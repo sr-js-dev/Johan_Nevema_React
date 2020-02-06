@@ -509,8 +509,21 @@ class Product extends Component {
         if(this._isMounted){
           this.setState({productData: result.data.Items});
           this.setState({loading:false})
-          $('#example').dataTable().fnDestroy();
-          $('#example').dataTable(
+        $('#project_table thead tr').clone(true).appendTo( '#project_table thead' );
+        $('#project_table thead tr:eq(1) th').each( function (i) {
+            $(this).html( '<input type="text" class="search-table-input" style="width: 100%" placeholder="Search" />' );
+            $(this).addClass("sort-style");
+            $( 'input', this ).on( 'keyup change', function () {
+                if ( table.column(i).search() !== this.value ) {
+                    table
+                        .column(i)
+                        .search( this.value )
+                        .draw();
+                }
+            } );
+        } );
+        $('#project_table').dataTable().fnDestroy();
+        var table = $('#project_table').DataTable(
             {
               "language": {
                   "lengthMenu": trls("Show")+" _MENU_ "+trls("Entries"),
@@ -523,11 +536,7 @@ class Product extends Component {
                     "previous": trls('Previous'),
                     "next": trls('Next')
                   }
-              },
-              columnDefs: [
-                { "width": "150px", "targets": [0,1]},
-                // { "width": "200px", "targets": [8] }
-              ]
+              }
             }
           );
         }
@@ -616,28 +625,6 @@ class Product extends Component {
     componentWillUnmount() {
       this._isMounted = false
     }
-    componentWillReceiveProps() {
-      $('#example').dataTable().fnDestroy();
-      $('#example').dataTable(
-        {
-          "language": {
-              "lengthMenu": trls("Show")+" _MENU_ "+trls("Entries"),
-              "zeroRecords": "Nothing found - sorry",
-              "info": trls("Show_page")+" _PAGE_ of _PAGES_",
-              "infoEmpty": "No records available",
-              "infoFiltered": "(filtered from _MAX_ total records)",
-              "search": trls('Search'),
-              "paginate": {
-                "previous": trls('Previous'),
-                "next": trls('Next')
-              },
-              columnDefs: [
-                { "width": "150px", "targets": [0,1]},
-              ]
-          }
-        }
-      );
-    }
 
     render () {
       let productData=this.state.productData;
@@ -668,7 +655,7 @@ class Product extends Component {
                     </Form>
                 </div>
                 <div className="table-responsive">
-                        <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
+                        <table id="project_table" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
                         <thead>
                             <tr>
                                 <th>{trls("Productcode")}</th>

@@ -58,6 +58,7 @@ class Salesform extends Component {
         this.props.getCustomer();
         this.getPurchaseData();
         this.getSupplierList();
+        this.getDocumentType();
     }
 
     getPurchaseData () {
@@ -68,11 +69,18 @@ class Salesform extends Component {
         });
     }
 
+    getDocumentType () {
+        var headers = SessionManager.shared().getAuthorizationHeader();
+        Axios.get(API.GetDocumenttypesDropdown, headers)
+        .then(result => {
+            this.setState({typeData: result.data.Items});
+        });
+    }
+
     getSupplierList = () => {
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.get(API.GetSuppliersDropdown, headers)
         .then(result => {
-            // console.log('1111111', result)
             this.setState({supplier: result.data.Items});
         });
     };
@@ -161,18 +169,22 @@ class Salesform extends Component {
         return supplierSelect
     }
 
+    onChange = (e) => {
+        let fileData = this.state.files;
+        if(e.target.files[0]){
+            e.target.files[0]['doctype'] = this.state.typeData[0].key;
+            fileData.push(e.target.files[0]);
+            this.setState({files: fileData, modalShow: true});
+        }
+    }
+
     handleDrop = (files, event) => {
         let fileData = this.state.files;
-        var headers = SessionManager.shared().getAuthorizationHeader();
-        Axios.get(API.GetDocumenttypesDropdown, headers)
-        .then(result => {
-            for(var i=0; i<files.length; i++){
-                files[i]['doctype']=result.data.Items[0].key
-                fileData.push(files[i]);
-            }
-            this.setState({files: fileData, typeData: result.data.Items});
-            this.setState({modalShow: true})
-        });
+        for(var i=0; i<files.length; i++){
+            files[i]['doctype']=this.state.typeData[0].key
+            fileData.push(files[i]);
+        }
+        this.setState({files: fileData, modalShow: true});
     }
 
     openUploadFile = () =>{

@@ -96,12 +96,28 @@ class Updateorderline extends Component {
                             <Form.Control type="text" name="product" defaultValue={updateData.productcode} readOnly placeholder={trls("Purchase_Price")} />
                         </Col>
                     </Form.Group>
-                    <Form.Group as={Row} controlId="formPlaintextPassword">
+                    {/* <Form.Group as={Row} controlId="formPlaintextPassword">
                         <Form.Label column sm="3">
                             {trls("Quantity")}  
                         </Form.Label>
                         <Col sm="9" className="product-text"> 
                             <Form.Control type="text" name="quantity" defaultValue={updateData.quantity} readOnly placeholder={trls("Purchase_Price")} />
+                        </Col>
+                    </Form.Group> */}
+                    <Form.Group as={Row} controlId="formPlaintextPassword">
+                        <Form.Label column sm="3">
+                            {trls("Sales_Quantity")}  
+                        </Form.Label>
+                        <Col sm="9" className="product-text"> 
+                            <Form.Control type="text" name="quantity" defaultValue={updateData.salesquantity} readOnly  placeholder={trls("Purchase_Price")} />
+                        </Col>
+                    </Form.Group>
+                    <Form.Group as={Row} controlId="formPlaintextPassword">
+                        <Form.Label column sm="3">
+                            {trls("Purchase_Quantity")}  
+                        </Form.Label>
+                        <Col sm="9" className="product-text"> 
+                            <Form.Control type="text" name="quantity" defaultValue={updateData.purchasequantity} readOnly placeholder={trls("Purchase_Price")} />
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">

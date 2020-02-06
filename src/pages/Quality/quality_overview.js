@@ -110,7 +110,7 @@ completeOrder = (id) => {
     }
     Axios.post(API.PostSalesOrderExact, params, headers)
         .then(result => {
-            Axios.get(API.GenerateProductXmlExact, headers)
+            Axios.get(API.GenerateSalesInvoiceXmlExact, headers)
             .then(result => {
                 Axios.post(API.PostSalesOrderExactSend, params, headers)
                 .then(result => {

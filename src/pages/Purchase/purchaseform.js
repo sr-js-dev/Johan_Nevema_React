@@ -11,7 +11,6 @@ import history from '../../history';
 import { trls } from '../../components/translate';
 import $ from 'jquery';
 import * as Auth   from '../../components/auth';
-// import Dropfileupload from '../../components/dropfileupload';
 import FileDrop from 'react-file-drop';
 import * as Common from '../../components/common';
 import DraggableModalDialog from '../../components/draggablemodal';

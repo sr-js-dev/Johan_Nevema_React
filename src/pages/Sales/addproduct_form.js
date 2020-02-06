@@ -33,6 +33,8 @@ class Addproduct extends Component {
             salesAmount: 0,
             reportingDate: new Date(),
             productQuantity: 0,
+            salesQuantity: 0,
+            purchaseQuantity: 0,
             orderLineId: '',
             invoicedateflag: false,
             purchaseUnit: '',
@@ -60,12 +62,12 @@ class Addproduct extends Component {
             params = {
                 orderid: this.props.orderid,
                 productid: data.product,
-                quantity: data.quantity
+                quantity: data.salesquantity
             }
             Axios.post(API.PostSalesOrderLine, params, headers)
             .then(result => {
-                this.setState({orderLineId: result.data.NewId, productid: data.product})
-                this.setState({purchaseAmount: this.state.productQuantity*this.state.purchasePrice, salesAmount: this.state.productQuantity*this.state.salesPrice, viewFieldFlag: true})
+                this.setState({orderLineId: result.data.NewId, productid: data.product, viewFieldFlag: true})
+                // this.setState({purchaseAmount: this.state.productQuantity*this.state.purchasePrice, salesAmount: this.state.productQuantity*this.state.salesPrice, viewFieldFlag: true})
                 // var transParams = {
                 //     orderid: this.props.orderid,
                 //     productid: data.product,
@@ -81,6 +83,8 @@ class Addproduct extends Component {
         }else{
             let transportData = []
             params = {
+                purchasequantity: data.purchasequantity,
+                salesquantity: data.salesquantity,
                 orderlineid: this.state.orderLineId,
                 purchasePrice: this.state.purchasePrice,
                 salesPrice: this.state.salesPrice,
@@ -99,7 +103,7 @@ class Addproduct extends Component {
                 transportData.packingslip=data.packingslip;
                 transportData.container=data.container;
                 transportData.shippingdocumentnumber=data.shippingdocumentnumber;
-                transportData.quantity=data.quantity
+                transportData.quantity=data.salesquantity
                 this.props.showTransportModal(transportData);
             });
         }
@@ -114,7 +118,8 @@ class Addproduct extends Component {
             salesAmount: 0,
             reportingDate: new Date(),
             productQuantity: 0,
-            orderLineId: ''
+            orderLineId: '',
+            val1: ''
         })
         this.props.onHide();
         this.props.getSalesOrderLine();
@@ -124,7 +129,8 @@ class Addproduct extends Component {
         var headers = SessionManager.shared().getAuthorizationHeader();
         var params = {
             customercode: this.props.customercode,
-            suppliercode: this.props.suppliercode
+            suppliercode: this.props.suppliercode,
+            loadingdate: this.props.loadingdate
         }
         Axios.post(API.GetSalesItems, params, headers)
         .then(result => {
@@ -180,6 +186,14 @@ class Addproduct extends Component {
         this.setState({productQuantity: event.target.value})
     }
 
+    changeSalesQauntity = (event) => {
+        this.setState({salesQuantity: event.target.value, salesAmount: this.state.salesPrice*event.target.value})
+    }
+
+    changePurchaseQauntity = (event) => {
+        this.setState({purchaseQuantity: event.target.value, purchaseAmount: this.state.purchasePrice*event.target.value})
+    }
+
     render(){
         return (
             <Modal
@@ -220,21 +234,29 @@ class Addproduct extends Component {
                             )}
                         </Col>
                     </Form.Group>
-                    <Form.Group as={Row} controlId="formPlaintextPassword">
+                    {/* <Form.Group as={Row} controlId="formPlaintextPassword">
                         <Form.Label column sm="3">
                             {trls("Quantity")}  
                         </Form.Label>
                         <Col sm="9" className="product-text">
                             <Form.Control type="number" name="quantity" required defaultValue={this.state.productQuantity} placeholder={trls("Quantity")} onChange = {(val)=>this.changeQauntity(val)} />
                         </Col>
+                    </Form.Group> */}
+                    <Form.Group as={Row} controlId="formPlaintextPassword">
+                        <Form.Label column sm="3">
+                            {trls("Sales_Quantity")}  
+                        </Form.Label>
+                        <Col sm="9" className="product-text">
+                            <Form.Control type="number" name="salesquantity" required  placeholder={trls("Sales_Quantity")} onChange = {(val)=>this.changeSalesQauntity(val)} />
+                        </Col>
                     </Form.Group>
                     {this.state.viewFieldFlag&&(
                         <Form.Group as={Row} controlId="formPlaintextPassword">
                             <Form.Label column sm="3">
-                                {trls("Purchase_Price")}  
+                                {trls("Purchase_Quantity")}  
                             </Form.Label>
-                            <Col sm="9" className="product-text"> 
-                                <Form.Control type="text" name="purchaseprice" defaultValue={Common.formatMoney(this.state.purchasePrice)} readOnly placeholder={trls("Purchase_Price")} />
+                            <Col sm="9" className="product-text">
+                                <Form.Control type="number" name="purchasequantity" required  placeholder={trls("Purchase_Quantity")} onChange = {(val)=>this.changePurchaseQauntity(val)} />
                             </Col>
                         </Form.Group>
                     )}
@@ -245,6 +267,16 @@ class Addproduct extends Component {
                             </Form.Label>
                             <Col sm="9" className="product-text">
                                 <Form.Control type="text" name="salesprice" defaultValue={Common.formatMoney(this.state.salesPrice)} readOnly placeholder={trls("Sales_Price")} />
+                            </Col>
+                        </Form.Group>
+                    )}
+                    {this.state.viewFieldFlag&&(
+                        <Form.Group as={Row} controlId="formPlaintextPassword">
+                            <Form.Label column sm="3">
+                                {trls("Purchase_Price")}  
+                            </Form.Label>
+                            <Col sm="9" className="product-text"> 
+                                <Form.Control type="text" name="purchaseprice" defaultValue={Common.formatMoney(this.state.purchasePrice)} readOnly placeholder={trls("Purchase_Price")} />
                             </Col>
                         </Form.Group>
                     )}
@@ -274,7 +306,7 @@ class Addproduct extends Component {
                                 {trls("Purchase_Amount")}  
                             </Form.Label>
                             <Col sm="9" className="product-text">
-                                <Form.Control type="text" name="purhcaseamount" defaultValue={Common.formatMoney(this.state.purchaseAmount)} readOnly placeholder={trls("Purchase_Amount")} />
+                                <Form.Control type="text" name="purhcaseamount" value={Common.formatMoney(this.state.purchaseAmount)} readOnly placeholder={trls("Purchase_Amount")} />
                             </Col>
                         </Form.Group>
                     )}
@@ -284,7 +316,7 @@ class Addproduct extends Component {
                                 {trls("Sales_Amount")}  
                             </Form.Label>
                             <Col sm="9" className="product-text">
-                                <Form.Control type="text" name="salesamount" defaultValue={Common.formatMoney(this.state.salesAmount)} readOnly placeholder={trls("Sales_Amount")} />
+                                <Form.Control type="text" name="salesamount" value={Common.formatMoney(this.state.salesAmount)} readOnly placeholder={trls("Sales_Amount")} />
                             </Col>
                         </Form.Group>
                     )}

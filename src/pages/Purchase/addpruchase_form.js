@@ -8,6 +8,7 @@ import { trls } from '../../components/translate';
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';
 import DraggableModalDialog from '../../components/draggablemodal';
+import * as Common from '../../components/common'
 
 const mapStateToProps = state => ({ 
     ...state.auth,
@@ -38,7 +39,7 @@ class Addpurchase extends Component {
     
     componentDidMount() {
         this.getProductList();
-        this.getVatcodeList();
+        // this.getVatcodeList();
     }
 
     handleSubmit = (event) => {
@@ -103,7 +104,6 @@ class Addpurchase extends Component {
             });
         }
     }
-    
     getProductList = () =>{
         this._isMounted = true;
         var headers = SessionManager.shared().getAuthorizationHeader();
@@ -291,46 +291,44 @@ class Addpurchase extends Component {
                         </Col>
                     </Form.Group>
                     <Form.Group style={{textAlign:"center"}}>
-                        <div className="table-responsive" style={{height: 300}}>
-                            <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%" style={{height: 230}}>
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>{!this.props.transport ? trls('Productcode') : trls('Pricingtype')}</th>
-                                        <th>{!this.props.transport ? trls('Quantity') : trls('Price')}</th>
-                                        {!this.props.transport&&(<th>{trls('Purchase_Unit')}</th>)}
-                                        {!this.props.transport&&(<th>{trls('VATCode')}</th>)}
-                                    </tr>
-                                </thead>
-                                {this.state.productData.length>0 ? (
-                                    <tbody>
-                                    {
-                                        this.state.productData.map((data,i) =>(
-                                        <tr id={data.id} key={i}>
-                                            <td style={{verticalAlign: 'top'}}><input type="checkbox" onChange={()=>this.changeProductId(data.id)} /></td>
-                                            <td style={{verticalAlign: 'top'}}>{!this.props.transport ? data.ProductCode :data.pricingtype}</td>
-                                            <td style={{verticalAlign: 'top'}}>{!this.props.transport ? data.Quantity : data.price}</td>
-                                            {!this.props.transport&&(<td style={{verticalAlign: 'top'}}>{data.unit}</td>)}
-                                            {!this.props.transport&&(<td style={{verticalAlign: 'top'}}>
-                                                <Select
-                                                    name="vat"
-                                                    placeholder={trls('Supplier')}
-                                                    options={this.state.vatCodeList}
-                                                    onChange={val => this.setVatCode(data.id, val.value)}
-                                                    // defaultValue = {this.getSupplierData()}
-                                                />
-                                            </td>)}
-                                        </tr>
-                                    ))
-                                    }
-                                </tbody>):
+                        <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>{!this.props.transport ? trls('Productcode') : trls('Pricingtype')}</th>
+                                    <th>{!this.props.transport ? trls('Quantity') : trls('Price')}</th>
+                                    {!this.props.transport&&(<th>{trls('Purchase_Unit')}</th>)}
+                                    {!this.props.transport&&(<th>{trls('VATCode')}</th>)}
+                                </tr>
+                            </thead>
+                            {this.state.productData.length>0 ? (
                                 <tbody>
-                                    <tr>
-                                        {!this.props.transport?(<td colSpan='5' style={{verticalAlign: 'top'}}>{trls('No_Result')}</td>):<td colSpan='3' style={{verticalAlign: 'top'}}>{trls('No_Result')}</td>}
+                                {
+                                    this.state.productData.map((data,i) =>(
+                                    <tr id={data.id} key={i}>
+                                        <td style={{verticalAlign: 'top'}}><input type="checkbox" onChange={()=>this.changeProductId(data.id)} /></td>
+                                        <td style={{verticalAlign: 'top'}}>{!this.props.transport ? data.ProductCode :data.pricingtype}</td>
+                                        <td style={{verticalAlign: 'top'}}>{!this.props.transport ? data.PurchaseQuantity : Common.formatMoney(data.price)}</td>
+                                        {!this.props.transport&&(<td style={{verticalAlign: 'top'}}>{data.unit}</td>)}
+                                        {!this.props.transport&&(<td style={{verticalAlign: 'top'}}>
+                                            <Select
+                                                name="vat"
+                                                placeholder={trls('Supplier')}
+                                                options={this.props.vatCodeList}
+                                                onChange={val => this.setVatCode(data.id, val.value)}
+                                                defaultValue = {this.props.defaultVatCode}
+                                            />
+                                        </td>)}
                                     </tr>
-                                </tbody>}
-                            </table>
-                        </div>     
+                                ))
+                                }
+                            </tbody>):
+                            <tbody>
+                                <tr>
+                                    {!this.props.transport?(<td colSpan='5' style={{verticalAlign: 'top'}}>{trls('No_Result')}</td>):<td colSpan='3' style={{verticalAlign: 'top'}}>{trls('No_Result')}</td>}
+                                </tr>
+                            </tbody>}
+                        </table>
                     </Form.Group>
                     <Form.Group style={{textAlign:"center"}}>
                         <Button style={{width:"100px"}} onClick={()=>this.postPurchaseLines()}>{trls('Save')}</Button>

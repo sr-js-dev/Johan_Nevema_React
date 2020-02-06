@@ -151,7 +151,6 @@ class Salesorderdtail extends Component {
         let detailData = this.state.salesorder;
         let salesItems = this.state.salesItems;
         let transporter = this.state.salesTransport;
-        // console.log('111111', salesItems)
         return (
             <div>
                 <div className="content__header content__header--with-line">
@@ -232,7 +231,8 @@ class Salesorderdtail extends Component {
                             <thead>
                                 <tr>
                                     <th>{trls("Product")}</th>
-                                    <th>{trls("Quantity")}</th>
+                                    <th>{trls("Sales_Quantity")}</th>
+                                    <th>{trls("Purchase_Quantity")}</th>
                                     <th>{trls("Purchase_Price")}</th>
                                     <th>{trls("Sales_Price")}</th>
                                     <th>{trls("Purchase_Amount")}</th>
@@ -241,7 +241,7 @@ class Salesorderdtail extends Component {
                                     <th>{trls("Container_number")}</th>
                                     <th>{trls("ShippingDocumentnumber")}</th>
                                     <th >{trls("ReportingDate")}</th>
-                                    <th>{trls("Action")}</th>
+                                    <th style={{width: 100}}>{trls("Action")}</th>
                                 </tr>
                             </thead>
                             {salesItems && (<tbody>
@@ -249,7 +249,8 @@ class Salesorderdtail extends Component {
                                     salesItems.map((data,i) =>(
                                     <tr id={data.id} key={i}>
                                         <td>{data.productcode}</td>
-                                        <td>{data.quantity}</td>
+                                        <td>{data.salesquantity}</td>
+                                        <td>{data.purchasequantity}</td>
                                         <td>{Common.formatMoney(data.SalesPrice)}</td>
                                         <td>{Common.formatMoney(data.purchaseprice)}</td>
                                         <td>{Common.formatMoney(data.purchaseamount)}</td>
@@ -258,7 +259,7 @@ class Salesorderdtail extends Component {
                                         <td>{data.Container}</td>
                                         <td>{data.Shipping}</td>
                                         <td>{Common.formatDate(data.ReportingDate)}</td>
-                                        <td >
+                                        <td>
                                             <Row style={{justifyContent:"center"}}>
                                                 <i id={data.Id} className="far fa-trash-alt statu-item" onClick={()=>this.orderLineDelete(data.id)}></i>
                                                 <i id={data.Id} className="fas fa-pen statu-item" onClick={()=>this.orderLineEdit(data)} ></i>
@@ -314,17 +315,19 @@ class Salesorderdtail extends Component {
                     arrivaldate={this.state.salesorder.arrivaldate!=="1900-01-01T00:00:00" ? true : false}
                     getSalesOrderData={()=>this.getSalesOrder()}
                 />
-                <Addproductform
-                    show={this.state.showModalProduct}
-                    onHide={() => this.setState({showModalProduct: false})}
-                    customercode={this.props.location.state.customercode}
-                    suppliercode={this.props.location.state.suppliercode}
-                    loadingdate={this.state.salesorder.loadingdate}
-                    orderid={this.props.location.state.newId}
-                    getSalesOrderLine={()=>this.getSalesItem()}
-                    getTransport={()=>this.getSalesOrderTransports()}
-                    showTransportModal={(transportData) => this.addTransport(transportData)}
-                />
+                {detailData.loadingdate&&(
+                    <Addproductform
+                        show={this.state.showModalProduct}
+                        onHide={() => this.setState({showModalProduct: false})}
+                        customercode={this.props.location.state.customercode}
+                        suppliercode={this.props.location.state.suppliercode}
+                        loadingdate={detailData.loadingdate}
+                        orderid={this.props.location.state.newId}
+                        getSalesOrderLine={()=>this.getSalesItem()}
+                        getTransport={()=>this.getSalesOrderTransports()}
+                        showTransportModal={(transportData) => this.addTransport(transportData)}
+                    />
+                )}
                 <Updateorderline
                     show={this.state.showModalUpdate}
                     onHide={() => this.setState({showModalUpdate: false})}

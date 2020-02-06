@@ -91,6 +91,10 @@ export default {
     GetPurchaseDescription: `${BASEURL}/api/factory/execute/Appmakerz-Test/getPurchaseDescription`,
     GetPurchaseUnit: `${BASEURL}/api/factory/execute/Appmakerz-Test/getPurchaseUnit`,
     GetSalesUnitData: `${BASEURL}/api/factory/execute/Appmakerz-Test/getSalesUnit`,
+    GetPurchaseTransportManual: `${BASEURL}/api/factory/execute/Appmakerz-Test/getPurchaseTransportManual`,
+    PostPurchaseTransportManual: `${BASEURL}/api/factory/execute/Appmakerz-Test/postPurchaseTransportManual`,
+    PutPurchaseTransportManual: `${BASEURL}/api/factory/execute/Appmakerz-Test/putPurchaseTransportManual`,
+    DeletePurchaseTransportManual: `${BASEURL}/api/factory/execute/Appmakerz-Test/deletePurchaseTransportManual`,
+    GetDefaultVatCode  : `${BASEURL}/api/factory/execute/exact-test/getDefaultVatCode`,
   };
   
-   

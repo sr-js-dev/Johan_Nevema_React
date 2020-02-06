@@ -54,7 +54,19 @@ class Goaltype extends Component {
     onHide = () => {
         this.props.setUploadFile(this.state.files)
         this.props.onHide();
+        this.setState({
+            typeData: [],
+            filse: []
+        })
     } 
+
+    setTypeOption = (value) => {
+      var item = this.props.typedata.filter(item => item.key===value);
+      var returnValue = {value: item[0].key, label: item[0].value}
+      return returnValue;
+    }
+
+    
 
     render(){
         let typeData = [];
@@ -81,37 +93,36 @@ class Goaltype extends Component {
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <div className="table-responsive" style={{textAlign: "center"}}>
-                    <table id="user_table" className="place-and-orders__table table table--striped" width="100%">
-                        <thead>
-                            <tr>
-                                <th>File</th>
-                                <th>DocumentType</th>
-                            </tr>
-                        </thead>
-                        {files &&(<tbody >
-                            {
-                                files.map((data,i) =>(
-                                    <tr id={i} key={i}>
-                                        <td>{data.name}</td>
-                                        <td>
-                                            <Select
-                                                name="type"
-                                                options={typeData}
-                                                className="select-user-class"
-                                                placeholder={trls('Select')}
-                                                onChange={val => this.setDocumentType(i, val)}
-                                                defaultValue={{"label": typeData[0].label , "value": typeData[0].value}}
-                                            />
-                                        </td>
-                                    </tr>
-                            ))
-                            }
-                        </tbody>)}
-                    </table>
+                <table id="user_table" className="place-and-orders__table table table--striped" width="100%">
+                    <thead>
+                        <tr>
+                            <th>File</th>
+                            <th style={{borderRight: '1px solid #ddd'}}>DocumentType</th>
+                        </tr>
+                    </thead>
+                    {files &&(<tbody >
+                        {
+                            files.map((data,i) =>(
+                                <tr id={i} key={i}>
+                                    <td>{data.name}</td>
+                                    <td>
+                                        <Select
+                                            name="type"
+                                            options={typeData}
+                                            className="select-user-class"
+                                            placeholder={trls('Select')}
+                                            onChange={val => this.setDocumentType(i, val)}
+                                            defaultValue={this.setTypeOption(data.doctype)}
+                                        />
+                                    </td>
+                                </tr>
+                        ))
+                        }
+                    </tbody>)}
+                </table>
+                <div style={{textAlign: 'center'}}>
                     <Button style={{width:"100px"}} onClick={()=>this.onHide()}>OK</Button>
                 </div>
-                
             </Modal.Body>
             </Modal>
         );

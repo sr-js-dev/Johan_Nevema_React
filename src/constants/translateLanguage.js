@@ -131,7 +131,12 @@ export const TRANSLATIONS = {
       Where_do_filter: 'Where do you want to filter on',
       TransporterCode: 'TransporterCode',
       TransporterName: 'TransporterName',
-      Arrival_date: 'ArrivalDate'
+      Arrival_date: 'ArrivalDate',
+      Manually: 'Manual',
+      Vat: 'Vat',
+      Manual_Edit: 'Manual Edit',
+      Sales_Quantity: 'Sales Quantity',
+      Purchase_Quantity: 'Purchase Quantity',
     },
 
 
@@ -257,7 +262,7 @@ export const TRANSLATIONS = {
       ShippingDocumentnumber: 'Vrachtbrief nummer',
       Add: 'Toevoegen',
       ReportingDate: 'Rapportage Datum',
-      Number: 'Nummer',
+      Number: 'Aantal',
       Quality: 'Controle',
       Complete: 'Compleet',
       No_Result: 'Geen resultaat',
@@ -267,6 +272,11 @@ export const TRANSLATIONS = {
       Where_do_filter: 'Waar wilt u op filteren?',
       TransporterCode: 'Vervoerder code',
       TransporterName: 'Vervoerder naam',
-      Arrival_date: 'Datum binnenkomst'
+      Arrival_date: 'Datum binnenkomst',
+      Manual: 'Handleiding',
+      Vat: 'Vat',
+      Manual_Edit: 'Handleiding Bewerk',
+      Sales_Quantity: 'Verkoop Aantal',
+      Purchase_Quantity: 'Aankoop Aantal '
     }
   };

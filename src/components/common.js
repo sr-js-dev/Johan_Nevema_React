@@ -33,8 +33,6 @@ export const formatMoney = (num) => {
     }else{
         return "€ 0,00" 
     }
-    
-   
 };
 
 export const formatPercent = (num) => {
@@ -55,7 +53,6 @@ export const formatDateSecond = (date) =>{
     }else{
         return '';
     }
-    
 }
 
 export const formatDecimal = (data) =>{

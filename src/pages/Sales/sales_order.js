@@ -36,11 +36,24 @@ getsalesData = () => {
     var header = SessionManager.shared().getAuthorizationHeader();
     Axios.get(API.GetSalesData, header)
     .then(result => {
-        console.log('123123123', result)
         this.setState({salesData:result.data.Items})
         this.setState({loading:false})
-        $('#example').dataTable().fnDestroy();
-        $('#example').DataTable(
+        $('#sales_table thead tr').clone(true).appendTo( '#sales_table thead' );
+        $('#sales_table thead tr:eq(1) th').each( function (i) {
+            $(this).html( '<input type="text" class="search-table-input" style="width: 100%" placeholder="Search" />' );
+            // $(this).removeClass("sorting");
+            $(this).addClass("sort-style");
+            $( 'input', this ).on( 'keyup change', function () {
+                if ( table.column(i).search() !== this.value ) {
+                    table
+                        .column(i)
+                        .search( this.value )
+                        .draw();
+                }
+            } );
+        } );
+        $('#sales_table').dataTable().fnDestroy();
+        var table = $('#sales_table').DataTable(
             {
               "language": {
                   "lengthMenu": trls("Show")+" _MENU_ "+trls("Entries"),
@@ -110,7 +123,7 @@ render () {
                     </Form>
                 </div>
                 <div className="table-responsive purchase-order-table">
-                    <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
+                    <table id="sales_table" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
                         <thead>
                             <tr>
                                 <th>{trls('Customer')}</th>
