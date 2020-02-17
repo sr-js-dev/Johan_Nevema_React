@@ -59,3 +59,9 @@ export const formatDecimal = (data) =>{
     
     return data.replace(",", ".");
 }
+
+export const formatEasyTypeDate = (value, e) =>{
+    console.log('111', e.target.value);
+    console.log('33', value)
+    return value;
+}

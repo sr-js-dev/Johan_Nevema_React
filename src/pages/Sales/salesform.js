@@ -251,6 +251,34 @@ class Salesform extends Component {
         });
     }
 
+    onChangeDate = (date, e, mode) => {
+        if(e.type==="click"){
+            if(mode==="orderdate"){
+                this.setState({orderdate:date, orderdateflag: true});
+            }else{
+                this.setState({arrivalDate: date, arrivalDateFlag: true})
+            }
+            
+        }
+    }
+
+    handleEnterKeyPress = (e, mode) => {
+        this.setState({flag: true});
+        if(e.target.value.length===4){
+            let today = new Date();
+            let year = today.getFullYear();
+            let date_day_month = e.target.value;
+            let day = date_day_month.substring(0,2);
+            let month = date_day_month.substring(2,4);
+            let setDate = new Date(year + '-'+ month + '-' + day);
+            if(mode==="orderdate"){
+                this.setState({orderdate:setDate, orderdateflag: true});
+            }else{
+                this.setState({arrivalDate:setDate, arrivalDateFlag: true})
+            }
+        }
+    }
+
     render(){
         let fileData = this.state.files;
         let customer = [];
@@ -331,7 +359,7 @@ class Salesform extends Component {
                         {trls('Reference_customer')}   
                         </Form.Label>
                         <Col sm="9" className="product-text">
-                            <Form.Control type="text" name="reference" defaultValue = {this.props.salesOrder?this.props.salesOrder.referencecustomer:''} placeholder={trls('Reference')} />
+                            <Form.Control type="text" name="reference" required defaultValue = {this.props.salesOrder?this.props.salesOrder.referencecustomer:''} placeholder={trls('Reference')} />
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
@@ -340,8 +368,8 @@ class Salesform extends Component {
                         </Form.Label>
                         <Col sm="9" className="product-text">
                             { this.state.orderdateflag || !this.props.salesOrder ? (
-                                <DatePicker name="orderdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.orderdate} onChange={date =>this.setState({orderdate:date, orderdateflag: true})} />
-                            ) : <DatePicker name="orderdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.salesOrder.loadingdate)} onChange={date =>this.setState({orderdate:date, orderdateflag: true})} />
+                                <DatePicker name="orderdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.orderdate} onChange = {(value, e)=>this.onChangeDate(value, e, 'orderdate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'orderdate')}/>}/>
+                            ) : <DatePicker name="orderdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.salesOrder.loadingdate)} onChange = {(value, e)=>this.onChangeDate(value, e, 'orderdate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'orderdate')}/>}/>
                             } 
                         </Col>
                     </Form.Group>
@@ -352,8 +380,8 @@ class Salesform extends Component {
                             </Form.Label>
                             <Col sm="9" className="product-text">
                                 { this.state.arrivalDateFlag || !this.props.arrivaldate ? (
-                                    <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.arrivalDate} onChange={date =>this.setState({arrivalDate:date, arrivalDateFlag: true})} />
-                                ) : <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.salesOrder.arrivaldate)} onChange={date =>this.setState({arrivalDate:date, arrivalDateFlag: true})} />
+                                    <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.arrivalDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
+                                ) : <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.salesOrder.arrivaldate)} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
                                 } 
                             </Col>
                         </Form.Group>
@@ -365,8 +393,8 @@ class Salesform extends Component {
                             </Form.Label>
                             <Col sm="9" className="product-text">
                                 { this.state.arrivalDateFlag || !this.props.arrivaldate ? (
-                                    <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.arrivalDate} onChange={date =>this.setState({arrivalDate:date, arrivalDateFlag: true})} />
-                                ) : <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.salesOrder.arrivaldate)} onChange={date =>this.setState({arrivalDate:date, arrivalDateFlag: true})} />
+                                    <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.arrivalDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
+                                ) : <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.salesOrder.arrivaldate)} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
                                 } 
                             </Col>
                         </Form.Group>

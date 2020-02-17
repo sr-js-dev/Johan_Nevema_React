@@ -74,32 +74,21 @@ getsalesData = () => {
 
 loadSalesDetail = (data)=>{
     var header = SessionManager.shared().getAuthorizationHeader();
-        Axios.get(API.GetCustomerData, header)
-        .then(result => {
-            let customerData = result.data.Items;
-            let customerCode = '';
-            customerData.map((customer, index)=>{
-                if(customer.value===data.Customer){
-                    customerCode = customer.key;
-                }
-                return customerData;
-            });
-            Axios.get(API.GetSuppliersDropdown, header)
-            .then(result => {
-                let supplierData = result.data.Items;
-                let supplierCode = '';
-                supplierData.map((supplier, index)=>{
-                    if(supplier.value===data.Supplier){
-                        supplierCode = supplier.key;
-                    }
-                    return supplierData;
-                });
-                history.push({
-                    pathname: '/sales-order-detail',
-                    state: { newId: data.id, customercode:customerCode, suppliercode: supplierCode, newSubmit:true, quality: false}
-                })
-            });
-          });
+    Axios.get(API.GetSuppliersDropdown, header)
+    .then(result => {
+        let supplierData = result.data.Items;
+        let supplierCode = '';
+        supplierData.map((supplier, index)=>{
+            if(supplier.value===data.Supplier){
+                supplierCode = supplier.key;
+            }
+            return supplierData;
+        });
+        history.push({
+            pathname: '/sales-order-detail',
+            state: { newId: data.id, customercode:data.CustomerCode, suppliercode: supplierCode, newSubmit:true, quality: false}
+        })
+    });
 }
 render () {
     let salesData = this.state.salesData

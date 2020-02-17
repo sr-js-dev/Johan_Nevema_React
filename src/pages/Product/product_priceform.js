@@ -28,6 +28,8 @@ const mapDispatchToProps = dispatch => ({
 class Productform extends Component {
       constructor(props) {
           super(props);
+          let today = new Date();
+          let year = today.getFullYear();
           this.state = {  
               token: window.localStorage.getItem('token'),
               transportlist:[],
@@ -38,7 +40,12 @@ class Productform extends Component {
               product_id: "",
               transprot_key: "",
               pricetype: "",
-              title: ""
+              title: "",
+              currentYear: year,
+              startSelectDate: new Date(year+'-01-01'),
+              endSelectDate: new Date(year+'-12-31'),
+              flag: false
+              
           };
         }
       componentWillUnmount() {
@@ -147,6 +154,35 @@ class Productform extends Component {
         this.props.onHide();
         this.props.removeState();
     }
+
+    onChangeDate = (date, e, mode) => {
+        if(e.type==="click"){
+            if(mode==="start"){
+                this.setState({startdate: date})
+            }else{
+                this.setState({enddate: date})
+            }
+            
+        }
+    }
+
+    handleEnterKeyPress = (e, mode) => {
+        this.setState({flag: true});
+        if(e.target.value.length===4){
+            let today = new Date();
+            let year = today.getFullYear();
+            let date_day_month = e.target.value;
+            let day = date_day_month.substring(0,2);
+            let month = date_day_month.substring(2,4);
+            let setDate = new Date(year + '-'+ month + '-' + day)
+            if(mode==="start"){
+                this.setState({startdate: setDate})
+            }else{
+                this.setState({enddate: setDate})
+            }
+        }
+    }
+
     render(){
         if(this.props.price_flag===1){
             return (
@@ -181,8 +217,8 @@ class Productform extends Component {
                                     </Form.Label>
                                     <Col sm="9" className="product-text">
                                         {!this.state.startdate ? (
-                                            <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date()} onChange={date =>this.setState({startdate:date})} />
-                                        ) : <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.state.startdate)} onChange={date =>this.setState({startdate:date})} />
+                                            <DatePicker name="startdatetest" id="startdatetest" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.startSelectDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'start')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'start')}/>}/>
+                                        ) : <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.state.startdate)} onChange = {(value, e)=>this.onChangeDate(value, e, 'start')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'start')}/>} />
                                         } 
                                     </Col>
                                 </Form.Group>
@@ -192,8 +228,8 @@ class Productform extends Component {
                                     </Form.Label>
                                     <Col sm="9" className="product-text">
                                         {!this.state.enddate ? (
-                                            <DatePicker name="enddate"  className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date()} onChange={date =>this.setState({enddate:date})} />
-                                        ) : <DatePicker name="enddate"  className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.state.enddate)} onChange={date =>this.setState({enddate:date})} />
+                                            <DatePicker name="enddate"  className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.endSelectDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'end')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'end')}/>} />
+                                        ) : <DatePicker name="enddate"  className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.state.enddate)} onChange = {(value, e)=>this.onChangeDate(value, e, 'end')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'end')}/>} />
                                         }
                                     </Col>
                                 </Form.Group>
@@ -235,9 +271,10 @@ class Productform extends Component {
                               </Form.Label>
                               <Col sm="9" className="product-text">
                                   {!this.state.startdate ? (
-                                     <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date()} onChange={date =>this.setState({startdate:date})} />
-                                  ) : <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.startdate} onChange={date =>this.setState({startdate:date})} />
+                                     <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.startSelectDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'start')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'start')}/>} />
+                                  ) : <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.startdate} onChange = {(value, e)=>this.onChangeDate(value, e, 'start')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'start')}/>} />
                                   } 
+                                  
                               </Col>
                           </Form.Group>
                           <Form.Group as={Row} controlId="formPlaintextPassword">
@@ -246,8 +283,8 @@ class Productform extends Component {
                               </Form.Label>
                               <Col sm="9" className="product-text">
                                   {!this.state.enddate ? (
-                                     <DatePicker name="enddate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date()} onChange={date =>this.setState({enddate:date})} />
-                                  ) : <DatePicker name="enddate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.enddate} onChange={date =>this.setState({enddate:date})} />
+                                     <DatePicker name="enddate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.endSelectDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'end')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'end')}/>} />
+                                  ) : <DatePicker name="enddate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.enddate} onChange = {(value, e)=>this.onChangeDate(value, e, 'end')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'end')}/>}/>
                                   }
                               </Col>
                           </Form.Group>
@@ -343,8 +380,8 @@ class Productform extends Component {
                                 </Form.Label>
                                 <Col sm="9" className="product-text">
                                     {!this.state.startdate ? (
-                                        <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date()} onChange={date =>this.setState({startdate:date})} />
-                                    ) : <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.startdate} onChange={date =>this.setState({startdate:date})} />
+                                        <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.startSelectDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'start')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'start')}/>} />
+                                    ) : <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.startdate} onChange = {(value, e)=>this.onChangeDate(value, e, 'start')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'start')}/>} />
                                     } 
                                 </Col>
                             </Form.Group>
@@ -354,8 +391,8 @@ class Productform extends Component {
                                 </Form.Label>
                                 <Col sm="9" className="product-text">
                                     {!this.state.enddate ? (
-                                        <DatePicker name="enddate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date()} onChange={date =>this.setState({enddate:date})} />
-                                    ) : <DatePicker name="enddate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.enddate} onChange={date =>this.setState({enddate:date})} />
+                                        <DatePicker name="enddate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.endSelectDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'end')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'end')}/>}/>
+                                    ) : <DatePicker name="enddate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.enddate} onChange = {(value, e)=>this.onChangeDate(value, e, 'end')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'end')}/>}/>
                                     }
                                 </Col>
                             </Form.Group>

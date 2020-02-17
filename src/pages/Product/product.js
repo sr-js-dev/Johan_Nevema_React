@@ -47,7 +47,8 @@ class Productform extends Component {
             redirect:false,
             product_id:"",
             loading:true,
-            description: ''
+            description: '',
+            CustomerCode: ''
         };
       }
     componentWillUnmount() {
@@ -137,14 +138,13 @@ class Productform extends Component {
       let customerSelect = [];
       let customerData = this.props.customer;
       if(this.props.customer){
-        customerData.map((customer, index)=>{
-              if(customer.value===this.props.copyproduct.Customer){
-                customerSelect = { "label": customer.value, "value": customer.key }
-              }
-              return customerData;
-          });
+          var item = customerData.filter(item => Number(item.key)===Number(this.props.customercode));
+          if(item[0]){
+            customerSelect = { "label": item[0].value, "value": item[0].key}
+          }
+         
       }
-      return customerSelect
+      return customerSelect;
     }
 
     setSalesUnit = () => {
@@ -610,14 +610,16 @@ class Product extends Component {
       })
     }
     copyProduct = (data) => {
+      console.log('2222', data);
       var headers = SessionManager.shared().getAuthorizationHeader();
       let params = {
         id: data.id
       }
       Axios.post(API.GetProduct, params, headers)
       .then(result => {
+        console.log('444444', result)
         if(this._isMounted){
-          this.setState({modalShow: true, copyFlag: 0, copyProduct: result.data.Items[0]})
+          this.setState({modalShow: true, copyFlag: 0, copyProduct: result.data.Items[0], CustomerCode: data.CustomerCode})
         }
       });
         // 
@@ -651,6 +653,7 @@ class Product extends Component {
                             approver = {this.state.approve_user}
                             copyproduct = {this.state.copyProduct}
                             copyflag={this.state.copyFlag}
+                            customercode={this.state.CustomerCode}
                         />
                     </Form>
                 </div>

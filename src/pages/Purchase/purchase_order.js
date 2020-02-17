@@ -41,8 +41,21 @@ getPurchaseOrders() {
     .then(result => {
         this.setState({purhaseorders: result.data.Items});
         this.setState({loading:false})
+        $('#example thead tr').clone(true).appendTo( '#example thead' );
+        $('#example thead tr:eq(1) th').each( function (i) {
+            $(this).html( '<input type="text" class="search-table-input" style="width: 100%" placeholder="Search" />' );
+            $(this).addClass("sort-style");
+            $( 'input', this ).on( 'keyup change', function () {
+                if ( table.column(i).search() !== this.value ) {
+                    table
+                        .column(i)
+                        .search( this.value )
+                        .draw();
+                }
+            } );
+        } );
         $('#example').dataTable().fnDestroy();
-        $('#example').DataTable(
+        var table = $('#example').DataTable(
             {
               "language": {
                   "lengthMenu": trls("Show")+" _MENU_ "+trls("Entries"),

@@ -139,6 +139,26 @@ class Addmanuallytransport extends Component {
     changePrice = (value) => {
         this.setState({amount: this.state.editQuantityFlag ? this.state.quantity*value : this.props.updateData.Quantity*value, price: value, editPriceFlag: true, editFlag: true}) 
     }
+
+    onChangeDate = (date, e) => {
+        if(e.type==="click"){
+            this.setState({reportingDate: date, reportingDateFlag: true})
+        }
+    }
+
+    handleEnterKeyPress = (e) => {
+        this.setState({flag: true});
+        if(e.target.value.length===4){
+            let today = new Date();
+            let year = today.getFullYear();
+            let date_day_month = e.target.value;
+            let day = date_day_month.substring(0,2);
+            let month = date_day_month.substring(2,4);
+            let setDate = new Date(year + '-'+ month + '-' + day)
+            this.setState({reportingDate: setDate, reportingDateFlag: true})
+        }
+    }
+
     render(){
         console.log('6565', this.props.updateData.length)
         return (
@@ -225,8 +245,8 @@ class Addmanuallytransport extends Component {
                         </Form.Label>
                         <Col sm="9" className="product-text">
                             {this.state.reportingDateFlag || !this.props.updateData.ReportingDate ? (
-                                <DatePicker name="reportdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={!this.state.reportingDateFlag ? new Date(this.props.reportingDate):this.state.reportingDate} onChange={date =>this.setState({reportingDate:date, reportingDateFlag: true})} />
-                            ) : <DatePicker name="reportdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.updateData.ReportingDate)} onChange={date =>this.setState({reportingDate:date, reportingDateFlag: true})} />
+                                <DatePicker name="reportdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={!this.state.reportingDateFlag ? new Date(this.props.reportingDate):this.state.reportingDate} onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>}/>
+                            ) : <DatePicker name="reportdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.updateData.ReportingDate)} onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>}/>
                             }
                         </Col>
                     </Form.Group>

@@ -194,6 +194,25 @@ class Addproduct extends Component {
         this.setState({purchaseQuantity: event.target.value, purchaseAmount: this.state.purchasePrice*event.target.value})
     }
 
+    onChangeDate = (date, e) => {
+        if(e.type==="click"){
+            this.setState({reportingDate: date, invoicedateflag: true})
+        }
+    }
+
+    handleEnterKeyPress = (e) => {
+        this.setState({flag: true});
+        if(e.target.value.length===4){
+            let today = new Date();
+            let year = today.getFullYear();
+            let date_day_month = e.target.value;
+            let day = date_day_month.substring(0,2);
+            let month = date_day_month.substring(2,4);
+            let setDate = new Date(year + '-'+ month + '-' + day)
+            this.setState({reportingDate:setDate, invoicedateflag: true})
+        }
+    }
+
     render(){
         return (
             <Modal
@@ -234,92 +253,106 @@ class Addproduct extends Component {
                             )}
                         </Col>
                     </Form.Group>
-                    {/* <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls("Quantity")}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
-                            <Form.Control type="number" name="quantity" required defaultValue={this.state.productQuantity} placeholder={trls("Quantity")} onChange = {(val)=>this.changeQauntity(val)} />
-                        </Col>
-                    </Form.Group> */}
+                    {!this.state.viewFieldFlag&&(
+                        <Form.Group as={Row} controlId="formPlaintextPassword">
+                            <Form.Label column sm="3">
+                                {trls("Sales_Quantity")}  
+                            </Form.Label>
+                            <Col sm="9" className="product-text">
+                                <Form.Control type="number" name="salesquantity" required min="0.00" step="0.001" placeholder={trls("Sales_Quantity")} onChange = {(val)=>this.changeSalesQauntity(val)} />
+                            </Col>
+                        </Form.Group>
+                    )}
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls("Sales_Quantity")}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
-                            <Form.Control type="number" name="salesquantity" required  placeholder={trls("Sales_Quantity")} onChange = {(val)=>this.changeSalesQauntity(val)} />
+                        <Col sm={6} style={{padding: 0}}>
+                            {this.state.viewFieldFlag&&(
+                                <Form.Group as={Row} controlId="formPlaintextPassword">
+                                    <Form.Label column sm="3">
+                                        {trls("Sales_Quantity")}  
+                                    </Form.Label>
+                                    <Col sm="9" className="product-text">
+                                        <Form.Control type="number" name="salesquantity" required min="0.00" step="0.001" defaultValue={this.state.salesQuantity} placeholder={trls("Sales_Quantity")} onChange = {(val)=>this.changeSalesQauntity(val)} />
+                                    </Col>
+                                </Form.Group>
+                            )}
+                            {this.state.viewFieldFlag&&(
+                                <Form.Group as={Row} controlId="formPlaintextPassword">
+                                    <Form.Label column sm="3">
+                                        {trls("Sales_Price")}  
+                                    </Form.Label>
+                                    <Col sm="9" className="product-text">
+                                        <Form.Control type="text" name="salesprice" defaultValue={Common.formatMoney(this.state.salesPrice)} readOnly placeholder={trls("Sales_Price")} />
+                                    </Col>
+                                </Form.Group>
+                            )}
+                            {this.state.viewFieldFlag&&(
+                                <Form.Group as={Row} controlId="formPlaintextPassword">
+                                    <Form.Label column sm="3">
+                                        {trls("Sales_Unit")}  
+                                    </Form.Label>
+                                    <Col sm="9" className="product-text">
+                                        <Form.Control type="text" name="salesunit" defaultValue={this.state.salesUnit} readOnly placeholder={trls("Sales_Unit")} />
+                                    </Col>
+                                </Form.Group>
+                            )}
+                            {this.state.viewFieldFlag&&(
+                                <Form.Group as={Row} controlId="formPlaintextPassword">
+                                    <Form.Label column sm="3">
+                                        {trls("Sales_Amount")}  
+                                    </Form.Label>
+                                    <Col sm="9" className="product-text">
+                                        <Form.Control type="text" name="salesamount" value={Common.formatMoney(this.state.salesAmount)} readOnly placeholder={trls("Sales_Amount")} />
+                                    </Col>
+                                </Form.Group>
+                            )}
+                        </Col>
+                        <Col sm={6} style={{padding: 0}}>
+                            {this.state.viewFieldFlag&&(
+                                <Form.Group as={Row} controlId="formPlaintextPassword">
+                                    <Form.Label column sm="3">
+                                        {trls("Purchase_Quantity")}  
+                                    </Form.Label>
+                                    <Col sm="9" className="product-text">
+                                        {this.state.purchaseUnit===this.state.salesUnit?(
+                                            <Form.Control type="number" name="purchasequantity" required min="0.00" step="0.001" defaultValue={this.state.salesQuantity}  placeholder={trls("Purchase_Quantity")} onChange = {(val)=>this.changePurchaseQauntity(val)} />
+                                        ):
+                                            <Form.Control type="number" name="purchasequantity" required min="0.00" step="0.001"  placeholder={trls("Purchase_Quantity")} onChange = {(val)=>this.changePurchaseQauntity(val)} />
+                                        }
+                                    </Col>
+                                </Form.Group>
+                            )}
+                            {this.state.viewFieldFlag&&(
+                                <Form.Group as={Row} controlId="formPlaintextPassword">
+                                    <Form.Label column sm="3">
+                                        {trls("Purchase_Price")}  
+                                    </Form.Label>
+                                    <Col sm="9" className="product-text"> 
+                                        <Form.Control type="text" name="purchaseprice" defaultValue={Common.formatMoney(this.state.purchasePrice)} readOnly placeholder={trls("Purchase_Price")} />
+                                    </Col>
+                                </Form.Group>
+                            )}
+                            {this.state.viewFieldFlag&&(
+                                <Form.Group as={Row} controlId="formPlaintextPassword">
+                                    <Form.Label column sm="3">
+                                        {trls("Purchase_Unit")}  
+                                    </Form.Label>
+                                    <Col sm="9" className="product-text">
+                                        <Form.Control type="text" name="purchaseunit" defaultValue={this.state.purchaseUnit} readOnly placeholder={trls("Purchase_Unit")} />
+                                    </Col>
+                                </Form.Group>
+                            )}
+                            {this.state.viewFieldFlag&&(
+                                <Form.Group as={Row} controlId="formPlaintextPassword">
+                                    <Form.Label column sm="3">
+                                        {trls("Purchase_Amount")}  
+                                    </Form.Label>
+                                    <Col sm="9" className="product-text">
+                                        <Form.Control type="text" name="purhcaseamount" value={Common.formatMoney(this.state.purchaseAmount)} readOnly placeholder={trls("Purchase_Amount")} />
+                                    </Col>
+                                </Form.Group>
+                            )}
                         </Col>
                     </Form.Group>
-                    {this.state.viewFieldFlag&&(
-                        <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls("Purchase_Quantity")}  
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
-                                <Form.Control type="number" name="purchasequantity" required  placeholder={trls("Purchase_Quantity")} onChange = {(val)=>this.changePurchaseQauntity(val)} />
-                            </Col>
-                        </Form.Group>
-                    )}
-                    {this.state.viewFieldFlag&&(
-                        <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls("Sales_Price")}  
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
-                                <Form.Control type="text" name="salesprice" defaultValue={Common.formatMoney(this.state.salesPrice)} readOnly placeholder={trls("Sales_Price")} />
-                            </Col>
-                        </Form.Group>
-                    )}
-                    {this.state.viewFieldFlag&&(
-                        <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls("Purchase_Price")}  
-                            </Form.Label>
-                            <Col sm="9" className="product-text"> 
-                                <Form.Control type="text" name="purchaseprice" defaultValue={Common.formatMoney(this.state.purchasePrice)} readOnly placeholder={trls("Purchase_Price")} />
-                            </Col>
-                        </Form.Group>
-                    )}
-                    {this.state.viewFieldFlag&&(
-                        <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls("Purchase_Unit")}  
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
-                                <Form.Control type="text" name="purchaseunit" defaultValue={this.state.purchaseUnit} readOnly placeholder={trls("Purchase_Unit")} />
-                            </Col>
-                        </Form.Group>
-                    )}
-                    {this.state.viewFieldFlag&&(
-                        <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls("Sales_Unit")}  
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
-                                <Form.Control type="text" name="salesunit" defaultValue={this.state.salesUnit} readOnly placeholder={trls("Sales_Unit")} />
-                            </Col>
-                        </Form.Group>
-                    )}
-                    {this.state.viewFieldFlag&&(
-                        <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls("Purchase_Amount")}  
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
-                                <Form.Control type="text" name="purhcaseamount" value={Common.formatMoney(this.state.purchaseAmount)} readOnly placeholder={trls("Purchase_Amount")} />
-                            </Col>
-                        </Form.Group>
-                    )}
-                    {this.state.viewFieldFlag&&(
-                        <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls("Sales_Amount")}  
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
-                                <Form.Control type="text" name="salesamount" value={Common.formatMoney(this.state.salesAmount)} readOnly placeholder={trls("Sales_Amount")} />
-                            </Col>
-                        </Form.Group>
-                    )}
                     {this.state.viewFieldFlag&&(
                         <Form.Group as={Row} controlId="formPlaintextPassword">
                             <Form.Label column sm="3">
@@ -357,8 +390,8 @@ class Addproduct extends Component {
                             </Form.Label>
                             <Col sm="9" className="product-text">
                                 {this.state.invoicedateflag || !this.props.loadingdate? (
-                                    <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.reportingDate} onChange={date =>this.setState({reportingDate:date, invoicedateflag: true})} />
-                                ) : <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.loadingdate)} onChange={date =>this.setState({reportingDate:date, invoicedateflag: true})} />
+                                    <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.reportingDate} onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>}/>
+                                ) : <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.loadingdate)} onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>}/>
                                 } 
                                 
                             </Col>

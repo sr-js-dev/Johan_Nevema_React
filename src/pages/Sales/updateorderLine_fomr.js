@@ -66,6 +66,25 @@ class Updateorderline extends Component {
         this.props.getSalesOrderLine();
     }
 
+    onChangeDate = (date, e) => {
+        if(e.type==="click"){
+            this.setState({reportingDate: date, reportingFlag: true})
+        }
+    }
+
+    handleEnterKeyPress = (e) => {
+        this.setState({flag: true});
+        if(e.target.value.length===4){
+            let today = new Date();
+            let year = today.getFullYear();
+            let date_day_month = e.target.value;
+            let day = date_day_month.substring(0,2);
+            let month = date_day_month.substring(2,4);
+            let setDate = new Date(year + '-'+ month + '-' + day)
+            this.setState({reportingDate:setDate, reportingFlag: true})
+        }
+    }
+
     render(){
         let updateData = [];
         if(this.props.updatedata){
@@ -198,8 +217,8 @@ class Updateorderline extends Component {
                         </Form.Label>
                         <Col sm="9" className="product-text">
                             {this.state.reportingFlag || !this.props.updatedata ?( 
-                                <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.reportingDate} onChange={date =>this.setState({reportingDate:date, reportingFlag: true})} />
-                                ) : <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date( this.props.updatedata.ReportingDate)} onChange={date =>this.setState({invoicedate:date, reportingFlag: true})} />
+                                <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.reportingDate} onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>} />
+                                ) : <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date( this.props.updatedata.ReportingDate)} onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>} />
                             } 
                         </Col>
                     </Form.Group>

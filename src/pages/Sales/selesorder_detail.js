@@ -226,7 +226,7 @@ class Salesorderdtail extends Component {
                             </Row>
                         </Container>
                     </div>
-                    <div className="table-responsive">
+                    {/* <div className="table-responsive"> */}
                         <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
                             <thead>
                                 <tr>
@@ -237,10 +237,10 @@ class Salesorderdtail extends Component {
                                     <th>{trls("Sales_Price")}</th>
                                     <th>{trls("Purchase_Amount")}</th>
                                     <th>{trls("Sales_Amount")}</th>
-                                    <th>{trls("Packing_slip_number")}</th>
-                                    <th>{trls("Container_number")}</th>
-                                    <th>{trls("ShippingDocumentnumber")}</th>
-                                    <th >{trls("ReportingDate")}</th>
+                                    <th style={{width: 50}}>{trls("Packing_slip_number")}</th>
+                                    <th style={{width: 50}}>{trls("Container_number")}</th>
+                                    <th style={{width: 50}}>{trls("ShippingDocumentnumber")}</th>
+                                    <th style={{width: "109px"}}>{trls("ReportingDate")}</th>
                                     <th style={{width: 100}}>{trls("Action")}</th>
                                 </tr>
                             </thead>
@@ -258,7 +258,7 @@ class Salesorderdtail extends Component {
                                         <td>{data.PackingSlip}</td>
                                         <td>{data.Container}</td>
                                         <td>{data.Shipping}</td>
-                                        <td>{Common.formatDate(data.ReportingDate)}</td>
+                                        <td>{Common.formatDate(data.ReportingDate)==="01-01-1970" ? '' : Common.formatDate(data.ReportingDate)}</td>
                                         <td>
                                             <Row style={{justifyContent:"center"}}>
                                                 <i id={data.Id} className="far fa-trash-alt statu-item" onClick={()=>this.orderLineDelete(data.id)}></i>
@@ -271,7 +271,7 @@ class Salesorderdtail extends Component {
                             </tbody>)}
                     </table>
                     <Button variant="primary" style={{height: 40, borderRadius: 20, float: 'right'}} onClick={()=>this.setState({showModalProduct: true})}>{trls('Add')}</Button>
-                </div>
+                {/* </div> */}
                 <div className="table-responsive">
                         <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
                             <thead>
