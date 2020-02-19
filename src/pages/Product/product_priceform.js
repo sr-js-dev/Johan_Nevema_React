@@ -217,7 +217,7 @@ class Productform extends Component {
                                     </Form.Label>
                                     <Col sm="9" className="product-text">
                                         {!this.state.startdate ? (
-                                            <DatePicker name="startdatetest" id="startdatetest" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.startSelectDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'start')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'start')}/>}/>
+                                            <DatePicker name="startdate" id="startdatetest" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.startSelectDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'start')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'start')}/>}/>
                                         ) : <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.state.startdate)} onChange = {(value, e)=>this.onChangeDate(value, e, 'start')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'start')}/>} />
                                         } 
                                     </Col>

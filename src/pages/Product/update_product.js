@@ -190,17 +190,15 @@ class Updateproductform extends Component {
         let customerSelect = [];
         let customerData = this.state.customer;
         if(this.state.customer){
-          customerData.map((customer, index)=>{
-                if(customer.value===this.props.copyproduct.Customer){
-                    
-                  customerSelect = { "label": customer.value, "value": customer.key }
-                }
-                return customerData;
-            });
+            var item = customerData.filter(item => Number(item.key)===Number(this.props.copyproduct.CustomerCode));
+            if(item[0]){
+              customerSelect = { "label": item[0].value, "value": item[0].key}
+            }
+           
         }
-        return customerSelect
+        return customerSelect;
       }
-  
+
       setSalesUnit = () => {
         let salesSelect = [];
         let salesData = this.state.salesUnit;

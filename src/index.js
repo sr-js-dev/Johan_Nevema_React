@@ -10,8 +10,8 @@ import './assets/css/bootstrap.min.css';
 import './assets/css/style.app.css';
 
 const store = configureStore()
-window.localStorage.setItem('nevema_lang',  'en_US');
-window.localStorage.setItem('nevema_label',  'En');
+window.localStorage.setItem('nevema_lang',  'nl_BE');
+window.localStorage.setItem('nevema_label',  'Nl');
 window.React = React
 
 ReactDOM.render(

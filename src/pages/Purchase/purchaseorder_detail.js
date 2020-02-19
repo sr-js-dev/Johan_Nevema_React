@@ -103,8 +103,6 @@ class Purchaseorderdtail extends Component {
     getPurchaseOrderLines () {
         this.setState({
             updateManualData: [],
-            defaultVatCode: '',
-            vatCodeList: []
         })
         var params = {
             purchaseorderid:this.props.location.state.newId

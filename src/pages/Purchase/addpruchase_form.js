@@ -25,7 +25,7 @@ class Addpurchase extends Component {
         this.state = {  
             filsterList: [{"value": "1", "label": "Packing slip"}, {"value": "2", "label": "Containernumber"}, {"value": "3", "label": "Shippingdocument "}],
             nlfilsterList: [{"value": "1", "label": "Pakbon nummer"}, {"value": "2", "label": "Container nummer"}, {"value": "3", "label": "Vrachtbrief nummer"}],
-            quantity: 0,
+            quantity: '',
             filterValue: '',
             productData: [],
             checkedData: [],
@@ -168,7 +168,7 @@ class Addpurchase extends Component {
                     params = {
                         purchaseid: this.props.purchaseid,
                         id: product.id,
-                        vatid: product.vatCode
+                        vatid: product.vatCode ? product.vatCode : Number(this.props.defaultVatCode[0].value)
                     }
                     Axios.post(API.PostPurchaseOrderLine, params, headers)
                     .then(result => {
@@ -275,7 +275,7 @@ class Addpurchase extends Component {
                             {trls("Number")}  
                         </Form.Label>
                         <Col sm="9" className="product-text">
-                            <Form.Control type="text" name="number" required defaultValue={this.state.quantity} placeholder={trls("Quantity")}  />
+                            <Form.Control type="text" name="number" required defaultValue={this.state.quantity} placeholder={trls("Number")}  />
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">

@@ -137,6 +137,9 @@ export const TRANSLATIONS = {
       Manual_Edit: 'Manual Edit',
       Sales_Quantity: 'Sales Quantity',
       Purchase_Quantity: 'Purchase Quantity',
+      Show_all: 'Show all',
+      Show_just_not_completed: 'Show just not completed',
+      Show_just_completed: 'Show just completed'
     },
 
 
@@ -207,7 +210,7 @@ export const TRANSLATIONS = {
       Total_amount: 'Totaalbedrag',
       Sales_Order_Details: 'Order registratie details',
       Loading_Date: 'Laaddatum',
-      Quantity: 'Nummer',
+      Quantity: 'Antal',
       Amount: 'Bedrag',
       Add_Pursase_Order: 'Toevoegen Inkoopfactuur',
       Invoice: 'Factuur',
@@ -262,7 +265,7 @@ export const TRANSLATIONS = {
       ShippingDocumentnumber: 'Vrachtbrief nummer',
       Add: 'Toevoegen',
       ReportingDate: 'Rapport Datum',
-      Number: 'Aantal',
+      Number: 'Nummer',
       Quality: 'Controle',
       Complete: 'Compleet',
       No_Result: 'Geen resultaat',
@@ -277,6 +280,9 @@ export const TRANSLATIONS = {
       Vat: 'Vat',
       Manual_Edit: 'Handleiding Bewerk',
       Sales_Quantity: 'Verkoop Aantal',
-      Purchase_Quantity: 'Inkoop Aantal '
+      Purchase_Quantity: 'Inkoop Aantal',
+      Show_all: 'Toon alles',
+      Show_just_not_completed: 'Tonen gewoon niet voltooid',
+      Show_just_completed: 'Tonen net voltooid'
     }
   };

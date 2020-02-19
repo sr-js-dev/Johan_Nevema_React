@@ -28,7 +28,7 @@ class Taskoverview extends Component {
         this.state = {  
             loading:true,
             qualityData:[],
-            showModeList: [{"value": "1", "label": "Show all"}, {"value": "2", "label": "Show just not completed"}, {"value": "3", "label": "Show just completed "}],
+            showModeList: [{"value": "1", "label": trls('Show_all')}, {"value": "2", "label": trls('Show_just_not_completed')}, {"value": "3", "label": trls('Show_just_completed')}],
             showMode: "2",
             exactFlag: false,
             sendingFlag: false,
@@ -184,7 +184,7 @@ render () {
                             options={this.state.showModeList}
                             className="select-show-class"
                             onChange={val => this.changeShowMode(val.value)}
-                            defaultValue={{"value": "2", "label":"Show just not completed"}}
+                            defaultValue={{"value": "2", "label":trls('Show_just_not_completed')}}
                         />
                     </Form>
                 </div>
