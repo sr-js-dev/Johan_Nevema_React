@@ -10,6 +10,7 @@ import Select from 'react-select';
 import DatePicker from "react-datepicker";
 import * as Common from '../../components/common';
 import DraggableModalDialog from '../../components/draggablemodal';
+import Addpriceform from '../Product/product_detailaddpriceform';
 
 const mapStateToProps = state => ({ 
     ...state.auth,
@@ -38,9 +39,13 @@ class Addproduct extends Component {
             orderLineId: '',
             invoicedateflag: false,
             purchaseUnit: '',
-            salesUnit: ''
+            salesUnit: '',
+            purhaseQuantityFlag: false,
+            productId: '',
+            loadProductFlag: false
         };
     }
+
     componentWillUnmount() {
         this._isMounted = false;
     }
@@ -67,18 +72,6 @@ class Addproduct extends Component {
             Axios.post(API.PostSalesOrderLine, params, headers)
             .then(result => {
                 this.setState({orderLineId: result.data.NewId, productid: data.product, viewFieldFlag: true})
-                // this.setState({purchaseAmount: this.state.productQuantity*this.state.purchasePrice, salesAmount: this.state.productQuantity*this.state.salesPrice, viewFieldFlag: true})
-                // var transParams = {
-                //     orderid: this.props.orderid,
-                //     productid: data.product,
-                //     quantity: data.quantity,
-                //     loadingdate: this.props.loadingdate
-                // }
-                // Axios.post(API.PostTransports, transParams, headers)
-                // .then(result => {
-                //     this.props.getTransport();
-                   
-                // });
             });
         }else{
             let transportData = []
@@ -119,11 +112,15 @@ class Addproduct extends Component {
             reportingDate: new Date(),
             productQuantity: 0,
             orderLineId: '',
-            val1: ''
+            val1: '',
+            purhaseQuantityFlag: false,
+            productId: '',
+            loadProductFlag: false
         })
         this.props.onHide();
         this.props.getSalesOrderLine();
     }
+
     getProductList = () =>{
         this._isMounted = true;
         var headers = SessionManager.shared().getAuthorizationHeader();
@@ -135,7 +132,7 @@ class Addproduct extends Component {
         Axios.post(API.GetSalesItems, params, headers)
         .then(result => {
             if(this._isMounted){
-                let product = result.data.Items.map( s => ({value:s.key,label:s.value}));
+                let product = result.data.Items.map( s => ({value:s.key,label: s.priceAvailable!=="True" ? <div>{s.value} <i className="fas fa-pen statu-item" style={{color: "#000", float: "right"}} onClick={()=>this.setState({showModalAddPrice: true, productId: s.key, loadProductFlag: true})}></i></div>:s.value, isDisabled: s.priceAvailable!=="True" ? true : false}));
                 this.setState({productListData: product});
             }
         });
@@ -191,7 +188,7 @@ class Addproduct extends Component {
     }
 
     changePurchaseQauntity = (event) => {
-        this.setState({purchaseQuantity: event.target.value, purchaseAmount: this.state.purchasePrice*event.target.value})
+        this.setState({purchaseQuantity: event.target.value, purchaseAmount: this.state.purchasePrice*event.target.value, purhaseQuantityFlag: true})
     }
 
     onChangeDate = (date, e) => {
@@ -214,18 +211,19 @@ class Addproduct extends Component {
     }
 
     render(){
+        let productListOption = this.state.productListData;
         return (
             <Modal
                 show={this.props.show}
                 dialogAs={DraggableModalDialog}
                 onHide={()=>this.onHide()}
-                size="xl"
+                size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
                 backdrop= "static"
                 centered
             >
             <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">
+                <Modal.Title id="contained-modal-title-vcenter">    
                     {trls('Add')}
                 </Modal.Title>
             </Modal.Header>
@@ -238,10 +236,10 @@ class Addproduct extends Component {
                         <Col sm="9" className="product-text">
                             <Select
                                 name="product"
-                                options={this.state.productListData}
+                                options={productListOption}
                                 onChange={val => this.changeProduct(val)}
                             />
-                            {!this.props.disabled && (
+                           {!this.props.disabled && (
                                 <input
                                     onChange={val=>console.log()}
                                     tabIndex={-1}
@@ -347,7 +345,12 @@ class Addproduct extends Component {
                                         {trls("Purchase_Amount")}  
                                     </Form.Label>
                                     <Col sm="9" className="product-text">
-                                        <Form.Control type="text" name="purhcaseamount" value={Common.formatMoney(this.state.purchaseAmount)} readOnly placeholder={trls("Purchase_Amount")} />
+                                        {this.state.purchaseUnit===this.state.salesUnit && !this.state.purhaseQuantityFlag?(
+                                            <Form.Control type="text" name="purhcaseamount" value={Common.formatMoney(this.state.salesAmount)} readOnly placeholder={trls("Purchase_Amount")} />
+                                        ):
+                                            <Form.Control type="text" name="purhcaseamount" value={Common.formatMoney(this.state.purchaseAmount)} readOnly placeholder={trls("Purchase_Amount")} />
+                                        }
+                                        
                                     </Col>
                                 </Form.Group>
                             )}
@@ -401,8 +404,16 @@ class Addproduct extends Component {
                         <Button type="submit" style={{width:"100px"}}>{trls('Save')}</Button>
                     </Form.Group>
                 </Form>
+                <Addpriceform
+                    show={this.state.showModalAddPrice}
+                    onHide={() => this.setState({showModalAddPrice: false})}
+                    productid={this.state.productId}
+                    loadproductflag={this.state.loadProductFlag}
+                    onLoadProductFlag={()=>this.setState({loadProductFlag: false})}
+                    onGetProductList={()=>this.getProductList()}
+                />
             </Modal.Body>
-            </Modal>
+        </Modal>
         );
     }
 }

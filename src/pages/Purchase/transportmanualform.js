@@ -160,7 +160,6 @@ class Addmanuallytransport extends Component {
     }
 
     render(){
-        console.log('6565', this.props.updateData.length)
         return (
             <Modal
                 dialogAs={DraggableModalDialog} 

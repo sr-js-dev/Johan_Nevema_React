@@ -1,29 +1,31 @@
-import React, {Component} from 'react'
+import React, {Component} from 'react';
 import { trls } from '../../components/translate';
 import { Button, Spinner } from 'react-bootstrap';
-import { Form, Row, Col} from 'react-bootstrap';
+import { Modal, Form, Row, Col} from 'react-bootstrap';
 import { Container} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import SessionManager from '../../components/session_manage';
-import API from '../../components/api'
+import API from '../../components/api';
 import Axios from 'axios';
-import Priceform from './product_priceform'
-import Updateproductform from './update_product'
+import Productform from './product_priceform';
+import Updateproductform from './update_product';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import * as Common from '../../components/common'
-import FlashMassage from 'react-flash-message'
-import PruchaseLineChangeForm from '../Purchase/purhcaselinechange_form';
+import FlashMassage from 'react-flash-message';
+import DraggableModalDialog from '../../components/draggablemodal';
 
 const mapStateToProps = state => ({ ...state.auth });
 
 const mapDispatchToProps = dispatch => ({
 
 });
-class Productdtail extends Component {
+
+class Detailaddpriceform extends Component {
+    _isMounted = false;
     constructor(props) {
         super(props);
-        this.state ={
+        this.state = {  
             purpriceDatalist: [],
             salespriceDatalist: [],
             transportpriceDatalist: [],
@@ -31,27 +33,28 @@ class Productdtail extends Component {
             modalShow: false,
             price_flag:"",
             exactFlag: false,
-            sendingFlag: false,
-            editPriceFlag: false,
-            editPriceData: [],
-            purchaseLineData: [],
-            newPrice: ''
-        }
-      }
+            sendingFlag: false
+        };
+    }
+
     componentWillUnmount() {
         this._isMounted = false
     }
-    componentDidMount() {
+
+    componentDidUpdate () {
         this._isMounted = true;
-        this.getProductDetails();
-        this.getPurchasePriceData();
-        this.getSalespriceData();
-        this.getTransportPriceData();
+        if(this.props.loadproductflag){
+            this.props.onLoadProductFlag();
+            this.getProductDetails();
+            this.getPurchasePriceData();
+            this.getSalespriceData();
+            this.getTransportPriceData();
+        }
     }
-    
+
     getProductDetails() {
         let params = {
-            id: this.props.location.state.id
+            id: this.props.productid
         }
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.post(API.GetProduct, params, headers)
@@ -64,12 +67,8 @@ class Productdtail extends Component {
 
     getPurchasePriceData = () => {
         let params = {
-            productid: this.props.location.state.id
+            productid: this.props.productid
         }
-        this.setState({
-            editPriceData: [],
-            editPriceFlag: false
-        })
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.post(API.GetPurchasePrices, params, headers)
         .then(result => {
@@ -81,7 +80,7 @@ class Productdtail extends Component {
 
     getSalespriceData = () => {
         let params = {
-            productid: this.props.location.state.id
+            productid: this.props.productid
         }
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.post(API.GetSalesPrices, params, headers)
@@ -94,7 +93,7 @@ class Productdtail extends Component {
 
     getTransportPriceData = () =>{
         let params = {
-            productid: this.props.location.state.id
+            productid: this.props.productid
         }
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.post(API.GetTransportPrices, params, headers)
@@ -175,7 +174,7 @@ class Productdtail extends Component {
         this.setState({sendingFlag: true})
         var headers = SessionManager.shared().getAuthorizationHeader();
         var params = {
-            productid: this.props.location.state.id
+            productid: this.props.productid
         }
         Axios.post(API.PostProductsExact, params, headers)
         .then(result => {
@@ -190,37 +189,12 @@ class Productdtail extends Component {
         
     }
 
-    viewPurchaseLine = (startDate, endDate, newPrice) => {
-        var headers = SessionManager.shared().getAuthorizationHeader();
-        var params = {
-            productid: this.props.location.state.id,
-            startdate: Common.formatDateSecond(startDate),
-            enddate: Common.formatDateSecond(endDate),
-        }
-        Axios.post(API.GetPurchaseLinesToChange , params, headers)
-        .then(result => {
-            if(result.data.Success){
-                this.setState({purchaseLineShowModal: true, newPrice: newPrice, purchaseLineData: result.data.Items})
-            }
-        })
+    onHide = () => {
+        this.props.onHide();
+        this.props.onGetProductList();
     }
 
-    changePurchasePrice = (id) => {
-        let purpriceDatalist = this.state.purpriceDatalist;
-        purpriceDatalist.map((data, index)=>{
-            if(data.Id===id){
-                if(data.checked){
-                    data.checked = false
-                }else{
-                    data.checked = true
-                }
-            }
-            return data;
-        });
-        this.setState({purpriceDatalist: purpriceDatalist});
-    }
-
-    render () {
+    render(){
         let detailData = [];
         let purpriceData = [];
         let salespriceData = [];
@@ -239,10 +213,21 @@ class Productdtail extends Component {
         }
         const pricingtypelist = {'1' :'Blokvracht','2' :'Eenheidsprijs'}
         return (
-            <div>
-                <div className="content__header content__header--with-line">
-                    <h2 className="title">{trls("Product_Details")}</h2>
-                </div>
+            <Modal
+                show={this.props.show}
+                dialogAs={DraggableModalDialog}
+                onHide={()=>this.onHide()}
+                size="xl"
+                aria-labelledby="contained-modal-title-vcenter"
+                backdrop= "static"
+                centered
+            >
+            <Modal.Header closeButton>
+                <Modal.Title id="contained-modal-title-vcenter">
+                    {trls('Product_Details')}
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
                 <div className="place-and-orders">
                     {this.state.exactFlag&&(
                         <div>
@@ -373,7 +358,6 @@ class Productdtail extends Component {
                                     <th>{trls("Start_date")}</th>
                                     <th>{trls("End_date")}</th>
                                     <th style={{width:"10%"}}>{trls("Approve")}</th>
-                                    <th style={{width: 100}}>{trls("Action")}</th>
                                 </tr>
                                 </thead>
                                     {purpriceData &&(<tbody>
@@ -386,43 +370,29 @@ class Productdtail extends Component {
                                                 {!data.isApproved?(
                                                     <td style={{textAlign:"center", paddingBottom:"0px", paddingTop:"0px"}}><Button id={data.Id} name="purchase" type="submit" style={{height:"31px",fontSize:"12px"}} onClick={this.priceApproveConfirm}>{trls('Approve')}</Button></td>
                                                 ):<td style={{textAlign:"center"}}></td>}
-                                                <td>
-                                                    <Row style={{justifyContent:"space-around"}}>
-                                                        <i className="fas fa-pen statu-item" onClick={()=>this.setState({ price_flag:1, editPriceFlag: true, editPriceData: data, modalShow: true})} ></i>
-                                                    </Row>
-                                                </td>
+                                                
                                             </tr>
                                         ))
                                         }
                                     </tbody>)}
                             </table>
                             <Button variant="primary" style={{height: 40, borderRadius: 20}} onClick={()=>this.setState({modalShow:true, price_flag:1})}>{trls('Add_Purchase_Price')}</Button>
-                            
-                            <Priceform
+                            <Productform
                                 show={this.state.modalShow}
                                 onHide={() => this.setState({modalShow: false})}
-                                productid={this.props.location.state.id}
+                                productid={this.props.productid}
                                 price_flag={this.state.price_flag}
                                 onGetPurchasePrice={this.getPurchasePriceData}
                                 onGetSalesPrice={this.getSalespriceData}
                                 onGetTransportPrice={this.getTransportPriceData}
-                                editpriceflag={this.state.editPriceFlag}
-                                editpricedata={this.state.editPriceData}
-                                viewPurchaseLine={(startDate, endDate, newPrice)=>this.viewPurchaseLine(startDate, endDate, newPrice)}
                             />
                             <Updateproductform
                                 show={this.state.modalEditShow}
                                 onHide={() => this.setState({modalEditShow: false})}
                                 getproductetails={()=>this.getProductDetails()}
-                                productid={this.props.location.state.id}
+                                productid={this.props.productid}
                                 copyflag={0}
                                 copyproduct = {detailData}
-                            />
-                            <PruchaseLineChangeForm
-                                show={this.state.purchaseLineShowModal}
-                                onHide={() => this.setState({purchaseLineShowModal: false, purchaseLineData: [], newPrice: ''})}
-                                purchaselinedata={this.state.purchaseLineData}
-                                newprice={this.state.newPrice}
                             />
                         </div>
                         <div className="product-price-table">
@@ -487,8 +457,9 @@ class Productdtail extends Component {
                         </div>
                     </div>
                 </div>
-            </div>
-        )
-    };
-  }
-  export default connect(mapStateToProps, mapDispatchToProps)(Productdtail);
+            </Modal.Body>
+            </Modal>
+        );
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Detailaddpriceform);

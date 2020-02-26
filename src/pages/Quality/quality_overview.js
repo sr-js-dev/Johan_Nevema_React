@@ -2,17 +2,17 @@ import React, {Component} from 'react'
 import { connect } from 'react-redux';
 import $ from 'jquery';
 import { BallBeat } from 'react-pure-loaders';
-import { Button, Form, Row, Spinner } from 'react-bootstrap';
-// import  Taskupdate  from './taskupdate_form'
+import { Button, Form, Row, Spinner, Col } from 'react-bootstrap';
 import { trls } from '../../components/translate';
 import 'datatables.net';
 import SessionManager from '../../components/session_manage';
 import API from '../../components/api'
 import Axios from 'axios';
-import history from '../../history';
 import Select from 'react-select';
 import * as Common from '../../components/common';
 import FlashMassage from 'react-flash-message'
+import DatePicker from "react-datepicker";
+import Salesdetailfrom from "../Sales/salesorder_detailform";
 
 const mapStateToProps = state => ({
      ...state.auth,
@@ -32,6 +32,18 @@ class Taskoverview extends Component {
             showMode: "2",
             exactFlag: false,
             sendingFlag: false,
+            originQualityData: [],
+            showModeData: [],
+            fistFilterWeek: 0,
+            secondFilterWeek: 0,
+            firstFilterDate: new Date(),
+            secondFilterDate: new Date(),
+            filterDateFlag: false,
+            filterWeekFlag: false,
+            orderId: '',
+            customerCode: '',
+            supplierCode: '',
+            detailFlag: ''
         };
       }
 componentDidMount() {
@@ -47,10 +59,31 @@ getQualityData = () => {
     var header = SessionManager.shared().getAuthorizationHeader();
     Axios.get(API.GetQualityControl, header)
     .then(result => {
-        this.setState({qualityData:result.data.Items})
-        this.setState({loading:false})
+        let optionarray = [];
+        if(result.data.Items){
+            result.data.Items.map((data, index) => {
+                if(!data.isCompleted){
+                    optionarray.push(data);
+                }
+                return data;
+            })
+        }
+        this.setState({originQualityData: result.data.Items, qualityData: optionarray, showModeData: optionarray, loading: false})
+        $('#example-task thead tr').clone(true).appendTo( '#example-task thead' );
+        $('#example-task thead tr:eq(1) th').each( function (i) {
+            $(this).html( '<input type="text" class="search-table-input" style="width: 100%" placeholder="Search" />' );
+            $(this).addClass("sort-style");
+            $( 'input', this ).on( 'keyup change', function () {
+                if ( table.column(i).search() !== this.value ) {
+                    table
+                        .column(i)
+                        .search( this.value )
+                        .draw();
+                }
+            } );
+        } );
         $('#example-task').dataTable().fnDestroy();
-        $('#example-task').DataTable(
+        var table = $('#example-task').DataTable(
             {
               "language": {
                   "lengthMenu": trls("Show")+" _MENU_ "+trls("Entries"),
@@ -72,33 +105,7 @@ componentWillUnmount() {
 }
 
 loadSalesDetail = (data)=>{
-    var header = SessionManager.shared().getAuthorizationHeader();
-        Axios.get(API.GetCustomerData, header)
-        .then(result => {
-            let customerData = result.data.Items;
-            let customerCode = '';
-            customerData.map((customer, index)=>{
-                if(customer.value===data.customer){
-                    customerCode = customer.key;
-                }
-                return customerData;
-            });
-            Axios.get(API.GetSuppliersDropdown, header)
-            .then(result => {
-                let supplierData = result.data.Items;
-                let supplierCode = '';
-                supplierData.map((supplier, index)=>{
-                    if(supplier.value===data.supplier){
-                        supplierCode = supplier.key;
-                    }
-                    return supplierData;
-                });
-                history.push({
-                    pathname: '/sales-order-detail',
-                    state: { newId: data.Id, customercode:customerCode, suppliercode: supplierCode, newSubmit:true, quality: true}
-                })
-            });
-          });
+    this.setState({orderId: data.Id, customerCode: data.customercode, supplierCode: data.suppliercode, detailFlag: true, modalShow: true})
 }
 
 completeOrder = (id) => {
@@ -127,8 +134,92 @@ completeOrder = (id) => {
 }
 
 changeShowMode = (value) =>{
-    this.setState({showMode: value});
-    this.getQualityData();
+    this.setState({showMode: value}, ()=>{
+        let optionarray = [];
+        if(this.state.showMode==="2"){
+            if(this.state.originQualityData){
+                this.state.originQualityData.map((data, index) => {
+                    if(!data.isCompleted){
+                        optionarray.push(data);
+                    }
+                    return data;
+                })
+            }
+        }else if(this.state.showMode==="3"){
+            if(this.state.originQualityData){
+                this.state.originQualityData.map((data, index) => {
+                    if(data.isCompleted){
+                        optionarray.push(data);
+                    }
+                    return data;
+                })
+            }
+        }else{
+            optionarray = this.state.originQualityData;
+        }
+        
+        this.setState({
+            qualityData: optionarray, 
+            showModeData: optionarray,
+            fistFilterWeek: 0,
+            secondFilterWeek: 0,
+            firstFilterDate: new Date(),
+            secondFilterDate: new Date(),
+            filterDateFlag: false,
+            filterWeekFlag: false
+        });
+    });
+}
+
+onChangeWeeks = (evt, mode) => {
+    if(mode==='first'){
+        this.setState({fistFilterWeek: evt.target.value, filterWeekFlag: true}, () => {
+            this.filterData();
+        })
+    }else{
+        this.setState({secondFilterWeek: evt.target.value, filterWeekFlag: true}, () => {
+            this.filterData();
+        })
+    }
+}
+
+onChangeDateFilter = (date, mode) => {
+    if(mode==="first"){
+        this.setState({firstFilterDate: date, filterDateFlag: true}, ()=>{
+            this.filterData();
+        })
+    }else{
+        this.setState({secondFilterDate: date, filterDateFlag: true}, ()=>{
+            this.filterData();
+        })
+    }
+}
+
+filterData = () => {
+    let qualityData = [];
+    let showModeData = this.state.showModeData;
+    if(this.state.fistFilterWeek<=this.state.secondFilterWeek){
+        this.state.showModeData.map((val, key) => {
+            if(this.state.filterDateFlag && this.state.filterWeekFlag){
+                if(this.state.secondFilterWeek>=val.Loadingweek && this.state.fistFilterWeek<=val.Loadingweek && new Date(this.state.firstFilterDate)<=new Date(val.Loadingdate) && new Date(this.state.secondFilterDate)>=new Date(val.Loadingdate)){
+                    qualityData.push(val)
+                }
+            }else if(this.state.filterDateFlag&&!this.state.filterWeekFlag){
+                if(new Date(this.state.firstFilterDate)<=new Date(val.Loadingdate) && new Date(this.state.secondFilterDate)>=new Date(val.Loadingdate)){
+                    qualityData.push(val)
+                }
+            }else if(!this.state.filterDateFlag&&this.state.filterWeekFlag){
+                if(this.state.secondFilterWeek>=val.Loadingweek && this.state.fistFilterWeek<=val.Loadingweek){
+                    qualityData.push(val)
+                }
+            }
+            
+            return val;  
+        })
+        this.setState({qualityData: qualityData});
+    }else{
+        this.setState({qualityData: showModeData});
+    }
 }
 
 render () {
@@ -136,28 +227,6 @@ render () {
     qualityData.sort(function(a, b) {
         return a.id - b.id;
     });
-    let optionarray = [];
-    if(this.state.showMode==="2"){
-        if(qualityData){
-            qualityData.map((data, index) => {
-                if(!data.isCompleted){
-                    optionarray.push(data);
-                }
-                return qualityData;
-            })
-        }
-    }else if(this.state.showMode==="3"){
-        if(qualityData){
-            qualityData.map((data, index) => {
-                if(data.isCompleted){
-                    optionarray.push(data);
-                }
-                return qualityData;
-            })
-        }
-    }else{
-        optionarray = qualityData;
-    }
     return (
         <div className="order_div">
             <div className="content__header content__header--with-line">
@@ -177,8 +246,8 @@ render () {
                     <div style={{marginTop:10, marginLeft: 20}}><Spinner animation="border" variant="info"/><span style={{marginTp:10, fontWeight: "bold", fontSize: 16}}> {trls('Sending')}...</span></div>
                 )}
             <div className="orders">
-                <div className="orders__filters justify-content-between">
-                    <Form inline style={{width:"100%"}}>
+                <Row className="order_filter">
+                    <Col xl={3} style={{paddingLeft: 0, paddingTop: 10}}>
                         <Select
                             name="filter"
                             options={this.state.showModeList}
@@ -186,8 +255,22 @@ render () {
                             onChange={val => this.changeShowMode(val.value)}
                             defaultValue={{"value": "2", "label":trls('Show_just_not_completed')}}
                         />
-                    </Form>
-                </div>
+                    </Col>
+                    <Col xl={4} style={{display: "flex", marginRight: 30, paddingLeft: 0, paddingTop: 10}}>
+                        <span style={{marginTop:6}}>{trls('Week')}</span>
+                        <div style={{display: "flex", paddingLeft: 12}}>
+                            <Form.Control type="text" className="order-filter_date" value={this.state.fistFilterWeek} name="firstweek" onChange={(evt)=>this.onChangeWeeks(evt, "first")} />
+                            <Form.Control type="text" className="order-filter_date" value={this.state.secondFilterWeek} name="secondweek" onChange={(evt)=>this.onChangeWeeks(evt, "second")} />
+                        </div>
+                    </Col>
+                    <Col xl={4} style={{display: "flex", paddingLeft: 0, paddingTop: 10}}>
+                        <span style={{marginTop:6}}>{trls('Date')}</span>
+                        <div style={{display: "flex"}}>
+                            <DatePicker name="startdate" className="myDatePicker order-filter_date" dateFormat="dd-MM-yyyy" selected={this.state.firstFilterDate} onChange={(date) =>this.onChangeDateFilter(date, 'first')} />
+                            <DatePicker name="startdate" className="myDatePicker order-filter_date" dateFormat="dd-MM-yyyy" selected={this.state.secondFilterDate} onChange={(date) =>this.onChangeDateFilter(date, 'second')} />
+                        </div>
+                    </Col>
+                </Row>
                 <div className="table-responsive purchase-order-table">
                     <table id="example-task" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
                         <thead>
@@ -197,23 +280,27 @@ render () {
                                 <th>{trls('Customer')}</th>
                                 <th>{trls('Purchase_Amount')}</th>
                                 <th>{trls('Sales_Amount')}</th>
+                                <th>{trls('Loading_date')}</th>
+                                <th>{trls('Loading_week')}</th>
                                 <th>{trls('Complete')}</th>
                             </tr>
                         </thead>
-                        {optionarray && !this.state.loading &&(<tbody >
+                        {qualityData && !this.state.loading &&(<tbody >
                             {
-                                optionarray.map((data,i) =>(
+                                qualityData.map((data,i) =>(
                                 <tr id={data.id} key={i}>
                                     <td><div id={data.id} style={{cursor: "pointer", color:'#004388', fontSize:"14px", fontWeight:'bold'}} onClick={()=>this.loadSalesDetail(data)}>{data.Id}</div></td>
                                     <td>{data.supplier}</td>
                                     <td>{data.customer}</td>
                                     <td>{Common.formatMoney(data.PurchaseAmount)}</td>
                                     <td>{Common.formatMoney(data.SalesAmount)}</td>
+                                    <td>{Common.formatDate(data.Loadingdate)}</td>
+                                    <td>{data.Loadingweek}</td>
                                     <td>
                                         <Row style={{justifyContent:"center"}}>
                                             {!data.isCompleted?(
-                                                <Button type="submit" style={{width:"100px", height: 35}} onClick={()=>this.completeOrder(data.Id)}>{trls('Complete')}</Button>
-                                            ):<Button type="submit" disabled style={{width:"100px", height: 35}}>{trls('Complete')}</Button>}
+                                                <Button type="submit" style={{width:"auto", height: 35}} onClick={()=>this.completeOrder(data.Id)}>{trls('Send_salesinvoice')}</Button>
+                                            ):<Button type="submit" disabled style={{width:"auto", height: 35}}>{trls('Send_salesinvoice')}</Button>}
                                             
                                         </Row>
                                     </td>
@@ -230,6 +317,15 @@ render () {
                             />
                         </div>
                     )}
+                    <Salesdetailfrom
+                        show={this.state.modalShow}
+                        onHide={() => this.setState({modalShow: false})}
+                        onSetDetailFlag={()=>this.setState({detailFlag: false})}
+                        detailflag={this.state.detailFlag}
+                        orderid={this.state.orderId}
+                        customercode={this.state.customerCode}
+                        suppliercode={this.state.supplierCode}
+                    />
                 </div>
             </div>
         </div>

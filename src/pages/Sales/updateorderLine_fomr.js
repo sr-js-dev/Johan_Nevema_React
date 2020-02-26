@@ -95,7 +95,7 @@ class Updateorderline extends Component {
                 show={this.props.show}
                 dialogAs={DraggableModalDialog}
                 onHide={()=>this.onHide()}
-                size="xl"
+                size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
                 backdrop= "static"
                 centered

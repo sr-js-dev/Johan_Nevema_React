@@ -78,7 +78,7 @@ class Sidebar extends Component {
                                 <span className="menu__link-img-wrap">
                                     <img src={require("../assets/images/icon-orders.svg")} alt="Orders"/>
                                 </span>
-                                <span>{trls("Quality")}</span>
+                                <span>{trls("Invoicing")}</span>
                             </Link>
                         </li>
                     </ul>

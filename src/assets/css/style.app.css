@@ -186,7 +186,8 @@ font-size: 13px;
 font-weight: 700;
 }
 .statu-item {
-padding-left:20px
+padding-left:20px;
+padding: 2px;
 }
 .dashboard__top{
 padding-top:20px
@@ -428,4 +429,12 @@ table.dataTable, table.dataTable th, table.dataTable td {
 .sort-style {
   background : none !important;
   border-top: 1px solid #fff !important;
+}
+.order-filter_date {
+  width: 120px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.order_filter{
+  padding-bottom: 20px;
 }

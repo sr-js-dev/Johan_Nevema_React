@@ -361,7 +361,7 @@ class Purchaseorderdtail extends Component {
                             
                         <Button variant="primary" style={{height: 40, borderRadius: 20, float: 'right'}} onClick={()=>this.setState({showModalPurchaase: true})}>{trls('Add')}</Button>
                     </div>
-                    {this.state.purchaseOrder.istransport&&(
+                    {/* {this.state.purchaseOrder.istransport&&( */}
                         <div className="table-responsive">
                             <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
                                 <thead>
@@ -404,7 +404,7 @@ class Purchaseorderdtail extends Component {
                             </table>
                             <Button variant="primary" style={{height: 40, borderRadius: 20, float: 'right'}} onClick={()=>this.setState({showModalManully: true})}>{trls('Add')}</Button>
                         </div>
-                    )}
+                     {/* )} */}
                     <div style={{textAlign: 'right', fontWeight: 'bold', padding: 10, marginBottom: 20, marginTop: 10, backgroundColor: '#E6DAB7'}}>
                         {trls('Total')}:  <span style={{fontWeight: 'bold', fontSize: 18}}>{Common.formatMoney(alltotal_Amounnt)}</span>
                     </div>

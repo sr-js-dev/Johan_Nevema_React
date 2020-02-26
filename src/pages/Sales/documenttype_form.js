@@ -33,7 +33,6 @@ class Goaltype extends Component {
     }
     
     componentDidMount() {
-        // this.getDocumentType();
         this.setState({files: this.props.files})
     }
 

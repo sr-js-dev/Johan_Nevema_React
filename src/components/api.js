@@ -96,5 +96,10 @@ export default {
     PutPurchaseTransportManual: `${BASEURL}/api/factory/execute/Appmakerz-Test/putPurchaseTransportManual`,
     DeletePurchaseTransportManual: `${BASEURL}/api/factory/execute/Appmakerz-Test/deletePurchaseTransportManual`,
     GetDefaultVatCode  : `${BASEURL}/api/factory/execute/exact-test/getDefaultVatCode`,
+    PostPurchasePrice  : `${BASEURL}/api/factory/execute/Appmakerz-Test/postPurchasePrice`,
+    PostSalesPrice  : `${BASEURL}/api/factory/execute/Appmakerz-Test/postSalesPrice`,
+    PutPurchasePrice  : `${BASEURL}/api/factory/execute/Appmakerz-Test/putPurchasePrice`,
+    GetPurchaseLinesToChange  : `${BASEURL}/api/factory/execute/Appmakerz-Test/getPurchaseLinesToChange`,
+    UpdatePricePurchaseLines  : `${BASEURL}/api/factory/execute/Appmakerz-Test/updatePricePurchaseLines`,
   };
   

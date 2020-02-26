@@ -584,16 +584,6 @@ class Product extends Component {
       });
     }
 
-    // getSalesunit = () =>{
-    //   var headers = SessionManager.shared().getAuthorizationHeader();
-    //   Axios.get(API.GetSalesUnit, headers)
-    //   .then(result => {
-    //     if(this._isMounted){
-    //       this.setState({Salesunit: result.data.Items})
-    //     }
-    //   });
-    // }
-
     getProductGroup = () =>{
       var headers = SessionManager.shared().getAuthorizationHeader();
       Axios.get(API.GetProductGroup, headers)
@@ -603,27 +593,27 @@ class Product extends Component {
         }
       });
     }
+
     loadProductDetail = (e) => {
       history.push({
         pathname: '/product-detail',
         state: { id: e.currentTarget.id, newSubmit:true }
       })
     }
+
     copyProduct = (data) => {
-      console.log('2222', data);
       var headers = SessionManager.shared().getAuthorizationHeader();
       let params = {
         id: data.id
       }
       Axios.post(API.GetProduct, params, headers)
       .then(result => {
-        console.log('444444', result)
         if(this._isMounted){
           this.setState({modalShow: true, copyFlag: 0, copyProduct: result.data.Items[0], CustomerCode: data.CustomerCode})
         }
       });
-        // 
     }
+
     componentWillUnmount() {
       this._isMounted = false
     }

@@ -1,14 +1,11 @@
 import React, {Component} from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
-// import Select from 'react-select';
 import * as salesAction  from '../../actions/salesAction';
 import SessionManager from '../../components/session_manage';
-// import DatePicker from "react-datepicker";
 import Axios from 'axios';
 import API from '../../components/api'
 import { trls } from '../../components/translate';
-// import Sweetalert from 'sweetalert';
 import  Salesform  from './salesform'
 import  Addproductform  from './addproduct_form';
 import  Updateorderline  from './updateorderLine_fomr';
@@ -260,7 +257,7 @@ class Salesorderdtail extends Component {
                                         <td>{data.Shipping}</td>
                                         <td>{Common.formatDate(data.ReportingDate)==="01-01-1970" ? '' : Common.formatDate(data.ReportingDate)}</td>
                                         <td>
-                                            <Row style={{justifyContent:"center"}}>
+                                            <Row style={{justifyContent:"space-around"}}>
                                                 <i id={data.Id} className="far fa-trash-alt statu-item" onClick={()=>this.orderLineDelete(data.id)}></i>
                                                 <i id={data.Id} className="fas fa-pen statu-item" onClick={()=>this.orderLineEdit(data)} ></i>
                                             </Row>
@@ -297,7 +294,7 @@ class Salesorderdtail extends Component {
                                         <td>{data.container}</td>
                                         <td>{data.shipping}</td>
                                         <td >
-                                            <Row style={{justifyContent:"center"}}>
+                                            <Row style={{justifyContent:"space-around"}}>
                                                 <i id={data.id} className="far fa-trash-alt statu-item" onClick={()=>this.transporterDelete(data.id)}></i>
                                                 <i id={data.id} className="fas fa-pen statu-item" onClick={()=>this.transporterEdit(data)}></i>
                                             </Row>

@@ -161,10 +161,13 @@ class Addpurchase extends Component {
     postPurchaseLines = () => {
         let product = this.state.productData;
         let params = [];
+        let k=0;
         var headers = SessionManager.shared().getAuthorizationHeader();
+        let checkedProductLength = product.filter(item => item.checked === true).length;
         if(!this.props.transport){
             product.map((product, index)=>{
                 if(product.checked){
+                    k++;
                     params = {
                         purchaseid: this.props.purchaseid,
                         id: product.id,
@@ -178,18 +181,18 @@ class Addpurchase extends Component {
                         }
                         Axios.post(API.PutSalesPurchaseId, params, headers)
                         .then(result => {
-                            if(index===this.state.productData.length-1){
+                            if(k===checkedProductLength){
                                 this.onHide();
                             }
                         });
                     });
                 }
-                
                 return product;
             });
         }else{
             product.map((product, index)=>{
                 if(product.checked){
+                    k++;
                     params = {
                         purchaseid: this.props.purchaseid,
                         id: product.id,
@@ -203,7 +206,7 @@ class Addpurchase extends Component {
                         }
                         Axios.post(API.PutTransportPurchaseId , params, headers)
                         .then(result => {
-                            if(index===this.state.productData.length-1){
+                            if(k===checkedProductLength){
                                 this.onHide();
                             }
                         });
