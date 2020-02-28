@@ -144,7 +144,14 @@ export const TRANSLATIONS = {
       Send_salesinvoice: 'Send salesinvoice',
       Loading_week: 'Loading week',
       Date: 'Date',
-      Week: 'Week'
+      Week: 'Week',
+      Sales: 'Sales',
+      Demurrage: 'Demurrage',
+      Product_Name: 'Product Name',
+      Packing_date: 'Packing Date',
+      SalesOrderExactSend: 'Sales Order Exact Send',
+      PurchaseOrderExactSend: 'Purchase Order Exact Send',
+      already_purchaseinvoice: 'This supplier already has a purchaseinvoice on this order registration!'
     },
 
 
@@ -215,7 +222,7 @@ export const TRANSLATIONS = {
       Total_amount: 'Totaalbedrag',
       Sales_Order_Details: 'Order registratie details',
       Loading_Date: 'Laad datum',
-      Quantity: 'Antal',
+      Quantity: 'Aantal',
       Amount: 'Bedrag',
       Add_Pursase_Order: 'Toevoegen Inkoopfactuur',
       Invoice: 'Factuur',
@@ -293,6 +300,13 @@ export const TRANSLATIONS = {
       Send_salesinvoice: 'Aanmaken verkoopfactuur',
       Loading_week: 'Laad week',
       Date: 'Datum',
-      Week: 'Week'
+      Week: 'Week',
+      Sales: 'Verkoop',
+      Demurrage: 'Overliggeld',
+      Product_Name: 'Product Naam',
+      Packing_date: 'Inpakken Datum',
+      SalesOrderExactSend: 'Verkoop Bestellen Exact Sturen',
+      PurchaseOrderExactSend: 'Aankoop Bestellen Exact Sturen',
+      already_purchaseinvoice: 'Deze leverancier heeft al een inkoopfactuur bij deze orderregistratie!'
     }
   };

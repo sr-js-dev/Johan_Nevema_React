@@ -69,19 +69,21 @@ getQualityData = () => {
             })
         }
         this.setState({originQualityData: result.data.Items, qualityData: optionarray, showModeData: optionarray, loading: false})
-        $('#example-task thead tr').clone(true).appendTo( '#example-task thead' );
-        $('#example-task thead tr:eq(1) th').each( function (i) {
-            $(this).html( '<input type="text" class="search-table-input" style="width: 100%" placeholder="Search" />' );
-            $(this).addClass("sort-style");
-            $( 'input', this ).on( 'keyup change', function () {
-                if ( table.column(i).search() !== this.value ) {
-                    table
-                        .column(i)
-                        .search( this.value )
-                        .draw();
-                }
+        if(!this.state.exactFlag){
+            $('#example-task thead tr').clone(true).appendTo( '#example-task thead' );
+            $('#example-task thead tr:eq(1) th').each( function (i) {
+                $(this).html( '<input type="text" class="search-table-input" style="width: 100%" placeholder="Search" />' );
+                $(this).addClass("sort-style");
+                $( 'input', this ).on( 'keyup change', function () {
+                    if ( table.column(i).search() !== this.value ) {
+                        table
+                            .column(i)
+                            .search( this.value )
+                            .draw();
+                    }
+                } );
             } );
-        } );
+        }
         $('#example-task').dataTable().fnDestroy();
         var table = $('#example-task').DataTable(
             {
@@ -101,6 +103,8 @@ getQualityData = () => {
           );
     });
 }
+
+
 componentWillUnmount() {
 }
 
@@ -116,20 +120,16 @@ completeOrder = (id) => {
         salesid: id
     }
     Axios.post(API.PostSalesOrderExact, params, headers)
+    .then(result => {
+        params = {id: id}
+        Axios.post(API.CompleteOrder , params, headers)
         .then(result => {
-            Axios.get(API.GenerateSalesInvoiceXmlExact, headers)
-            .then(result => {
-                Axios.post(API.PostSalesOrderExactSend, params, headers)
-                .then(result => {
-                    params = {id: id}
-                    Axios.post(API.CompleteOrder , params, headers)
-                    .then(result => {
-                        this.setState({exactFlag: true, sendingFlag: false});
-                        this.getQualityData();
-                    });
-                });
+            this.setState({exactFlag: true, sendingFlag: false}, ()=>{
+                this.getQualityData();
             });
+            
         });
+    });
     
 }
 
@@ -298,9 +298,11 @@ render () {
                                     <td>{data.Loadingweek}</td>
                                     <td>
                                         <Row style={{justifyContent:"center"}}>
-                                            {!data.isCompleted?(
+                                            {!data.isCompleted && data.referencecustomer!==""?(
                                                 <Button type="submit" style={{width:"auto", height: 35}} onClick={()=>this.completeOrder(data.Id)}>{trls('Send_salesinvoice')}</Button>
-                                            ):<Button type="submit" disabled style={{width:"auto", height: 35}}>{trls('Send_salesinvoice')}</Button>}
+                                            ):
+                                                <Button type="submit" disabled style={{width:"auto", height: 35}}>{trls('Send_salesinvoice')}</Button>
+                                            }
                                             
                                         </Row>
                                     </td>

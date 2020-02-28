@@ -81,6 +81,14 @@ class Sidebar extends Component {
                                 <span>{trls("Invoicing")}</span>
                             </Link>
                         </li>
+                        <li id="4" className="menu__item" onClick={this.changeItem}>
+                            <Link to={'/demurrage'} className={window.location.pathname === "/demurrage" ? 'menu__link menu__link--active' : 'menu__link menu__link'} >
+                                <span className="menu__link-img-wrap">
+                                    <img src={require("../assets/images/icon-orders.svg")} alt="Orders"/>
+                                </span>
+                                <span>{trls("Demurrage")}</span>
+                            </Link>
+                        </li>
                     </ul>
                 </nav>
             </aside>

@@ -13,7 +13,7 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import * as Common from '../../components/common'
 import FlashMassage from 'react-flash-message'
-import PruchaseLineChangeForm from '../Purchase/purhcaselinechange_form';
+import Pricelinechangeform from './pricelinechange_form';
 
 const mapStateToProps = state => ({ ...state.auth });
 
@@ -34,7 +34,7 @@ class Productdtail extends Component {
             sendingFlag: false,
             editPriceFlag: false,
             editPriceData: [],
-            purchaseLineData: [],
+            priceLineData: [],
             newPrice: ''
         }
       }
@@ -83,6 +83,10 @@ class Productdtail extends Component {
         let params = {
             productid: this.props.location.state.id
         }
+        this.setState({
+            editPriceData: [],
+            editPriceFlag: false
+        })
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.post(API.GetSalesPrices, params, headers)
         .then(result => {
@@ -96,6 +100,10 @@ class Productdtail extends Component {
         let params = {
             productid: this.props.location.state.id
         }
+        this.setState({
+            editPriceData: [],
+            editPriceFlag: false
+        })
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.post(API.GetTransportPrices, params, headers)
         .then(result => {
@@ -190,17 +198,33 @@ class Productdtail extends Component {
         
     }
 
-    viewPurchaseLine = (startDate, endDate, newPrice) => {
+    viewPurchaseLine = (startDate, endDate, newPrice, price_flag, transportCode) => {
         var headers = SessionManager.shared().getAuthorizationHeader();
-        var params = {
-            productid: this.props.location.state.id,
-            startdate: Common.formatDateSecond(startDate),
-            enddate: Common.formatDateSecond(endDate),
+        let params = {};
+        let URL = "";
+        if(price_flag === 1 || price_flag === 2){
+            params = {
+                productid: this.props.location.state.id,
+                startdate: Common.formatDateSecond(startDate),
+                enddate: Common.formatDateSecond(endDate),
+            }
+            if(price_flag === 1){
+                URL = API.GetPurchaseLinesToChange;
+            }else{
+                URL = API.GetSalesLinesToChange;
+            }
+        }else{
+            URL = API.GetTransportLinesToChange;
+            params = {
+                transportercode: transportCode,
+                startdate: Common.formatDateSecond(startDate),
+                enddate: Common.formatDateSecond(endDate),
+            }
         }
-        Axios.post(API.GetPurchaseLinesToChange , params, headers)
+        Axios.post(URL, params, headers)
         .then(result => {
             if(result.data.Success){
-                this.setState({purchaseLineShowModal: true, newPrice: newPrice, purchaseLineData: result.data.Items})
+                this.setState({priceLineShowModal: true, newPrice: newPrice, priceLineData: result.data.Items})
             }
         })
     }
@@ -218,6 +242,42 @@ class Productdtail extends Component {
             return data;
         });
         this.setState({purpriceDatalist: purpriceDatalist});
+    }
+
+    deletePrice = (id, mode) => {
+        var headers = SessionManager.shared().getAuthorizationHeader();
+        let URL = '';
+        if(mode===1){
+            URL = API.DeletePurchasePrice;
+        }else{
+            URL = API.DeleteSalesPrice;
+        }
+        let params = {
+            id: id
+        }
+        Axios.post(URL, params, headers)
+        .then(result => {
+            if(result.data.Success){
+                if(mode===1){
+                    this.getPurchasePriceData();
+                }else{
+                    this.getSalespriceData();
+                }
+            }
+        })
+    }
+
+    removeState = () => {
+        this.setState({
+            modalShow: false,
+            price_flag:"",
+            exactFlag: false,
+            sendingFlag: false,
+            editPriceFlag: false,
+            editPriceData: [],
+            priceLineData: [],
+            newPrice: ''
+        })
     }
 
     render () {
@@ -388,6 +448,9 @@ class Productdtail extends Component {
                                                 ):<td style={{textAlign:"center"}}></td>}
                                                 <td>
                                                     <Row style={{justifyContent:"space-around"}}>
+                                                        {data.canDelete !== "false"&&(
+                                                            <i id={data.Id} className="far fa-trash-alt statu-item" onClick={()=>this.deletePrice(data.Id, 1)}></i>
+                                                        )}
                                                         <i className="fas fa-pen statu-item" onClick={()=>this.setState({ price_flag:1, editPriceFlag: true, editPriceData: data, modalShow: true})} ></i>
                                                     </Row>
                                                 </td>
@@ -397,33 +460,6 @@ class Productdtail extends Component {
                                     </tbody>)}
                             </table>
                             <Button variant="primary" style={{height: 40, borderRadius: 20}} onClick={()=>this.setState({modalShow:true, price_flag:1})}>{trls('Add_Purchase_Price')}</Button>
-                            
-                            <Priceform
-                                show={this.state.modalShow}
-                                onHide={() => this.setState({modalShow: false})}
-                                productid={this.props.location.state.id}
-                                price_flag={this.state.price_flag}
-                                onGetPurchasePrice={this.getPurchasePriceData}
-                                onGetSalesPrice={this.getSalespriceData}
-                                onGetTransportPrice={this.getTransportPriceData}
-                                editpriceflag={this.state.editPriceFlag}
-                                editpricedata={this.state.editPriceData}
-                                viewPurchaseLine={(startDate, endDate, newPrice)=>this.viewPurchaseLine(startDate, endDate, newPrice)}
-                            />
-                            <Updateproductform
-                                show={this.state.modalEditShow}
-                                onHide={() => this.setState({modalEditShow: false})}
-                                getproductetails={()=>this.getProductDetails()}
-                                productid={this.props.location.state.id}
-                                copyflag={0}
-                                copyproduct = {detailData}
-                            />
-                            <PruchaseLineChangeForm
-                                show={this.state.purchaseLineShowModal}
-                                onHide={() => this.setState({purchaseLineShowModal: false, purchaseLineData: [], newPrice: ''})}
-                                purchaselinedata={this.state.purchaseLineData}
-                                newprice={this.state.newPrice}
-                            />
                         </div>
                         <div className="product-price-table">
                             <p className="purprice-title">{trls("Sales_Price")}</p>
@@ -434,24 +470,33 @@ class Productdtail extends Component {
                                         <th>{trls("Start_date")}</th>
                                         <th>{trls("End_date")}</th>
                                         <th style={{width:"10%"}}>{trls("Approve")}</th>
+                                        <th style={{width: 100}}>{trls("Action")}</th>
                                     </tr>
                                     </thead>
-                                        {salespriceData &&(<tbody>
-                                            {
-                                                salespriceData.map((data,i) =>(
-                                                <tr id={i} key={i}>
-                                                    <td>{Common.formatMoney(data.Price)}</td>
-                                                    <td>{Common.formatDate(data.StartDate)}</td>
-                                                    <td>{Common.formatDate(data.EndDate)}</td>
-                                                    {!data.isApproved?(
-                                                        <td style={{textAlign:"center", paddingBottom:"0px", paddingTop:"0px"}}><Button id={data.Id} name="sales" type="submit" style={{height:"31px",fontSize:"12px"}} onClick={this.priceApproveConfirm}>{trls('Approve')}</Button></td>
-                                                    ):<td style={{textAlign:"center"}}></td>}
-                                                </tr>
-                                            ))
-                                            }
-                                        </tbody>)}
-                                </table>
-                        <Button variant="primary" style={{height: 40, borderRadius: 20}} onClick={()=>this.setState({modalShow:true, price_flag:2})}>{trls('Add_Salese_Price')}</Button>
+                                    {salespriceData &&(<tbody>
+                                        {
+                                            salespriceData.map((data,i) =>(
+                                            <tr id={i} key={i}>
+                                                <td>{Common.formatMoney(data.Price)}</td>
+                                                <td>{Common.formatDate(data.StartDate)}</td>
+                                                <td>{Common.formatDate(data.EndDate)}</td>
+                                                {!data.isApproved?(
+                                                    <td style={{textAlign:"center", paddingBottom:"0px", paddingTop:"0px"}}><Button id={data.Id} name="sales" type="submit" style={{height:"31px",fontSize:"12px"}} onClick={this.priceApproveConfirm}>{trls('Approve')}</Button></td>
+                                                ):<td style={{textAlign:"center"}}></td>}
+                                                <td>
+                                                    <Row style={{justifyContent:"space-around"}}>
+                                                        {data.canDelete !== "false"&&(
+                                                            <i id={data.Id} className="far fa-trash-alt statu-item" onClick={()=>this.deletePrice(data.Id, 2)}></i>
+                                                        )}
+                                                        <i className="fas fa-pen statu-item" onClick={()=>this.setState({ price_flag:2, editPriceFlag: true, editPriceData: data, modalShow: true})} ></i>
+                                                    </Row>
+                                                </td>
+                                            </tr>
+                                        ))
+                                        }
+                                    </tbody>)}
+                            </table>
+                            <Button variant="primary" style={{height: 40, borderRadius: 20}} onClick={()=>this.setState({modalShow:true, price_flag:2})}>{trls('Add_Salese_Price')}</Button>
                         </div>
                         <div className="product-price-table transport">
                             <p className="purprice-title">{trls("Transport_Price")}</p>
@@ -464,29 +509,63 @@ class Productdtail extends Component {
                                     <th>{trls('Start_date')}</th>
                                     <th>{trls('End_date')}</th>
                                     <th style={{width:"10%"}}>{trls("Approve")}</th>
+                                    <th style={{width: 100}}>{trls("Action")}</th>
                                 </tr>
                                 </thead>
-                                    {transportData &&(<tbody>
-                                        {
-                                            transportData.map((data,i) =>(
-                                            <tr id={i} key={i}>
-                                                <td>{data.Transporter}</td>
-                                                <td>{pricingtypelist[data.pricingtype]}</td>
-                                                <td>{Common.formatMoney(data.price)}</td>
-                                                <td>{Common.formatDate(data.startdate)}</td> 
-                                                <td>{Common.formatDate(data.enddate)}</td> 
-                                                {!data.isApproved?(
-                                                    <td style={{textAlign:"center", paddingBottom:"0px", paddingTop:"0px"}}><Button id={data.Id} name="transport" type="submit" style={{height:"31px",fontSize:"12px"}} onClick={this.priceApproveConfirm}>{trls('Approve')}</Button></td>
-                                                ):<td style={{textAlign:"center"}}></td>}
-                                            </tr>
-                                        ))
-                                        }
-                                    </tbody>)}
+                                {transportData &&(<tbody>
+                                    {
+                                        transportData.map((data,i) =>(
+                                        <tr id={i} key={i}>
+                                            <td>{data.Transporter}</td>
+                                            <td>{pricingtypelist[data.pricingtype]}</td>
+                                            <td>{Common.formatMoney(data.price)}</td>
+                                            <td>{Common.formatDate(data.startdate)}</td> 
+                                            <td>{Common.formatDate(data.enddate)}</td> 
+                                            {!data.isApproved?(
+                                                <td style={{textAlign:"center", paddingBottom:"0px", paddingTop:"0px"}}><Button id={data.Id} name="transport" type="submit" style={{height:"31px",fontSize:"12px"}} onClick={this.priceApproveConfirm}>{trls('Approve')}</Button></td>
+                                            ):<td style={{textAlign:"center"}}></td>}
+                                            <td>
+                                                <Row style={{justifyContent:"space-around"}}>
+                                                    <i className="fas fa-pen statu-item" onClick={()=>this.setState({ price_flag:3, editPriceFlag: true, editPriceData: data, modalShow: true})} ></i>
+                                                </Row>
+                                            </td>
+                                        </tr>
+                                    ))
+                                    }
+                                </tbody>)}
                             </table>
                             <Button variant="primary" style={{height: 40, borderRadius: 20}} onClick={()=>this.setState({modalShow:true, price_flag:3})}>{trls('Add_Transport_Price')}</Button>
                         </div>
                     </div>
                 </div>
+                <Priceform
+                    show={this.state.modalShow}
+                    onHide={() => this.setState({modalShow: false})}
+                    productid={this.props.location.state.id}
+                    price_flag={this.state.price_flag}
+                    onGetPurchasePrice={this.getPurchasePriceData}
+                    onGetSalesPrice={this.getSalespriceData}
+                    onGetTransportPrice={this.getTransportPriceData}
+                    editpriceflag={this.state.editPriceFlag}
+                    editpricedata={this.state.editPriceData}
+                    viewPurchaseLine={(startDate, endDate, newPrice, price_flag, transportCode)=>this.viewPurchaseLine(startDate, endDate, newPrice, price_flag, transportCode)}
+                    onRemoveState={()=>this.removeState()}               
+                />
+                <Updateproductform
+                    show={this.state.modalEditShow}
+                    onHide={() => this.setState({modalEditShow: false})}
+                    getproductetails={()=>this.getProductDetails()}
+                    productid={this.props.location.state.id}
+                    copyflag={0}
+                    copyproduct = {detailData}
+                />
+                <Pricelinechangeform
+                    show={this.state.priceLineShowModal}
+                    onHide={() => this.setState({priceLineShowModal: false, purchaseLineData: [], newPrice: ''})}
+                    pricelinedata={this.state.priceLineData}
+                    newprice={this.state.newPrice}
+                    price_flag={this.state.price_flag}
+                />
             </div>
         )
     };

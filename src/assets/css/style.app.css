@@ -27,7 +27,7 @@ padding-left: 0px;
 	max-width: 100%;
 }
 span{
-font-size:15px;
+font-size:14px;
 }
 .order_div{
 padding:20px;
@@ -437,4 +437,17 @@ table.dataTable, table.dataTable th, table.dataTable td {
 }
 .order_filter{
   padding-bottom: 20px;
+}
+.demurrage-manage{
+  margin-top: 20px;
+}
+.Xml-Exact{
+  margin: 20px;
+}
+.exact-send__button{
+  text-align: left;
+  width: 55%;
+}
+.exact-send__message{
+  padding-left: 25px;
 }

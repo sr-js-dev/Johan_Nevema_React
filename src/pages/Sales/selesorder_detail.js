@@ -189,16 +189,6 @@ class Salesorderdtail extends Component {
                                                 )}
                                             </Col>
                                         </Form.Group>
-                                        <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                            <Form.Label column sm="3">
-                                                {trls("Loading_date")}
-                                            </Form.Label>
-                                            <Col sm="9" className="product-text">
-                                                {detailData.loadingdate ?(
-                                                    <input type="text" readOnly defaultValue={Common.formatDate(detailData.loadingdate)} className="input input-detail"/>
-                                                ): <input type="text" readOnly className="input input-detail"/>}
-                                            </Col>
-                                        </Form.Group>
                                         {detailData.arrivaldate!=="1900-01-01T00:00:00"&&(
                                             <Form.Group as={Row} controlId="formPlaintextSupplier">
                                                 <Form.Label column sm="3">
@@ -210,7 +200,18 @@ class Salesorderdtail extends Component {
                                                     ): <input type="text" readOnly className="input input-detail"/>}
                                                 </Col>
                                             </Form.Group>
-                                       )}
+                                        )}
+                                        <Form.Group as={Row} controlId="formPlaintextSupplier">
+                                            <Form.Label column sm="3">
+                                                {trls("Loading_date")}
+                                            </Form.Label>
+                                            <Col sm="9" className="product-text">
+                                                {detailData.loadingdate ?(
+                                                    <input type="text" readOnly defaultValue={detailData.arrivaldate!=="1900-01-01T00:00:00" ? Common.formatDate(detailData.arrivaldate) : Common.formatDate(detailData.loadingdate)} className="input input-detail"/>
+                                                ): <input type="text" readOnly className="input input-detail"/>}
+                                            </Col>
+                                        </Form.Group>
+                                        
                                         <Form.Group as={Row} controlId="formPlaintextSupplier" >
                                             <Form.Label column sm="3">
                                             </Form.Label>
@@ -229,11 +230,11 @@ class Salesorderdtail extends Component {
                                 <tr>
                                     <th>{trls("Product")}</th>
                                     <th>{trls("Sales_Quantity")}</th>
+                                    <th>{trls("Sales_Price")}</th>
+                                    <th>{trls("Sales_Amount")}</th>
                                     <th>{trls("Purchase_Quantity")}</th>
                                     <th>{trls("Purchase_Price")}</th>
-                                    <th>{trls("Sales_Price")}</th>
                                     <th>{trls("Purchase_Amount")}</th>
-                                    <th>{trls("Sales_Amount")}</th>
                                     <th style={{width: 50}}>{trls("Packing_slip_number")}</th>
                                     <th style={{width: 50}}>{trls("Container_number")}</th>
                                     <th style={{width: 50}}>{trls("ShippingDocumentnumber")}</th>
@@ -247,11 +248,11 @@ class Salesorderdtail extends Component {
                                     <tr id={data.id} key={i}>
                                         <td>{data.productcode}</td>
                                         <td>{data.salesquantity}</td>
-                                        <td>{data.purchasequantity}</td>
                                         <td>{Common.formatMoney(data.SalesPrice)}</td>
+                                        <td>{Common.formatMoney(data.SalesAmount)}</td>
+                                        <td>{data.purchasequantity}</td>
                                         <td>{Common.formatMoney(data.purchaseprice)}</td>
                                         <td>{Common.formatMoney(data.purchaseamount)}</td>
-                                        <td>{Common.formatMoney(data.SalesAmount)}</td>
                                         <td>{data.PackingSlip}</td>
                                         <td>{data.Container}</td>
                                         <td>{data.Shipping}</td>

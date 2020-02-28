@@ -82,7 +82,7 @@ class Addproduct extends Component {
                 purchasePrice: this.state.purchasePrice,
                 salesPrice: this.state.salesPrice,
                 quantity: data.quantity,
-                purchaseAmount: this.state.purchaseAmount,
+                purchaseAmount: this.state.purchaseUnit===this.state.salesUnit && !this.state.purhaseQuantityFlag ? this.state.purchasePrice*this.state.salesQuantity : this.state.purchaseAmount,
                 salesAmount: this.state.salesAmount,
                 packingslip: data.packingslip,
                 container: data.container,
@@ -346,7 +346,7 @@ class Addproduct extends Component {
                                     </Form.Label>
                                     <Col sm="9" className="product-text">
                                         {this.state.purchaseUnit===this.state.salesUnit && !this.state.purhaseQuantityFlag?(
-                                            <Form.Control type="text" name="purhcaseamount" value={Common.formatMoney(this.state.salesAmount)} readOnly placeholder={trls("Purchase_Amount")} />
+                                            <Form.Control type="text" name="purhcaseamount" value={Common.formatMoney(this.state.purchasePrice*this.state.salesQuantity)} readOnly placeholder={trls("Purchase_Amount")} />
                                         ):
                                             <Form.Control type="text" name="purhcaseamount" value={Common.formatMoney(this.state.purchaseAmount)} readOnly placeholder={trls("Purchase_Amount")} />
                                         }

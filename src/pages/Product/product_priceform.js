@@ -72,28 +72,47 @@ class Productform extends Component {
                     }else{
                         url=API.PutPurchasePrice;
                     }
-                }else if(this.props.price_flag===2){
-                    url=API.PostSalesPrice;
-                }
-                if(!this.props.editpriceflag){
-                    priceParams = {
-                        productid: this.props.productid,
-                        startdate: Common.formatDateSecond(data.startdate),
-                        enddate: Common.formatDateSecond(data.enddate),
-                        price: Common.formatDecimal(data.price)
+                    if(!this.props.editpriceflag){
+                        priceParams = {
+                            productid: this.props.productid,
+                            startdate: Common.formatDateSecond(data.startdate),
+                            enddate: Common.formatDateSecond(data.enddate),
+                            price: Common.formatDecimal(data.price)
+                        }
+                    }else{
+                        priceParams = {
+                            id: this.props.editpricedata.Id,
+                            startdate: Common.formatDateSecond(data.startdate),
+                            enddate: Common.formatDateSecond(data.enddate),
+                            price: Common.formatDecimal(data.price)
+                        }
                     }
-                }else{
-                    priceParams = {
-                        id: this.props.editpricedata.Id,
-                        startdate: Common.formatDateSecond(data.startdate),
-                        enddate: Common.formatDateSecond(data.enddate),
-                        price: Common.formatDecimal(data.price)
+                }else if(this.props.price_flag===2){
+                    if(!this.props.editpriceflag){
+                        url=API.PostSalesPrice;
+                    }else{
+                        url=API.PutSalesPrice;
+                    }
+                    if(!this.props.editpriceflag){
+                        priceParams = {
+                            productid: this.props.productid,
+                            startdate: Common.formatDateSecond(data.startdate),
+                            enddate: Common.formatDateSecond(data.enddate),
+                            price: Common.formatDecimal(data.price)
+                        }
+                    }else{
+                        priceParams = {
+                            id: this.props.editpricedata.Id,
+                            startdate: Common.formatDateSecond(data.startdate),
+                            enddate: Common.formatDateSecond(data.enddate),
+                            price: Common.formatDecimal(data.price)
+                        }
                     }
                 }
                 Axios.post(url, priceParams, headers)
                 .then(response => {
                     if(response.data.Success===true){
-                        this.setState({
+                        this.setState({ 
                             startdate:'',
                             enddate:''
                         })
@@ -101,10 +120,10 @@ class Productform extends Component {
                         .then(result => {
                             console.log("OK");
                         });
-                        this.props.onHide();
                         if(this.props.editpriceflag){
-                            this.props.viewPurchaseLine(data.startdate, data.enddate, data.price);
+                            this.props.viewPurchaseLine(data.startdate, data.enddate, data.price, this.props.price_flag, null);
                         }
+                        this.props.onHide();
                         if(this.props.price_flag===1){
                             this.props.onGetPurchasePrice();
                         }else if(this.props.price_flag===2){
@@ -113,15 +132,27 @@ class Productform extends Component {
                     }
                 })
             }else{
-                let params = {
-                    productid: this.props.productid,
-                    startdate: Common.formatDateSecond(data.startdate),
-                    enddate: Common.formatDateSecond(data.enddate),
-                    pricingType: data.pricingtype,
-                    transporter: data.transport,
-                    price: Common.formatDecimal(data.price)
+                let transportParams = {};
+                if(!this.props.editpriceflag){
+                    url = API.PostTransportPrice;
+                    transportParams = {
+                        productid: this.props.productid,
+                        startdate: Common.formatDateSecond(data.startdate),
+                        enddate: Common.formatDateSecond(data.enddate),
+                        pricingType: data.pricingtype,
+                        transporter: data.transport,
+                        price: Common.formatDecimal(data.price)
+                    }
+                }else{
+                    url = API.PutTransportPrice;
+                    transportParams = {
+                        id: this.props.editpricedata.Id,
+                        startdate: Common.formatDateSecond(data.startdate),
+                        enddate: Common.formatDateSecond(data.enddate),
+                        price: Common.formatDecimal(data.price)
+                    }
                 }
-                Axios.post(API.PostTransportPrice, params, headers)
+                Axios.post(url, transportParams, headers)
                 .then(result => {
                     if(result.data.Success){
                         this.setState({
@@ -133,8 +164,10 @@ class Productform extends Component {
                         .then(result => {
                             console.log("OK");
                         });
+                        if(this.props.editpriceflag){
+                            this.props.viewPurchaseLine(data.startdate, data.enddate, data.price, this.props.price_flag, this.props.editpricedata.TransporterCode);
+                        }
                         this.props.onHide();
-                        this.props.removeState();
                         this.props.onGetTransportPrice()
                     }else{
                         this.props.postPriceError(trls("Please_set_pricetype"))
@@ -145,7 +178,7 @@ class Productform extends Component {
         }
     componentDidMount() {
         const data = {
-            "url": "https://app-test.organisatie.freepeat.com/api/factory/execute/Exact-Test/getTransportersDropdown",
+            "url": API.GetTransportersDropdown,
             "method": "GET",
             "headers": {
               "Content-Type": "application/x-www-form-urlencoded",
@@ -160,7 +193,7 @@ class Productform extends Component {
     }
     onHide = () => {
         this.props.onHide();
-        this.props.removeState();
+        this.props.onRemoveState();
     }
 
     onChangeDate = (date, e, mode) => {
@@ -270,7 +303,7 @@ class Productform extends Component {
                                   {trls("Price")}  
                               </Form.Label>
                               <Col sm="9" className="product-text">
-                                  <Form.Control type="text" name="price" required placeholder="Price" />
+                                  <Form.Control type="text" name="price" defaultValue={this.props.editpriceflag ? this.props.editpricedata.Price : ''} required placeholder="Price" />
                               </Col>
                           </Form.Group>
                           <Form.Group as={Row} controlId="formPlaintextPassword">
@@ -279,7 +312,7 @@ class Productform extends Component {
                               </Form.Label>
                               <Col sm="9" className="product-text">
                                   {!this.state.startdate ? (
-                                     <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.startSelectDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'start')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'start')}/>} />
+                                     <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.props.editpriceflag ? new Date(this.props.editpricedata.StartDate) : this.state.startSelectDate}  onChange = {(value, e)=>this.onChangeDate(value, e, 'start')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'start')}/>} />
                                   ) : <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.startdate} onChange = {(value, e)=>this.onChangeDate(value, e, 'start')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'start')}/>} />
                                   } 
                                   
@@ -291,7 +324,7 @@ class Productform extends Component {
                               </Form.Label>
                               <Col sm="9" className="product-text">
                                   {!this.state.enddate ? (
-                                     <DatePicker name="enddate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.endSelectDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'end')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'end')}/>} />
+                                     <DatePicker name="enddate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={ this.props.editpriceflag ? new Date(this.props.editpricedata.EndDate) : this.state.endSelectDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'end')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'end')}/>} />
                                   ) : <DatePicker name="enddate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.enddate} onChange = {(value, e)=>this.onChangeDate(value, e, 'end')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'end')}/>}/>
                                   }
                               </Col>
@@ -305,11 +338,17 @@ class Productform extends Component {
               );
           }
           else{
+            let defaultransport = [];
+            let defaultpricetype = [];
             const transportlist = this.state.transportlist.map( s => ({value:s.Key,label:s.Value}));
             const pricingtypelist = [
                 { value: '1', label: 'Blokvracht' },
                 { value: '2', label: 'Eenheidsprijs' },
               ];
+            if(this.props.editpriceflag){
+                defaultransport  = transportlist.filter(item => item.label === this.props.editpricedata.Transporter);
+                defaultpricetype = pricingtypelist.filter(item => item.value === this.props.editpricedata.pricingtype);
+            }
             return (
                 <Modal
                     dialogAs={DraggableModalDialog}
@@ -336,8 +375,10 @@ class Productform extends Component {
                                             name="transport"
                                             options={transportlist}
                                             onChange={val => this.setState({transprot_key:val})}
+                                            defaultValue={defaultransport}
+                                            isDisabled = {this.props.editpriceflag ? true : false}
                                         />
-                                        {!this.props.disabled && (
+                                        {!this.props.disabled && !this.props.editpriceflag && (
                                             <input
                                                 onChange={val=>console.log()}
                                                 tabIndex={-1}
@@ -359,8 +400,10 @@ class Productform extends Component {
                                                     name="pricingtype"
                                                     options={pricingtypelist}
                                                     onChange={val => this.setState({pricetype:val})}
+                                                    defaultValue={defaultpricetype}
+                                                    isDisabled = {this.props.editpriceflag ? true : false}
                                                 />
-                                                {!this.props.disabled && (
+                                                {!this.props.disabled && !this.props.editpriceflag && (
                                                     <input
                                                         onChange={val=>console.log()}
                                                         tabIndex={-1}
@@ -379,7 +422,7 @@ class Productform extends Component {
                                     {trls('Price')}  
                                 </Form.Label>
                                 <Col sm="9" className="product-text">
-                                    <Form.Control type="text" name="price" required placeholder="Price" />
+                                    <Form.Control type="text" name="price" defaultValue={this.props.editpriceflag ? this.props.editpricedata.price : ''} required placeholder="Price" />
                                 </Col>
                             </Form.Group>
                             <Form.Group as={Row} controlId="formPlaintextPassword">
@@ -388,7 +431,7 @@ class Productform extends Component {
                                 </Form.Label>
                                 <Col sm="9" className="product-text">
                                     {!this.state.startdate ? (
-                                        <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.startSelectDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'start')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'start')}/>} />
+                                        <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.props.editpriceflag ? new Date(this.props.editpricedata.startdate) : this.state.startSelectDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'start')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'start')}/>} />
                                     ) : <DatePicker name="startdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.startdate} onChange = {(value, e)=>this.onChangeDate(value, e, 'start')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'start')}/>} />
                                     } 
                                 </Col>
@@ -399,7 +442,7 @@ class Productform extends Component {
                                 </Form.Label>
                                 <Col sm="9" className="product-text">
                                     {!this.state.enddate ? (
-                                        <DatePicker name="enddate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.endSelectDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'end')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'end')}/>}/>
+                                        <DatePicker name="enddate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={ this.props.editpriceflag ? new Date(this.props.editpricedata.enddate) : this.state.endSelectDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'end')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'end')}/>}/>
                                     ) : <DatePicker name="enddate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.enddate} onChange = {(value, e)=>this.onChangeDate(value, e, 'end')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'end')}/>}/>
                                     }
                                 </Col>

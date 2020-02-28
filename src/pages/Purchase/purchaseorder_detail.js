@@ -148,20 +148,23 @@ class Purchaseorderdtail extends Component {
     }
     
     generatePurchaseInvoiceXmlExact = () => {
-        this.setState({sendingFlag: true})
+        this.setState({sendingFlag: true, exactFlag: false})
         var headers = SessionManager.shared().getAuthorizationHeader();
         var params = {
             purchaseid: this.props.location.state.newId
         }
         Axios.post(API.PostPurchaseOrderExact, params, headers)
         .then(result => {
-            Axios.get(API.GeneratePurchaseInvoiceXmlExact, headers)
-            .then(result => {
-                Axios.post(API.PostPurchaseOrderExactSend, params, headers)
-                .then(result => {
-                    this.setState({exactFlag: true, sendingFlag: false})
-                });
-            });
+            if(result.data.Success){
+                this.setState({exactFlag: true, sendingFlag: false});
+            }
+            // Axios.get(API.GeneratePurchaseInvoiceXmlExact, headers)
+            // .then(result => {
+            //     Axios.post(API.PostPurchaseOrderExactSend, params, headers)
+            //     .then(result => {
+            //         this.setState({exactFlag: true, sendingFlag: false})
+            //     });
+            // });
         });
     }
 

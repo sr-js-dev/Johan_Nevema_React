@@ -9,6 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';
 import DraggableModalDialog from '../../components/draggablemodal';
 import * as Common from '../../components/common'
+import Sweetalert from 'sweetalert';
 
 const mapStateToProps = state => ({ 
     ...state.auth,
@@ -30,7 +31,8 @@ class Addpurchase extends Component {
             productData: [],
             checkedData: [],
             vatCodeList: [],
-            searchFlag: false
+            searchFlag: false,
+            priceEditFlag: false
         };
     }
     componentWillUnmount() {
@@ -133,6 +135,7 @@ class Addpurchase extends Component {
     }
 
     changeProductId = (id) => {
+        this.setState({priceEditFlag: false})
         let productArray = this.state.productData;
         productArray.map((product, index)=>{
             if(product.id===id){
@@ -176,11 +179,21 @@ class Addpurchase extends Component {
                     Axios.post(API.PostPurchaseOrderLine, params, headers)
                     .then(result => {
                         params ={ 
-                            id: product.id,
-                            postId: result.data.NewId
+                            purchaseid: this.props.purchaseid,
+                            id: result.data.NewId
                         }
-                        Axios.post(API.PutSalesPurchaseId, params, headers)
+                        Axios.post(API.CheckMultipleLines, params, headers)
                         .then(result => {
+                            if(result.data.Success){
+                                Sweetalert(trls('already_purchaseinvoice'));
+                            }
+                            // 
+                            // Axios.post(API.PutTransportPurchaseId , params, headers)
+                            // .then(result => {
+                            //     if(k===checkedProductLength){
+                            //         this.onHide();
+                            //     }
+                            // });
                             if(k===checkedProductLength){
                                 this.onHide();
                             }
@@ -223,10 +236,47 @@ class Addpurchase extends Component {
             quantity: 0,
             filterValue: '',
             productData: [],
-            checkedData: []
+            checkedData: [],
+            priceEditFlag: true
         })
         this.props.onHide();
         this.props.getPurchaseOrderLines();
+    }
+
+    onEditPriceChange = (data) => {
+        this.setState({priceEditFlag: true})
+        let productDatArray = this.state.productData;
+        productDatArray.map((value, key) => {
+            if(value.id===data.id){
+                value.editFlag=true;
+            }else{
+                value.editFlag=false;
+            }
+            return data;
+        })
+        this.setState({productData: productDatArray})
+    }
+
+    onChangePrice = (evt) => {
+        let productDatArray = this.state.productData;
+        let line_id = evt.target.id;
+        let line_value = evt.target.value;
+        var headers = SessionManager.shared().getAuthorizationHeader();
+        let params = {};
+        params = {
+            orderlineid: line_id,
+            newprice: line_value,
+        }
+        Axios.post(API.UpdateTransportPriceLines, params, headers)
+        .then(result => {
+            productDatArray.map((value, key) => {
+                if(value.id===Number(line_id)){
+                    value.price=parseFloat(line_value);
+                }
+                return value;
+            })
+        })
+        this.setState({productData: productDatArray});
     }
 
     render(){
@@ -299,7 +349,7 @@ class Addpurchase extends Component {
                                 <tr>
                                     <th></th>
                                     <th>{!this.props.transport ? trls('Productcode') : trls('Pricingtype')}</th>
-                                    <th>{!this.props.transport ? trls('Quantity') : trls('Price')}</th>
+                                    <th style={{width: "25%"}}>{!this.props.transport ? trls('Quantity') : trls('Price')}</th>
                                     {!this.props.transport&&(<th>{trls('Purchase_Unit')}</th>)}
                                     {!this.props.transport&&(<th>{trls('VATCode')}</th>)}
                                 </tr>
@@ -311,7 +361,24 @@ class Addpurchase extends Component {
                                     <tr id={data.id} key={i}>
                                         <td style={{verticalAlign: 'top'}}><input type="checkbox" onChange={()=>this.changeProductId(data.id)} /></td>
                                         <td style={{verticalAlign: 'top'}}>{!this.props.transport ? data.ProductCode :data.pricingtype}</td>
-                                        <td style={{verticalAlign: 'top'}}>{!this.props.transport ? data.PurchaseQuantity : Common.formatMoney(data.price)}</td>
+                                        {!this.props.transport?(
+                                            <td style={{verticalAlign: 'top'}}>{data.PurchaseQuantity }</td>
+                                        ):
+                                            <td style={{verticalAlign: 'top', display: 'flex'}}>
+                                                
+                                                {!data.editFlag || !this.state.priceEditFlag ?(
+                                                    <span>{Common.formatMoney(data.price)}</span>
+                                                ):
+                                                    <Form.Control id={data.id} type="text" name="price" style={{width: "50%"}} defaultValue={data.price} placeholder={trls("Number")} onChange = {(evt, data)=>this.onChangePrice(evt, data)}/>
+                                                }
+                                                {data.editablePrice!=="false" ? (
+                                                    <i id={data.Id} style={{marginLeft: 'auto'}} className="fas fa-pen statu-item" disabled onClick={()=>this.onEditPriceChange(data)} ></i>
+                                                ):
+                                                    null
+                                                }
+                                                
+                                            </td>
+                                        }
                                         {!this.props.transport&&(<td style={{verticalAlign: 'top'}}>{data.unit}</td>)}
                                         {!this.props.transport&&(<td style={{verticalAlign: 'top'}}>
                                             <Select

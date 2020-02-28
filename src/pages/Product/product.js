@@ -655,8 +655,11 @@ class Product extends Component {
                                 <th>{trls("Supplier")}</th>
                                 <th>{trls("Product")}</th>
                                 <th>{trls("Customer")}</th>
-                                <th>{trls("Product_Group")}</th>
+                                <th>{trls("Product_Name")}</th>
+                                <th>{trls("Sales_Price")}</th>
+                                <th>{trls("Purchase_Price")}</th>
                                 <th>{trls("Sales_Unit")}</th>
+                                <th>{trls("Purchase_Unit")}</th>
                                 <th>{trls("Kilogram")}</th>
                                 <th>{trls("Copy_Product")}</th>
                             </tr>
@@ -673,8 +676,11 @@ class Product extends Component {
                                     </td>
                                     <td>{data.Product}</td>
                                     <td>{data.Customer}</td>
-                                    <td>{data.Productgroup}</td>
+                                    <td>{data.Product}</td>
+                                    <td>{data.SalesPrice}</td>
+                                    <td>{data.PurchasePrice}</td>
                                     <td>{data.SalesUnit}</td>
+                                    <td>{data.PurchaseUnit}</td>
                                     <td>{data.Kilogram}</td>
                                     <td>
                                       <Row style={{justifyContent:"center"}}>

@@ -101,5 +101,16 @@ export default {
     PutPurchasePrice  : `${BASEURL}/api/factory/execute/Appmakerz-Test/putPurchasePrice`,
     GetPurchaseLinesToChange  : `${BASEURL}/api/factory/execute/Appmakerz-Test/getPurchaseLinesToChange`,
     UpdatePricePurchaseLines  : `${BASEURL}/api/factory/execute/Appmakerz-Test/updatePricePurchaseLines`,
-  };
-  
+    PutSalesPrice  : `${BASEURL}/api/factory/execute/Appmakerz-Test/putSalesPrice`,
+    GetSalesLinesToChange   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getSalesLinesToChange`,
+    UpdatePriceSalesLines   : `${BASEURL}/api/factory/execute/Appmakerz-Test/updatePriceSalesLines`,
+    PutTransportPrice   : `${BASEURL}/api/factory/execute/Appmakerz-Test/putTransportPrice`,
+    GetTransportLinesToChange   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getTransportLinesToChange`,
+    UpdateTransportPriceLines   : `${BASEURL}/api/factory/execute/Appmakerz-Test/updateTransportPriceLines`,
+    DeleteSalesPrice   : `${BASEURL}/api/factory/execute/Appmakerz-Test/deleteSalesPrice`,
+    DeletePurchasePrice   : `${BASEURL}/api/factory/execute/Appmakerz-Test/deletePurchasePrice`,
+    GetDemurrage   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getDemurrage`,
+    CheckMultipleLines   : `${BASEURL}/api/factory/execute/Appmakerz-Test/checkMultipleLines`,
+    GetSalesOrdersExact   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getSalesOrdersExact`,
+    GetPurchaseOrdersExact   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getPurchaseOrdersExact`,
+  }; 
