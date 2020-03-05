@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import { trls } from '../../components/translate';
 import { Button, Spinner } from 'react-bootstrap';
 import { Form, Row, Col} from 'react-bootstrap';
-import { Container} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import SessionManager from '../../components/session_manage';
 import API from '../../components/api'
@@ -51,7 +50,7 @@ class Productdtail extends Component {
     
     getProductDetails() {
         let params = {
-            id: this.props.location.state.id
+            id: this.props.productid
         }
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.post(API.GetProduct, params, headers)
@@ -64,7 +63,7 @@ class Productdtail extends Component {
 
     getPurchasePriceData = () => {
         let params = {
-            productid: this.props.location.state.id
+            productid: this.props.productid
         }
         this.setState({
             editPriceData: [],
@@ -81,7 +80,7 @@ class Productdtail extends Component {
 
     getSalespriceData = () => {
         let params = {
-            productid: this.props.location.state.id
+            productid: this.props.productid
         }
         this.setState({
             editPriceData: [],
@@ -98,7 +97,7 @@ class Productdtail extends Component {
 
     getTransportPriceData = () =>{
         let params = {
-            productid: this.props.location.state.id
+            productid: this.props.productid
         }
         this.setState({
             editPriceData: [],
@@ -183,7 +182,7 @@ class Productdtail extends Component {
         this.setState({sendingFlag: true})
         var headers = SessionManager.shared().getAuthorizationHeader();
         var params = {
-            productid: this.props.location.state.id
+            productid: this.props.productid
         }
         Axios.post(API.PostProductsExact, params, headers)
         .then(result => {
@@ -204,7 +203,7 @@ class Productdtail extends Component {
         let URL = "";
         if(price_flag === 1 || price_flag === 2){
             params = {
-                productid: this.props.location.state.id,
+                productid: this.props.productid,
                 startdate: Common.formatDateSecond(startDate),
                 enddate: Common.formatDateSecond(endDate),
             }
@@ -280,6 +279,11 @@ class Productdtail extends Component {
         })
     }
 
+    onHide = () => {
+        this.props.onHide();
+        Common.hideSlideForm();
+    }
+
     render () {
         let detailData = [];
         let purpriceData = [];
@@ -299,11 +303,14 @@ class Productdtail extends Component {
         }
         const pricingtypelist = {'1' :'Blokvracht','2' :'Eenheidsprijs'}
         return (
-            <div>
-                <div className="content__header content__header--with-line">
+            <div className = "slide-form__controls open slide-product__detail">
+                <div style={{marginBottom:30, padding:"0 20px"}}>
+                    <i className="fas fa-times slide-close" style={{ fontSize: 20, cursor: 'pointer'}} onClick={()=>this.onHide()}></i>
+                </div>
+                <div className="content__header content__header--with-line product-detail__data--detail">
                     <h2 className="title">{trls("Product_Details")}</h2>
                 </div>
-                <div className="place-and-orders">
+                <div className="place-and-orders product-detail_main">
                     {this.state.exactFlag&&(
                         <div>
                             <FlashMassage duration={2000}>
@@ -315,162 +322,128 @@ class Productdtail extends Component {
                     )
                     }
                     {this.state.sendingFlag&&(
-                        <div style={{marginTop:10}}><Spinner animation="border" variant="info"/><span style={{marginTp:10, fontWeight: "bold", fontSize: 16}}> {trls('Sending')}...</span></div>
+                        <div style={{marginTop:10, padding: "0 45px"}}><Spinner animation="border" variant="info"/><span style={{marginTp:10, fontWeight: "bold", fontSize: 16}}> {trls('Sending')}...</span></div>
                     )}
-                    <Button variant="primary" onClick={()=>this.generateProductXml()} style={{marginTop:10}}>{trls("Send_to_Exact")}</Button>
-                    
                     <div className="place-and-orders__top">
-                        <Container className="product-details">
-                            <Row>
-                                <Col sm={6}>
-                                    <Form className="container product-form">
-                                        <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                            <Form.Label column sm="3">
-                                                {trls("Productcode")}
-                                            </Form.Label>
-                                            <Col sm="9" className="product-text">
-                                                {detailData &&(
-                                                    <input type="text" readOnly defaultValue={detailData.productcode} className="input input-detail"/>
-                                                )}
-                                            </Col>
-                                        </Form.Group>
-                                        <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                            <Form.Label column sm="3">
-                                                {trls("Supplier")}
-                                            </Form.Label>
-                                            <Col sm="9" className="product-text">
-                                                {detailData &&(
-                                                    <input type="text" readOnly defaultValue={detailData.Supplier} className="input input-detail"/>
-                                                )}
-                                            </Col>
-                                        </Form.Group>
-                                        <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                            <Form.Label column sm="3">
-                                                {trls("Product")}
-                                            </Form.Label>
-                                            <Col sm="9" className="product-text">
-                                                {detailData &&(
-                                                    <input type="text" readOnly defaultValue={detailData.product} className="input input-detail"/>
-                                                )}
-                                            </Col>
-                                        </Form.Group>
-                                        <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                            <Form.Label column sm="3">
-                                                {trls("Customer")}
-                                            </Form.Label>
-                                            <Col sm="9" className="product-text">
-                                                {detailData &&(
-                                                    <input type="text" readOnly defaultValue={detailData.Customer} className="input input-detail"/>
-                                                )}
-                                            </Col>
-                                        </Form.Group>
-                                    </Form>
-                                </Col>
-                                <Col sm={6}>
-                                    <Form className="container product-form">
-                                        <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                            <Form.Label column sm="3">
-                                                {trls("Productgroup")}
-                                            </Form.Label>
-                                            <Col sm="9" className="product-text">
-                                                {detailData &&(
-                                                    <input type="text" readOnly defaultValue={detailData.Productgroup} className="input input-detail"/>
-                                                )}
-                                            </Col>
-                                        </Form.Group>
-                                        <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                            <Form.Label column sm="3">
-                                                {trls("Salesunit")}
-                                            </Form.Label>
-                                            <Col sm="9" className="product-text">
-                                                {detailData &&(
-                                                    <input type="text" readOnly defaultValue={detailData.Salesunit} className="input input-detail"/>
-                                                )}
-                                            </Col>
-                                        </Form.Group>
-                                        <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                            <Form.Label column sm="3">
-                                                {trls("Purchase_Unit")}
-                                            </Form.Label>
-                                            <Col sm="9" className="product-text">
-                                                {detailData &&(
-                                                    <input type="text" readOnly defaultValue={detailData.PurchaseUnit} className="input input-detail"/>
-                                                )}
-                                            </Col>
-                                        </Form.Group>
-                                        <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                            <Form.Label column sm="3">
-                                                {trls("Kilogram")}
-                                            </Form.Label>
-                                            <Col sm="9" className="product-text">
-                                                {detailData &&(
-                                                    <input type="text" readOnly defaultValue={detailData.kilogram} className="input input-detail"/>
-                                                )}
-                                            </Col>
-                                        </Form.Group>
-                                        <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                            <Form.Label column sm="3">
-                                            </Form.Label>
-                                            <Col sm="9" className="product-text">
-                                                <Button variant="primary" style={{float: "right", marginRight: -20}} onClick={()=>this.setState({modalEditShow:true, exactFlag: false})}>{trls('Edit')}</Button>
-                                            </Col>
-                                            
-                                        </Form.Group>
-                                    </Form>
-                                </Col>
-                                
-                            </Row>
-                            
-                        </Container>
+                        <Row className="product-detail__data-div">
+                            <Col sm={6}>
+                                <div>
+                                    <Form.Label>
+                                        {trls("Productcode")}
+                                    </Form.Label>
+                                    <p className="product-detail__data">{detailData.productcode}</p>
+                                </div>
+                                <div style={{paddingTop: 30}}>
+                                    <Form.Label>
+                                        {trls("Supplier")}
+                                    </Form.Label>
+                                    <p className="product-detail__data">{detailData.Supplier}</p>
+                                </div>
+                                <div>
+                                    <Button variant="light" style={{marginRight: 10}} onClick={()=>this.setState({modalEditShow:true, exactFlag: false})}><img src={require('../../assets/images/edit.svg')} alt="edit" style={{marginRight: 10}}></img>{trls('Edit_project_detail')}</Button>
+                                    <Button variant="primary" onClick={()=>this.generateProductXml()}><i className="fas fa-plus add-icon"></i>{trls("Send_to_Exact")}</Button>
+                                </div>
+                            </Col>
+                            <Col sm={2}>
+                                <div>
+                                    <Form.Label>
+                                        {trls("Product")}
+                                    </Form.Label>
+                                    <p className="product-detail__data">{detailData.product}</p>
+                                </div>
+                                <div style={{paddingTop: 30}}>
+                                    <Form.Label>
+                                        {trls("Customer")}
+                                    </Form.Label>
+                                    <p className="product-detail__data">{detailData.Customer}</p>
+                                </div>
+                            </Col>
+                            <Col sm={2}>
+                                <div>
+                                    <Form.Label>
+                                        {trls("Productgroup")}
+                                    </Form.Label>
+                                    <p className="product-detail__data">{detailData.Productgroup}</p>
+                                </div>
+                                <div style={{paddingTop: 30}}>
+                                    <Form.Label>
+                                        {trls("Salesunit")}
+                                    </Form.Label>
+                                    <p className="product-detail__data">{detailData.Salesunit}</p>
+                                </div>
+                            </Col>
+                            <Col sm={2}>
+                                <div>
+                                    <Form.Label>
+                                        {trls("Purchase_Unit")}
+                                    </Form.Label>
+                                    <p className="product-detail__data">{detailData.PurchaseUnit}</p>
+                                </div>
+                                <div style={{paddingTop: 30}}>
+                                    <Form.Label>
+                                        {trls("Kilogram")}
+                                    </Form.Label>
+                                    <p className="product-detail__data">{detailData.kilogram}</p>
+                                </div>
+                            </Col>
+                        </Row>
                     </div>
                     <div className={"product-detail-table"}>
                         <div className="product-price-table">
-                            <p className="purprice-title">{trls("Purchase_Price")}</p>
-                            <table className="place-and-orders__table table prurprice-dataTable">
-                                <thead>
-                                <tr>
-                                    <th>{trls("Price")}</th>
-                                    <th>{trls("Start_date")}</th>
-                                    <th>{trls("End_date")}</th>
-                                    <th style={{width:"10%"}}>{trls("Approve")}</th>
-                                    <th style={{width: 100}}>{trls("Action")}</th>
-                                </tr>
-                                </thead>
-                                    {purpriceData &&(<tbody>
-                                        {
-                                            purpriceData.map((data,i) =>(
-                                            <tr id={i} key={i} style={{verticalAlign:"middle"}}>
-                                                <td>{Common.formatMoney(data.Price)}</td>
-                                                <td>{Common.formatDate(data.StartDate)}</td>
-                                                <td>{Common.formatDate(data.EndDate)}</td>
-                                                {!data.isApproved?(
-                                                    <td style={{textAlign:"center", paddingBottom:"0px", paddingTop:"0px"}}><Button id={data.Id} name="purchase" type="submit" style={{height:"31px",fontSize:"12px"}} onClick={this.priceApproveConfirm}>{trls('Approve')}</Button></td>
-                                                ):<td style={{textAlign:"center"}}></td>}
-                                                <td>
-                                                    <Row style={{justifyContent:"space-around"}}>
-                                                        {data.canDelete !== "false"&&(
-                                                            <i id={data.Id} className="far fa-trash-alt statu-item" onClick={()=>this.deletePrice(data.Id, 1)}></i>
-                                                        )}
-                                                        <i className="fas fa-pen statu-item" onClick={()=>this.setState({ price_flag:1, editPriceFlag: true, editPriceData: data, modalShow: true})} ></i>
-                                                    </Row>
-                                                </td>
-                                            </tr>
-                                        ))
-                                        }
-                                    </tbody>)}
-                            </table>
-                            <Button variant="primary" style={{height: 40, borderRadius: 20}} onClick={()=>this.setState({modalShow:true, price_flag:1})}>{trls('Add_Purchase_Price')}</Button>
+                            <div className="purchase-price__div">
+                                <p className="purprice-title"><i className="fas fa-caret-right add-icon" style={{color: "#4697D1"}}></i>{trls("Purchase_Price")}</p>
+                                <Button variant="outline-secondary" style={{marginLeft: "auto"}} onClick={()=>this.setState({modalShow:true, price_flag:1})}><i className="fas fa-plus add-icon"></i>{trls('Add_Purchase_Price')}</Button>
+                            </div>
+                            <div className="prurprice-table__div">
+                                <table className="place-and-orders__table table table--striped prurprice-dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th>{trls("Price")}</th>
+                                            <th>{trls("Start_date")}</th>
+                                            <th>{trls("End_date")}</th>
+                                            <th style={{width:"10%"}}>{trls("Approve")}</th>
+                                            <th style={{width: 200}}>{trls("Action")}</th>
+                                        </tr>
+                                    </thead>
+                                        {purpriceData &&(<tbody>
+                                            {
+                                                purpriceData.map((data,i) =>(
+                                                <tr id={i} key={i} style={{verticalAlign:"middle"}}>
+                                                    <td>{Common.formatMoney(data.Price)}</td>
+                                                    <td>{Common.formatDate(data.StartDate)}</td>
+                                                    <td>{Common.formatDate(data.EndDate)}</td>
+                                                    {!data.isApproved?(
+                                                        <td style={{textAlign:"center", paddingBottom:"0px", paddingTop:"0px"}}><Button id={data.Id} name="purchase" type="submit" style={{height:"31px",fontSize:"12px"}} onClick={this.priceApproveConfirm}>{trls('Approve')}</Button></td>
+                                                    ):<td style={{textAlign:"center"}}></td>}
+                                                    <td>
+                                                        <Row style={{justifyContent:"space-around"}}>
+                                                            {data.canDelete !== "false"&&(
+                                                                <Button id={data.Id} className="price-action__button" variant="light" onClick={()=>this.deletePrice(data.Id, 1)}><i className="far fa-trash-alt add-icon" ></i>{trls('Delete')}</Button>
+                                                            )}
+                                                            <Button id={data.Id} className="price-action__button" variant="light" onClick={()=>this.setState({ price_flag:1, editPriceFlag: true, editPriceData: data, modalShow: true})}><i className="fas fa-pen add-icon" ></i>{trls('Edit')}</Button>
+                                                        </Row>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                            }
+                                        </tbody>)}
+                                </table>
+                            </div>
                         </div>
                         <div className="product-price-table">
-                            <p className="purprice-title">{trls("Sales_Price")}</p>
-                                <table className="place-and-orders__table table prurprice-dataTable">
+                            <div className="purchase-price__div">
+                                <p className="purprice-title"><i className="fas fa-caret-right add-icon" style={{color: "#4697D1"}}></i>{trls("Sales_Price")}</p>
+                                <Button variant="outline-secondary" style={{marginLeft: "auto"}} onClick={()=>this.setState({modalShow:true, price_flag:2})}><i className="fas fa-plus add-icon"></i>{trls('Add_Salese_Price')}</Button>
+                            </div>
+                            <div className="prurprice-table__div">
+                                <table className="place-and-orders__table table table--striped prurprice-dataTable">
                                     <thead>
                                     <tr>
                                         <th>{trls("Price")}</th>
                                         <th>{trls("Start_date")}</th>
                                         <th>{trls("End_date")}</th>
                                         <th style={{width:"10%"}}>{trls("Approve")}</th>
-                                        <th style={{width: 100}}>{trls("Action")}</th>
+                                        <th style={{width: 200}}>{trls("Action")}</th>
                                     </tr>
                                     </thead>
                                     {salespriceData &&(<tbody>
@@ -486,62 +459,66 @@ class Productdtail extends Component {
                                                 <td>
                                                     <Row style={{justifyContent:"space-around"}}>
                                                         {data.canDelete !== "false"&&(
-                                                            <i id={data.Id} className="far fa-trash-alt statu-item" onClick={()=>this.deletePrice(data.Id, 2)}></i>
+                                                            <Button id={data.Id} className="price-action__button" variant="light" onClick={()=>this.deletePrice(data.Id, 2)}><i className="far fa-trash-alt add-icon" ></i>{trls('Delete')}</Button>
                                                         )}
-                                                        <i className="fas fa-pen statu-item" onClick={()=>this.setState({ price_flag:2, editPriceFlag: true, editPriceData: data, modalShow: true})} ></i>
+                                                        <Button id={data.Id} className="price-action__button" variant="light" onClick={()=>this.setState({ price_flag:2, editPriceFlag: true, editPriceData: data, modalShow: true})}><i className="fas fa-pen add-icon" ></i>{trls('Edit')}</Button>
                                                     </Row>
                                                 </td>
                                             </tr>
                                         ))
                                         }
                                     </tbody>)}
-                            </table>
-                            <Button variant="primary" style={{height: 40, borderRadius: 20}} onClick={()=>this.setState({modalShow:true, price_flag:2})}>{trls('Add_Salese_Price')}</Button>
+                                </table>
+                            </div>
                         </div>
                         <div className="product-price-table transport">
-                            <p className="purprice-title">{trls("Transport_Price")}</p>
-                            <table className="place-and-orders__table table prurprice-dataTable">
-                                <thead>
-                                <tr>
-                                    <th>{trls('Transporter')}</th>
-                                    <th>{trls('Pricingtype')}</th>
-                                    <th>{trls('Price')}</th>
-                                    <th>{trls('Start_date')}</th>
-                                    <th>{trls('End_date')}</th>
-                                    <th style={{width:"10%"}}>{trls("Approve")}</th>
-                                    <th style={{width: 100}}>{trls("Action")}</th>
-                                </tr>
-                                </thead>
-                                {transportData &&(<tbody>
-                                    {
-                                        transportData.map((data,i) =>(
-                                        <tr id={i} key={i}>
-                                            <td>{data.Transporter}</td>
-                                            <td>{pricingtypelist[data.pricingtype]}</td>
-                                            <td>{Common.formatMoney(data.price)}</td>
-                                            <td>{Common.formatDate(data.startdate)}</td> 
-                                            <td>{Common.formatDate(data.enddate)}</td> 
-                                            {!data.isApproved?(
-                                                <td style={{textAlign:"center", paddingBottom:"0px", paddingTop:"0px"}}><Button id={data.Id} name="transport" type="submit" style={{height:"31px",fontSize:"12px"}} onClick={this.priceApproveConfirm}>{trls('Approve')}</Button></td>
-                                            ):<td style={{textAlign:"center"}}></td>}
-                                            <td>
-                                                <Row style={{justifyContent:"space-around"}}>
-                                                    <i className="fas fa-pen statu-item" onClick={()=>this.setState({ price_flag:3, editPriceFlag: true, editPriceData: data, modalShow: true})} ></i>
-                                                </Row>
-                                            </td>
-                                        </tr>
-                                    ))
-                                    }
-                                </tbody>)}
-                            </table>
-                            <Button variant="primary" style={{height: 40, borderRadius: 20}} onClick={()=>this.setState({modalShow:true, price_flag:3})}>{trls('Add_Transport_Price')}</Button>
+                            <div className="purchase-price__div">
+                                <p className="purprice-title"><i className="fas fa-caret-right add-icon" style={{color: "#4697D1"}}></i>{trls("Transport_Price")}</p>
+                                <Button variant="outline-secondary" style={{marginLeft: "auto"}} onClick={()=>this.setState({modalShow:true, price_flag:3})}><i className="fas fa-plus add-icon"></i>{trls('Add_Transport_Price')}</Button>
+                            </div>
+                            <div className="prurprice-table__div">
+                                <table className="place-and-orders__table table table--striped prurprice-dataTable">
+                                    <thead>
+                                    <tr>
+                                        <th>{trls('Transporter')}</th>
+                                        <th>{trls('Pricingtype')}</th>
+                                        <th>{trls('Price')}</th>
+                                        <th>{trls('Start_date')}</th>
+                                        <th>{trls('End_date')}</th>
+                                        <th style={{width:"10%"}}>{trls("Approve")}</th>
+                                        <th style={{width: 200}}>{trls("Action")}</th>
+                                    </tr>
+                                    </thead>
+                                    {transportData &&(<tbody>
+                                        {
+                                            transportData.map((data,i) =>(
+                                            <tr id={i} key={i}>
+                                                <td>{data.Transporter}</td>
+                                                <td>{pricingtypelist[data.pricingtype]}</td>
+                                                <td>{Common.formatMoney(data.price)}</td>
+                                                <td>{Common.formatDate(data.startdate)}</td> 
+                                                <td>{Common.formatDate(data.enddate)}</td> 
+                                                {!data.isApproved?(
+                                                    <td style={{textAlign:"center", paddingBottom:"0px", paddingTop:"0px"}}><Button id={data.Id} name="transport" type="submit" style={{height:"31px",fontSize:"12px"}} onClick={this.priceApproveConfirm}>{trls('Approve')}</Button></td>
+                                                ):<td style={{textAlign:"center"}}></td>}
+                                                <td>
+                                                    <Row style={{justifyContent:"space-around"}}>
+                                                        <Button id={data.Id} className="price-action__button" variant="light" onClick={()=>this.setState({ price_flag:3, editPriceFlag: true, editPriceData: data, modalShow: true})}><i className="fas fa-pen add-icon" ></i>{trls('Edit')}</Button>
+                                                    </Row>
+                                                </td>
+                                            </tr>
+                                        ))
+                                        }
+                                    </tbody>)}
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <Priceform
                     show={this.state.modalShow}
                     onHide={() => this.setState({modalShow: false})}
-                    productid={this.props.location.state.id}
+                    productid={this.props.productid}
                     price_flag={this.state.price_flag}
                     onGetPurchasePrice={this.getPurchasePriceData}
                     onGetSalesPrice={this.getSalespriceData}
@@ -555,7 +532,7 @@ class Productdtail extends Component {
                     show={this.state.modalEditShow}
                     onHide={() => this.setState({modalEditShow: false})}
                     getproductetails={()=>this.getProductDetails()}
-                    productid={this.props.location.state.id}
+                    productid={this.props.productid}
                     copyflag={0}
                     copyproduct = {detailData}
                 />

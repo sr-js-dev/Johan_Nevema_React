@@ -41,26 +41,26 @@ getPurchaseOrders() {
     .then(result => {
         this.setState({purhaseorders: result.data.Items});
         this.setState({loading:false})
-        $('#example thead tr').clone(true).appendTo( '#example thead' );
-        $('#example thead tr:eq(1) th').each( function (i) {
-            $(this).html( '<input type="text" class="search-table-input" style="width: 100%" placeholder="Search" />' );
-            $(this).addClass("sort-style");
-            $( 'input', this ).on( 'keyup change', function () {
-                if ( table.column(i).search() !== this.value ) {
-                    table
-                        .column(i)
-                        .search( this.value )
-                        .draw();
-                }
-            } );
-        } );
+        // $('#example thead tr').clone(true).appendTo( '#example thead' );
+        // $('#example thead tr:eq(1) th').each( function (i) {
+        //     $(this).html( '<input type="text" class="search-table-input" style="width: 100%" placeholder="Search" />' );
+        //     $(this).addClass("sort-style");
+        //     $( 'input', this ).on( 'keyup change', function () {
+        //         if ( table.column(i).search() !== this.value ) {
+        //             table
+        //                 .column(i)
+        //                 .search( this.value )
+        //                 .draw();
+        //         }
+        //     } );
+        // } );
         $('#example').dataTable().fnDestroy();
-        var table = $('#example').DataTable(
+        $('#example').DataTable(
             {
               "language": {
-                  "lengthMenu": trls("Show")+" _MENU_ "+trls("Entries"),
+                  "lengthMenu": trls("Show")+" _MENU_ "+trls("Result_on_page"),
                   "zeroRecords": "Nothing found - sorry",
-                  "info": trls("Show_page")+" _PAGE_ of _PAGES_",
+                  "info": trls("Show_page")+" _PAGE_ "+trls('Results_of')+" _PAGES_",
                   "infoEmpty": "No records available",
                   "infoFiltered": "(filtered from _MAX_ total records)",
                   "search": trls('Search'),
@@ -68,7 +68,9 @@ getPurchaseOrders() {
                     "previous": trls('Previous'),
                     "next": trls('Next')
                   }
-              }
+              },
+                "searching": false,
+                "dom": 't<"bottom-datatable" lip>'
             }
           );
     });
@@ -92,17 +94,15 @@ render () {
                 <h2 className="title">{trls('Purchase_Order')}</h2>
             </div>
             <div className="orders">
-                <div className="orders__filters justify-content-between">
-                    <Form inline style={{width:"100%"}}>
-                        <Button variant="primary" onClick={()=>this.setState({modalShow:true})}>{trls('Add_Pursase_Order')}</Button>   
-                        <Purchaseform
-                            show={this.state.modalShow}
-                            onHide={() => this.setState({modalShow: false})}
-                        />
-                    </Form>
+                <div className="orders__filters">
+                    <Button variant="primary" onClick={()=>this.setState({modalShow:true})}><i className="fas fa-plus add-icon"></i>{trls('Add_Pursase_Order')}</Button>  
+                    <div className="has-search">
+                        <span className="fa fa-search form-control-feedback"></span>
+                        <Form.Control className="form-control fitler" type="text" name="number"placeholder={trls("Quick_search")}/>
+                    </div>
                 </div>
                 <div className="table-responsive purchase-order-table">
-                    <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
+                    <table id="example" className="place-and-orders__table table" width="100%">
                         <thead>
                             <tr>
                                 <th>{trls('Id')}</th>
@@ -124,7 +124,13 @@ render () {
                                     </td>
                                     <td>{data.invoicenr}</td>
                                     <td>{Common.formatDate(data.invoicedate)}</td>
-                                    <td><Form.Check type="checkbox" disabled defaultChecked={data.istransport} name="transport" /></td>
+                                    <td>
+                                        {data.istransport ? (
+                                            <i className ="fas fa-check-circle active-icon"></i>
+                                        ):
+                                            <i className ="fas fa-check-circle inactive-icon"></i>
+                                        }
+                                    </td>
                                     <td>{Common.formatMoney(data.total)}</td>
                                 </tr>
                             ))
@@ -141,6 +147,10 @@ render () {
                     )}
                 </div>
             </div>
+            <Purchaseform
+                show={this.state.modalShow}
+                onHide={() => this.setState({modalShow: false})}
+            />
         </div>
     )
 };

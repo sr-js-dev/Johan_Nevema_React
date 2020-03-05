@@ -337,7 +337,7 @@ class Updateproductform extends Component {
                             <Form.Label column sm="3">
                               {trls("Product")}
                             </Form.Label>
-                            <Col sm="9" className="product-text">
+                            <Col sm="9">
                                 <Form.Control type="text" name="product" defaultValue={this.props.copyproduct.product} placeholder="Product" />
                                 {!this.props.disabled && (
                                   <input
@@ -353,7 +353,7 @@ class Updateproductform extends Component {
                             <Form.Label column sm="3">
                               {trls("Description")}
                             </Form.Label>
-                            <Col sm="9" className="product-text">
+                            <Col sm="9">
                                 <Form.Control type="text" defaultValue={this.props.copyproduct.description} name="Description" placeholder="Description" />
                                 {!this.props.disabled && (
                                   <input

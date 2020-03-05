@@ -1,3 +1,4 @@
+import $ from 'jquery';
 export const formatDate = (startdate) => {
     var dd = new Date(startdate).getDate();
     var mm = new Date(startdate).getMonth()+1; 
@@ -17,12 +18,6 @@ export const formatDate = (startdate) => {
 };
 
 export const formatMoney = (num) => {
-    // var num = parseFloat(price);
-    // if(num){
-    //     var value = num.toFixed(2);
-    //     return  "€ " + value.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-    // }else{
-    //     
     if(num){
         return (
             "€ "+num
@@ -61,7 +56,17 @@ export const formatDecimal = (data) =>{
 }
 
 export const formatEasyTypeDate = (value, e) =>{
-    console.log('111', e.target.value);
-    console.log('33', value)
     return value;
+}
+
+export const showSlideForm = () =>{
+    // $(".slide-form__controls").toggleClass("open")
+    $(".fade-display").toggleClass("fade modal-backdrop show"); 
+    return true;
+}
+
+export const hideSlideForm = () =>{
+    // $(".slide-form__controls").toggleClass("open");
+    $(".fade-display").toggleClass("fade modal-backdrop show");
+    return true;
 }

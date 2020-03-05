@@ -61,19 +61,21 @@ getTaskData = () => {
         $('#example-task').dataTable().fnDestroy();
         $('#example-task').DataTable(
             {
-              "language": {
-                  "lengthMenu": trls("Show")+" _MENU_ "+trls("Entries"),
-                  "zeroRecords": "Nothing found - sorry",
-                  "info": trls("Show_page")+" _PAGE_ of _PAGES_",
-                  "infoEmpty": "No records available",
-                  "infoFiltered": "(filtered from _MAX_ total records)",
-                  "search": trls('Search'),
-                  "paginate": {
-                    "previous": trls('Previous'),
-                    "next": trls('Next')
-                  }
+                "language": {
+                    "lengthMenu": trls("Show")+" _MENU_ "+trls("Result_on_page"),
+                    "zeroRecords": "Nothing found - sorry",
+                    "info": trls("Show_page")+" _PAGE_ "+trls('Results_of')+" _PAGES_",
+                    "infoEmpty": "No records available",
+                    "infoFiltered": "(filtered from _MAX_ total records)",
+                    "search": trls('Search'),
+                    "paginate": {
+                      "previous": trls('Previous'),
+                      "next": trls('Next')
+                    }
+                },
+                  "searching": false,
+                  "dom": 't<"bottom-datatable" lip>'
               }
-            }
           );
     });
 }
@@ -92,20 +94,14 @@ render () {
             </div>
             <div className="orders">
                 <div className="orders__filters justify-content-between">
-                    <Form inline style={{width:"100%"}}>
-                        <Button variant="primary" onClick={()=>this.setState({modalShow:true})}>{trls('Add_Task')}</Button> 
-                        <Taskupdate
-                            show={this.state.modalupdateShow}
-                            onHide={() => this.setState({modalupdateShow: false})}
-                            taskUpdateData={this.state.updateTask}
-                            taskId={this.state.taskId}
-                            detailmode={this.detailmode}
-                            onGetTaskData={this.getTaskData}
-                        />
-                    </Form>
+                    <Button variant="primary" onClick={()=>this.setState({modalShow:true})}><i className="fas fa-plus add-icon"></i>{trls('Add_Task')}</Button> 
+                    <div className="has-search">
+                        <span className="fa fa-search form-control-feedback"></span>
+                        <Form.Control className="form-control" type="text" name="number"placeholder={trls("Quick_search")}/>
+                    </div>
                 </div>
                 <div className="table-responsive purchase-order-table">
-                    <table id="example-task" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
+                    <table id="example-task" className="place-and-orders__table table" width="100%">
                         <thead>
                             <tr>
                                 <th>{trls('Id')}</th>
@@ -127,7 +123,7 @@ render () {
                                     <td>{data.User}</td>
                                     <td>
                                         <Row style={{justifyContent:"center"}}>
-                                            <i id={data.id} className="fas fa-pen statu-item" onClick={this.getUpdateTaskData} ></i>
+                                            <Button id={data.id} variant="light" onClick={()=>this.getUpdateTaskData()} className="action-button"><i className="fas fa-pen add-icon"></i>{trls('Edit')}</Button>
                                         </Row>
                                     </td>
                                 </tr>
@@ -145,6 +141,14 @@ render () {
                     )}
                 </div>
             </div>
+            <Taskupdate
+                show={this.state.modalupdateShow}
+                onHide={() => this.setState({modalupdateShow: false})}
+                taskUpdateData={this.state.updateTask}
+                taskId={this.state.taskId}
+                detailmode={this.detailmode}
+                onGetTaskData={this.getTaskData}
+            />
         </div>
     )
 };

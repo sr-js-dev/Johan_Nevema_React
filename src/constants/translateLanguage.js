@@ -22,7 +22,7 @@ export const TRANSLATIONS = {
       Show_entries:'Show entries',
       Show:'Show',
       Entries:'entries',
-      Show_page:'Showing page',
+      Show_page:'Showing',
       Producttype: 'Producttype',
       Concentration: 'Concentration',
       Addition: 'Addition',
@@ -151,7 +151,14 @@ export const TRANSLATIONS = {
       Packing_date: 'Packing Date',
       SalesOrderExactSend: 'Sales Order Exact Send',
       PurchaseOrderExactSend: 'Purchase Order Exact Send',
-      already_purchaseinvoice: 'This supplier already has a purchaseinvoice on this order registration!'
+      already_purchaseinvoice: 'This supplier already has a purchaseinvoice on this order registration!',
+      Results_of: 'results of',
+      Result_on_page: 'result on page',
+      Quick_search: 'Quick search',
+      Copy: 'Copy',
+      Users: 'Users',
+      Delete: 'Delete',
+      Edit_project_detail: 'Edit project detail'
     },
 
 
@@ -179,7 +186,7 @@ export const TRANSLATIONS = {
       Show_entries:'Toon records',
       Show:'Toon',
       Entries:'Records',
-      Show_page:'Pagina weergeven',
+      Show_page:'Tonen',
       Producttype: 'Artikelsoort',
       Concentration: 'Concentratie',
       Addition: 'Toevoeging',
@@ -307,6 +314,13 @@ export const TRANSLATIONS = {
       Packing_date: 'Inpakken Datum',
       SalesOrderExactSend: 'Verkoop Bestellen Exact Sturen',
       PurchaseOrderExactSend: 'Aankoop Bestellen Exact Sturen',
-      already_purchaseinvoice: 'Deze leverancier heeft al een inkoopfactuur bij deze orderregistratie!'
+      already_purchaseinvoice: 'Deze leverancier heeft al een inkoopfactuur bij deze orderregistratie!',
+      Results_of: 'Resultaten van',
+      Result_on_page: 'resultaat aan bladzijde',
+      Quick_search: 'Snel zoeken',
+      Copy: 'Kopiëren',
+      Users: 'Gebruikers',
+      Delete: 'Delete',
+      Edit_project_detail: 'Projectdetails bewerken'
     }
   };

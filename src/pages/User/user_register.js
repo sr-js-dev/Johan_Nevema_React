@@ -49,42 +49,26 @@ class Userregister extends Component {
                 $('#example').dataTable().fnDestroy();
                 $('#example').DataTable(
                     {
-                      "language": {
-                          "lengthMenu": trls("Show")+" _MENU_ "+trls("Entries"),
-                          "zeroRecords": "Nothing found - sorry",
-                          "info": trls("Show_page")+" _PAGE_ of _PAGES_",
-                          "infoEmpty": "No records available",
-                          "infoFiltered": "(filtered from _MAX_ total records)",
-                          "search": trls('Search'),
-                          "paginate": {
-                            "previous": trls('Previous'),
-                            "next": trls('Next')
-                          }
+                        "language": {
+                            "lengthMenu": trls("Show")+" _MENU_ "+trls("Result_on_page"),
+                            "zeroRecords": "Nothing found - sorry",
+                            "info": trls("Show_page")+" _PAGE_ "+trls('Results_of')+" _PAGES_",
+                            "infoEmpty": "No records available",
+                            "infoFiltered": "(filtered from _MAX_ total records)",
+                            "search": trls('Search'),
+                            "paginate": {
+                              "previous": trls('Previous'),
+                              "next": trls('Next')
+                            }
+                        },
+                          "searching": false,
+                          "dom": 't<"bottom-datatable" lip>'
                       }
-                    }
                   );
             }
         });
     }
-    componentWillReceiveProps() {
-        $('#example').dataTable().fnDestroy();
-        $('#example').dataTable(
-          {
-            "language": {
-                "lengthMenu": trls("Show")+" _MENU_ "+trls("Entries"),
-                "zeroRecords": "Nothing found - sorry",
-                "info": trls("Show_page")+" _PAGE_ of _PAGES_",
-                "infoEmpty": "No records available",
-                "infoFiltered": "(filtered from _MAX_ total records)",
-                "search": trls('Search'),
-                "paginate": {
-                  "previous": trls('Previous'),
-                  "next": trls('Next')
-                }
-            }
-          }
-        );
-      }
+    
     userUpdate = (event) => {
         let userID=event.currentTarget.id;
         var settings = {
@@ -158,26 +142,20 @@ class Userregister extends Component {
                 </div>
                 <div className="orders">
                     <div className="orders__filters justify-content-between">
-                        <Form inline style={{width:"100%"}}>
-                            <Button variant="primary" onClick={()=>this.setState({modalShow:true, mode:"add", flag:false})}>{trls('Add_User')}</Button> 
-                            <Adduserform
-                                show={this.state.modalShow}
-                                mode={this.state.mode}
-                                onHide={() => this.setState({modalShow: false})}
-                                onGetUser={() => this.getUserData()}
-                                userUpdateData={this.state.userUpdateData}
-                                userID={this.state.userID}
-                            />  
-                        </Form>
+                        <Button variant="primary" onClick={()=>this.setState({modalShow:true, mode:"add", flag:false})}><i className="fas fa-plus add-icon"></i>{trls('Add_User')}</Button> 
+                        <div className="has-search">
+                            <span className="fa fa-search form-control-feedback"></span>
+                            <Form.Control className="form-control" type="text" name="number"placeholder={trls("Quick_search")}/>
+                        </div>
                     </div>
                     <div className="table-responsive credit-history">
-                        <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
+                        <table id="example" className="place-and-orders__table table" width="100%">
                         <thead>
                             <tr>
                                 <th>{trls('UserName')}</th>
                                 <th>{trls('Email')}</th>
                                 <th>{trls('Active')}</th>
-                                <th>{trls('Action')}</th>
+                                <th style={{width: "15%"}}>{trls('Action')}</th>
                             </tr>
                         </thead>
                         {optionarray && !this.state.loading &&(<tbody >
@@ -186,12 +164,20 @@ class Userregister extends Component {
                                     <tr id={i} key={i}>
                                         <td>{data.UserName}</td>
                                         <td>{data.Email}</td>
-                                        <td><Form.Check inline name="Intrastat" type="checkbox" disabled defaultChecked={data.IsActive} id="Intrastat" /></td>
+                                        <td>
+                                            {data.IsActive ? (
+                                                <i className ="fas fa-check-circle active-icon"></i>
+                                            ):
+                                                <i className ="fas fa-check-circle inactive-icon"></i>
+                                            }
+                                        </td>
                                         <td >
-                                            <Row style={{justifyContent:"center"}}>
-                                                <i id={data.Id} className="far fa-trash-alt statu-item" onClick={this.userDeleteConfirm}></i>
+                                            <Row style={{justifyContent:"space-around"}}>
+                                                <Button id={data.Id} variant="light" onClick={()=>this.userDeleteConfirm()} className="action-button"><i className="fas fa-trash-alt add-icon"></i>{trls('Delete')}</Button>
+                                                <Button id={data.Id} variant="light" onClick={()=>this.userUpdate()} className="action-button"><i className="fas fa-pen add-icon"></i>{trls('Edit')}</Button>
+                                                {/* <i id={data.Id} className="far fa-trash-alt statu-item" onClick={this.userDeleteConfirm}></i>
                                                 <i id={data.Id} className="fas fa-pen statu-item" onClick={this.userUpdate} ></i>
-                                                <i id={data.Id} className="far fa-eye statu-item" onClick={this.viewUserData} ></i>
+                                                <i id={data.Id} className="far fa-eye statu-item" onClick={this.viewUserData} ></i> */}
                                             </Row>
                                         </td>
                                     </tr>
@@ -209,6 +195,14 @@ class Userregister extends Component {
                         )}
                     </div>
                 </div>
+                <Adduserform
+                    show={this.state.modalShow}
+                    mode={this.state.mode}
+                    onHide={() => this.setState({modalShow: false})}
+                    onGetUser={() => this.getUserData()}
+                    userUpdateData={this.state.userUpdateData}
+                    userID={this.state.userID}
+                /> 
             </div>
         )
         };

@@ -83,7 +83,6 @@ video {
 	padding: 0;
 	border: 0;
 	font: inherit;
-	font-size: 100%;
 	vertical-align: baseline
 }
 
@@ -340,23 +339,6 @@ table {
 	}
 }
 
-.header__search {
-	font-size: 14px;
-	height: 20px;
-	width: 148px;
-	font-family: Oxygen, sans-serif;
-	background-color: transparent;
-	border: none;
-	background-image: url(../images/icon-search.svg);
-	background-repeat: no-repeat;
-	background-position: 0 center;
-	padding-left: 30px
-}
-
-.header__search:focus {
-	outline: 0
-}
-
 @media (min-width:768px) {
 	.header__search {
 		width: 100px
@@ -499,7 +481,7 @@ table {
 	z-index: 10;
 	left: -100%;
 	top: 54px;
-	width: 220px;
+	width: 100%;
 	height: calc(100%);
 	padding-top: 15px;
 	background-color: #f4fbfe;
@@ -528,7 +510,7 @@ table {
 		position: relative;
 		left: 0;
 		top: 0;
-		width: auto;
+		width: 100%;
 		height: calc(100%);
 		padding: 0;
 		background-color: rgba(45, 175, 229, .05);
@@ -570,7 +552,6 @@ table {
 
 .content__header {
 	margin-top: 24px;
-	padding-bottom: 30px;
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
@@ -586,7 +567,6 @@ table {
 }
 
 .content__header--with-line {
-	border-bottom: 1px solid #2dafe5;
 	padding-left: 20px
 }
 
@@ -607,20 +587,6 @@ table {
 .content__header-breadcrumbs-item {
 	position: relative;
 	padding-left: 25px
-}
-
-.content__header-breadcrumbs-item::before {
-	content: '';
-	display: inline-block;
-	position: absolute;
-	left: 0;
-	top: 6px;
-	width: 9px;
-	height: 16px;
-	background-image: url(../images/icon-arr-right.svg);
-	background-position: center center;
-	background-repeat: no-repeat;
-	background-size: cover
 }
 
 @media (min-width:768px) {
@@ -705,11 +671,12 @@ table {
 
 .menu {
 	width: 100%;
-	padding: 0 30px
+	padding: 0 0px
 }
 
 .menu__item {
-	padding: 13px 0
+	display: flex;
+	padding: 13px 0px;
 }
 
 .menu__link {
@@ -720,15 +687,16 @@ table {
 	-ms-flex-align: center;
 	align-items: center;
 	text-decoration: none;
-	color: #212121;
-	font-size: 14px
+	color: #585858;
 }
 
 .menu__link--active {
+	color: #4697D1;
 	font-weight: 700
 }
 
 .menu__link:hover {
+	color: #4697D1;
 	font-weight: 700
 }
 
@@ -736,7 +704,8 @@ table {
 	display: inline-block;
 	width: 20px;
 	margin-right: 16px;
-	text-align: center
+	text-align: center;
+	margin-left: 20px;
 }
 
 .menu__separator {
@@ -819,13 +788,6 @@ table {
 	font-family: Oxygen, sans-serif;
 	border-radius: 2px;
 	font-size: 16px
-}
-
-.input--date {
-	padding-right: 30px;
-	background-image: url(../images/icon-calendar.svg);
-	background-repeat: no-repeat;
-	background-position: right 15px center
 }
 
 .selectric-select {
@@ -912,10 +874,6 @@ table {
 	clip: rect(0 0 0 0)
 }
 
-.checkbox__input:checked+.checkbox__custom {
-	background-image: url(../images/icon-checked.svg)
-}
-
 .checkbox__input:disabled+.checkbox__custom {
 	background-color: #e5e5e5;
 	border-color: #9d9d9d
@@ -934,14 +892,13 @@ table {
 }
 
 .title {
-	font-size: 20px;
-	line-height: 25px;
-	font-weight: 700
+	font-size: 31px;
+	line-height: 39px;
 }
 
 @media (min-width:768px) {
 	.title {
-		font-size: 24px;
+		font-size: 31px;
 		line-height: 30px
 	}
 }
@@ -1022,21 +979,6 @@ table {
 	color: #212121
 }
 
-.input-search {
-	background-color: rgba(45, 175, 229, .05);
-	border: 1px solid rgba(45, 175, 229, .16);
-	border-radius: 2px;
-	font-size: 16px;
-	background-image: url(../images/icon-search.svg);
-	background-repeat: no-repeat;
-	background-position: 20px center;
-	padding-left: 55px;
-	font-family: Oxygen, sans-serif;
-	margin-left: auto;
-	height: 46px;
-	outline: 0
-}
-
 .input-email {
 	background-color: rgba(45, 175, 229, .05);
 	border: 1px solid rgba(45, 175, 229, .16);
@@ -1052,11 +994,13 @@ table {
 	height: 46px;
 	outline: 0
 }
+
 .auth-page{
     background-image: url(../images/img_admin.png);
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
   }
+
 .input-password {
 	background-color: rgba(45, 175, 229, .05);
 	border: 1px solid rgba(45, 175, 229, .16);
@@ -1507,19 +1451,6 @@ table {
 	color: #2dafe5;
 	margin-bottom: 5px;
 	padding-right: 15px
-}
-
-.chat__header-user-name::after {
-	content: '';
-	position: absolute;
-	top: 9px;
-	right: 0;
-	display: block;
-	width: 10px;
-	height: 6px;
-	background-image: url(../images/icon-arr-dropdown.svg);
-	background-position: center center;
-	background-repeat: no-repeat
 }
 
 .chat__header-user-status {
@@ -2277,4 +2208,25 @@ table.dataTable, table.dataTable th, table.dataTable td {
     font-size: 14px;
     height: 30px;
     vertical-align: middle;
+}
+.menu__link--active .menu__link-div--active{
+	background-color: #4697D1;
+	border-radius: 0px 30px 30px 0px;
+}
+.menu__link:hover .menu__link-div--active{
+	background-color: #4697D1;
+	border-radius: 0px 30px 30px 0px;
+}
+.menu__link-div{
+	width: 5px;
+	height: 17px;
+}
+.menu__link--active .menu-link__icon--active{
+	fill: #4697D1
+}
+.menu__link:hover .menu-link__icon--active{
+	fill: #4697D1
+}
+.menu-link__icon{
+	fill: #585858;
 }

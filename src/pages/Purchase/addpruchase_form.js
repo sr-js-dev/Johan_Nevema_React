@@ -359,7 +359,7 @@ class Addpurchase extends Component {
                                 {
                                     this.state.productData.map((data,i) =>(
                                     <tr id={data.id} key={i}>
-                                        <td style={{verticalAlign: 'top'}}><input type="checkbox" onChange={()=>this.changeProductId(data.id)} /></td>
+                                        <td style={{verticalAlign: 'top'}}><input type="checkbox" checked={data.checked ? data.checked : false } onChange={()=>this.changeProductId(data.id)}/></td>
                                         <td style={{verticalAlign: 'top'}}>{!this.props.transport ? data.ProductCode :data.pricingtype}</td>
                                         {!this.props.transport?(
                                             <td style={{verticalAlign: 'top'}}>{data.PurchaseQuantity }</td>

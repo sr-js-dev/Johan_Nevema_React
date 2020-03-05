@@ -38,36 +38,38 @@ getsalesData = () => {
     .then(result => {
         this.setState({salesData:result.data.Items})
         this.setState({loading:false})
-        $('#sales_table thead tr').clone(true).appendTo( '#sales_table thead' );
-        $('#sales_table thead tr:eq(1) th').each( function (i) {
-            $(this).html( '<input type="text" class="search-table-input" style="width: 100%" placeholder="Search" />' );
-            // $(this).removeClass("sorting");
-            $(this).addClass("sort-style");
-            $( 'input', this ).on( 'keyup change', function () {
-                if ( table.column(i).search() !== this.value ) {
-                    table
-                        .column(i)
-                        .search( this.value )
-                        .draw();
-                }
-            } );
-        } );
-        $('#sales_table').dataTable().fnDestroy();
-        var table = $('#sales_table').DataTable(
+        // $('#sales_table thead tr').clone(true).appendTo( '#sales_table thead' );
+        // $('#sales_table thead tr:eq(1) th').each( function (i) {
+        //     $(this).html( '<input type="text" class="search-table-input" style="width: 100%" placeholder="Search" />' );
+        //     // $(this).removeClass("sorting");
+        //     $(this).addClass("sort-style");
+        //     $( 'input', this ).on( 'keyup change', function () {
+        //         if ( table.column(i).search() !== this.value ) {
+        //             table
+        //                 .column(i)
+        //                 .search( this.value )
+        //                 .draw();
+        //         }
+        //     } );
+        // } );
+        // $('#sales_table').dataTable().fnDestroy();
+        $('#sales_table').DataTable(
             {
-              "language": {
-                  "lengthMenu": trls("Show")+" _MENU_ "+trls("Entries"),
-                  "zeroRecords": "Nothing found - sorry",
-                  "info": trls("Show_page")+" _PAGE_ of _PAGES_",
-                  "infoEmpty": "No records available",
-                  "infoFiltered": "(filtered from _MAX_ total records)",
-                  "search": trls('Search'),
-                  "paginate": {
-                    "previous": trls('Previous'),
-                    "next": trls('Next')
-                  }
+                "language": {
+                    "lengthMenu": trls("Show")+" _MENU_ "+trls("Result_on_page"),
+                    "zeroRecords": "Nothing found - sorry",
+                    "info": trls("Show_page")+" _PAGE_ "+trls('Results_of')+" _PAGES_",
+                    "infoEmpty": "No records available",
+                    "infoFiltered": "(filtered from _MAX_ total records)",
+                    "search": trls('Search'),
+                    "paginate": {
+                      "previous": trls('Previous'),
+                      "next": trls('Next')
+                    }
+                },
+                  "searching": false,
+                  "dom": 't<"bottom-datatable" lip>'
               }
-            }
           );
     });
 }
@@ -102,17 +104,14 @@ render () {
             </div>
             <div className="orders">
                 <div className="orders__filters justify-content-between">
-                    <Form inline style={{width:"100%"}}>
-                        <Button variant="primary" onClick={()=>this.setState({modalShow:true})}>{trls('Sales_Order')}</Button>   
-                        <Salesform
-                            show={this.state.modalShow}
-                            onHide={() => this.setState({modalShow: false})}
-                            // customerData
-                        />
-                    </Form>
+                    <Button variant="primary" onClick={()=>this.setState({modalShow:true})}><i className="fas fa-plus add-icon"></i>{trls('Sales_Order')}</Button>   
+                    <div className="has-search">
+                        <span className="fa fa-search form-control-feedback"></span>
+                        <Form.Control className="form-control" type="text" name="number"placeholder={trls("Quick_search")}/>
+                    </div>
                 </div>
                 <div className="table-responsive purchase-order-table">
-                    <table id="sales_table" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
+                    <table id="sales_table" className="place-and-orders__table table" width="100%">
                         <thead>
                             <tr>
                                 <th>{trls('Customer')}</th>
@@ -156,6 +155,11 @@ render () {
                     )}
                 </div>
             </div>
+            <Salesform
+                show={this.state.modalShow}
+                onHide={() => this.setState({modalShow: false})}
+                // customerData
+            />
         </div>
     )
 };

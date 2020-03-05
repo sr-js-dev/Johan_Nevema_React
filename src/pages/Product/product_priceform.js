@@ -25,7 +25,7 @@ const mapDispatchToProps = dispatch => ({
     removeState: () =>
         dispatch(authAction.blankdispatch()),
 });
-class Productform extends Component {
+class Productpriceform extends Component {
       constructor(props) {
           super(props);
           let today = new Date();
@@ -458,4 +458,4 @@ class Productform extends Component {
           
       }
     }
-    export default connect(mapStateToProps, mapDispatchToProps)(Productform);
+    export default connect(mapStateToProps, mapDispatchToProps)(Productpriceform);

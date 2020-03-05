@@ -69,41 +69,42 @@ getQualityData = () => {
             })
         }
         this.setState({originQualityData: result.data.Items, qualityData: optionarray, showModeData: optionarray, loading: false})
-        if(!this.state.exactFlag){
-            $('#example-task thead tr').clone(true).appendTo( '#example-task thead' );
-            $('#example-task thead tr:eq(1) th').each( function (i) {
-                $(this).html( '<input type="text" class="search-table-input" style="width: 100%" placeholder="Search" />' );
-                $(this).addClass("sort-style");
-                $( 'input', this ).on( 'keyup change', function () {
-                    if ( table.column(i).search() !== this.value ) {
-                        table
-                            .column(i)
-                            .search( this.value )
-                            .draw();
-                    }
-                } );
-            } );
-        }
-        $('#example-task').dataTable().fnDestroy();
-        var table = $('#example-task').DataTable(
+        // if(!this.state.exactFlag){
+        //     $('#example-task thead tr').clone(true).appendTo( '#example-task thead' );
+        //     $('#example-task thead tr:eq(1) th').each( function (i) {
+        //         $(this).html( '<input type="text" class="search-table-input" style="width: 100%" placeholder="Search" />' );
+        //         $(this).addClass("sort-style");
+        //         $( 'input', this ).on( 'keyup change', function () {
+        //             if ( table.column(i).search() !== this.value ) {
+        //                 table
+        //                     .column(i)
+        //                     .search( this.value )
+        //                     .draw();
+        //             }
+        //         } );
+        //     } );
+        // }
+        // $('#example-task').dataTable().fnDestroy();
+            $('#example-task').DataTable(
             {
-              "language": {
-                  "lengthMenu": trls("Show")+" _MENU_ "+trls("Entries"),
-                  "zeroRecords": "Nothing found - sorry",
-                  "info": trls("Show_page")+" _PAGE_ of _PAGES_",
-                  "infoEmpty": "No records available",
-                  "infoFiltered": "(filtered from _MAX_ total records)",
-                  "search": trls('Search'),
-                  "paginate": {
-                    "previous": trls('Previous'),
-                    "next": trls('Next')
-                  }
+                "language": {
+                    "lengthMenu": trls("Show")+" _MENU_ "+trls("Result_on_page"),
+                    "zeroRecords": "Nothing found - sorry",
+                    "info": trls("Show_page")+" _PAGE_ "+trls('Results_of')+" _PAGES_",
+                    "infoEmpty": "No records available",
+                    "infoFiltered": "(filtered from _MAX_ total records)",
+                    "search": trls('Search'),
+                    "paginate": {
+                      "previous": trls('Previous'),
+                      "next": trls('Next')
+                    }
+                },
+                  "searching": false,
+                  "dom": 't<"bottom-datatable" lip>'
               }
-            }
           );
     });
 }
-
 
 componentWillUnmount() {
 }
@@ -233,18 +234,18 @@ render () {
                 <h2 className="title">{trls('Quality')}</h2>
             </div>
              {this.state.exactFlag&&(
-                    <div style={{marginLeft: 20}}>
-                        <FlashMassage duration={2000}>
-                            <div className="alert alert-success" style={{marginTop:10}}>
-                                <strong><i className="fas fa-check-circle"></i> Success!</strong>
-                            </div>
-                        </FlashMassage>
-                    </div>
-                )
-                }
-                {this.state.sendingFlag&&(
-                    <div style={{marginTop:10, marginLeft: 20}}><Spinner animation="border" variant="info"/><span style={{marginTp:10, fontWeight: "bold", fontSize: 16}}> {trls('Sending')}...</span></div>
-                )}
+                <div style={{marginLeft: 20}}>
+                    <FlashMassage duration={2000}>
+                        <div className="alert alert-success" style={{marginTop:10}}>
+                            <strong><i className="fas fa-check-circle"></i> Success!</strong>
+                        </div>
+                    </FlashMassage>
+                </div>
+            )
+            }
+            {this.state.sendingFlag&&(
+                <div style={{marginTop:10, marginLeft: 20}}><Spinner animation="border" variant="info"/><span style={{marginTp:10, fontWeight: "bold", fontSize: 16}}> {trls('Sending')}...</span></div>
+            )}
             <div className="orders">
                 <Row className="order_filter">
                     <Col xl={3} style={{paddingLeft: 0, paddingTop: 10}}>
@@ -272,7 +273,7 @@ render () {
                     </Col>
                 </Row>
                 <div className="table-responsive purchase-order-table">
-                    <table id="example-task" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
+                    <table id="example-task" className="place-and-orders__table table" width="100%">
                         <thead>
                             <tr>
                                 <th>{trls('Id')}</th>
@@ -298,7 +299,7 @@ render () {
                                     <td>{data.Loadingweek}</td>
                                     <td>
                                         <Row style={{justifyContent:"center"}}>
-                                            {!data.isCompleted && data.referencecustomer!==""?(
+                                            {!data.isCompleted && data.referencecustomer!=="" && !data.Temporary?(
                                                 <Button type="submit" style={{width:"auto", height: 35}} onClick={()=>this.completeOrder(data.Id)}>{trls('Send_salesinvoice')}</Button>
                                             ):
                                                 <Button type="submit" disabled style={{width:"auto", height: 35}}>{trls('Send_salesinvoice')}</Button>

@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import * as authAction  from '../actions/authAction';
 import { Dropdown } from 'react-bootstrap';
-import Select from 'react-select';
+// import Select from 'react-select';
 import { connect } from 'react-redux';
 import history from '../history';
 import { removeAuth } from '../components/auth';
@@ -55,15 +55,15 @@ class Header extends Component {
                     <img src={require("../assets/images/appmakerz.svg")} alt="logo"/>
                 </a>
                 <div className="header__controls">
-                        <Select
+                        {/* <Select
                                 name="lan"
                                 options={this.state.roles}
                                 className="select-lang-class"
                                 value={{"label":this.state.selectrollabel,"value":this.state.selectrolvalue}}
                                 onChange={val => this.changeLangauge(val)}
-                            />
+                            /> */}
                         <Dropdown>
-                            <Dropdown.Toggle variant="success" id="dropdown-basic" style={{color:"#000000"}}>
+                            <Dropdown.Toggle variant="success" id="dropdown-basic" style={{color: "#585858"}}>
                                 Johan Boerema<img src={require("../assets/images/avatar.jpg")} alt="User avatar" className="header__user-dropdown-img"/> 
                             </Dropdown.Toggle>
                             <Dropdown.Menu style={{marginLeft:15}}>

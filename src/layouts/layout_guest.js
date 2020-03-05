@@ -42,6 +42,7 @@ class Layout extends Component {
                   </Switch>
                 </Router>
             </Col>
+            <div className="fade-display"></div>
           </Row>
       )
     };
