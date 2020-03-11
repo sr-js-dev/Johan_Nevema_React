@@ -1,4 +1,5 @@
 import $ from 'jquery';
+
 export const formatDate = (startdate) => {
     var dd = new Date(startdate).getDate();
     var mm = new Date(startdate).getMonth()+1; 
@@ -69,4 +70,76 @@ export const hideSlideForm = () =>{
     // $(".slide-form__controls").toggleClass("open");
     $(".fade-display").toggleClass("fade modal-backdrop show");
     return true;
+}
+
+export const filterData = (filterOption, filterData) =>{
+    let resutDat = [];
+    let orResultData = [];
+    filterOption.map((data, index) => {
+        if(data.condition === "where"){
+            if(!data.dateFlag){
+                if(data.mode==="Contains"){
+                    resutDat = filterData.filter(item => String(item[data.filterOption]).toLowerCase().includes(data.value.toLowerCase()));
+                }else{
+                    resutDat = filterData.filter(item => String(item[data.filterOption])===data.value);
+                }
+            }else{
+                resutDat = filterData.filter(function(item, key) {
+                    let filterDate = new Date(item[data.filterOption]);
+                    let startDate = new Date(data.startDate);
+                    let endDate = new Date(data.endDate);
+                    filterDate = new Date(filterDate.getFullYear()+'-'+parseInt(filterDate.getMonth()+1)+'-'+filterDate.getDate());
+                    startDate = new Date(startDate.getFullYear()+'-'+parseInt(startDate.getMonth()+1)+'-'+startDate.getDate());
+                    endDate = new Date(endDate.getFullYear()+'-'+parseInt(endDate.getMonth()+1)+'-'+endDate.getDate());
+                    return filterDate>=startDate && filterDate<=endDate;
+                    // if(filterDate>=startDate && filterDate<=endDate){
+                        
+                    // }
+                    
+                })
+            }
+            
+        }else if(data.condition === "And"){
+            if(!data.dateFlag){
+                if(data.mode==="Contains"){
+                    resutDat = resutDat.filter(item => String(item[data.filterOption]).toLowerCase().includes(data.value.toLowerCase()));
+                }else{
+                    resutDat = resutDat.filter(item => String(item[data.filterOption])===data.value);
+                }
+            }else{
+                resutDat = filterData.filter(function(item, key) {
+                    let filterDate = new Date(item[data.filterOption]);
+                    let startDate = new Date(data.startDate);
+                    let endDate = new Date(data.endDate);
+                    filterDate = new Date(filterDate.getFullYear()+'-'+parseInt(filterDate.getMonth()+1)+'-'+filterDate.getDate());
+                    startDate = new Date(startDate.getFullYear()+'-'+parseInt(startDate.getMonth()+1)+'-'+startDate.getDate());
+                    endDate = new Date(endDate.getFullYear()+'-'+parseInt(endDate.getMonth()+1)+'-'+endDate.getDate());
+                    return filterDate>=startDate && filterDate<=endDate;
+                })
+            }
+            
+        }else{
+            if(!data.dateFlag){
+                if(data.mode==="Contains"){
+                    orResultData = filterData.filter(item => String(item[data.filterOption]).toLowerCase().includes(data.value.toLowerCase()));
+                }else{
+                    orResultData = filterData.filter(item => String(item[data.filterOption])===data.value);
+                }
+            }else{
+                orResultData = filterData.filter(function(item, key) {
+                    let filterDate = new Date(item[data.filterOption]);
+                    let startDate = new Date(data.startDate);
+                    let endDate = new Date(data.endDate);
+                    filterDate = new Date(filterDate.getFullYear()+'-'+parseInt(filterDate.getMonth()+1)+'-'+filterDate.getDate());
+                    startDate = new Date(startDate.getFullYear()+'-'+parseInt(startDate.getMonth()+1)+'-'+startDate.getDate());
+                    endDate = new Date(endDate.getFullYear()+'-'+parseInt(endDate.getMonth()+1)+'-'+endDate.getDate());
+                    return filterDate>=startDate && filterDate<=endDate;
+                })
+            }
+            resutDat = resutDat.concat(orResultData) 
+            resutDat.splice(0, resutDat.length, ...(new Set(resutDat)))
+        }
+        return data;
+    })
+    return resutDat;
 }

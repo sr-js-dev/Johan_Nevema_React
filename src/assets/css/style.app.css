@@ -85,9 +85,10 @@ cursor: pointer;
   display: flex;
 }
 .react-datepicker-wrapper{
-width:100%
+  width:100%
 }
 .myDatePicker {
+  font-weight: 500;
   width:100%;
   height: 40px;
   border-radius: 4px;
@@ -652,8 +653,8 @@ table.dataTable.no-footer {
   border: 1px solid #E2E3E4;
 }
 .has-search{
+  padding: 0px;
   margin-left: auto;
-  width: 10%;
 }
 .has-search .form-control-feedback {
   position: absolute;
@@ -756,15 +757,16 @@ input[name="search"].form-control::-webkit-input-placeholder {
   left:1.8em;
   background-color:white;
 }
+.slide-product__detail{
+  width: 100%;
+  padding-right: 0px;
+  padding-left: 0px;
+}
 @media (min-width: 768px){
   .slide-product__detail{
     width: 50vw;
     height: 100%;
   }
-}
-.slide-product__detail{
-  padding-right: 0px;
-  padding-left: 0px;
 }
 .product-detail__data{
   font-style: normal;
@@ -795,4 +797,71 @@ input[name="search"].form-control::-webkit-input-placeholder {
 .product-text{
   padding-bottom: 15px
 }
-
+.order-product__td{
+  border-bottom: 0px solid rgb(234, 240, 242) !important;
+}
+.order-product__first-td{
+  border-left: 1px solid rgb(234, 240, 242) !important;
+}
+.order-product__last-td{
+  border-right: 1px solid rgb(234, 240, 242) !important;
+}
+.form-control:disabled, .form-control[readonly] {
+  background-color: #ffffff !important;
+  opacity: 1;
+}
+.purhcase-placeholder{
+  left: 0.8em !important;
+}
+.purchase-amount{
+  font-weight: bold;
+  font-size: 15px;
+  line-height: 19px;
+  color: #F6FBFD;
+}
+.purchase-child-total{
+  font-weight: bold;
+  font-size: 13px;
+  line-height: 16px;
+  color: #21353D;
+}
+.purchase-child-total.amount{
+  margin-left: 10px;
+  color: #3C8635;
+}
+.multi-filter__div{
+  /* width: auto!important; */
+  margin-Left: auto;
+  padding-right: 20px;
+  min-height: 100px;
+  border: solid 1px #EAF0F2;
+  border-radius: 5px;
+  position: absolute;
+  z-index: 10;
+  right: 48px;
+  margin-top: 40px;
+  /* width: 40%; */
+  background-color: #fff
+}
+.filter-header__option {
+  padding: 10;
+  width: 20%;
+  height: 30px !important;
+}
+.filter-header__option .css-1wy0on6{
+  min-height: 27px;
+  height: 10px;
+}
+.filter-header__option .css-bg1rzq-control{
+  min-height: 27px !important;
+}
+.filter-header__option .css-1szy77t-control{
+  min-height: 27px !important;
+}
+.filter-date__picker{
+  width: 99%;
+  height: 30px;
+}
+.filter-show__hide{
+  display: none;
+}

@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Form, Button, Row, Col } from 'react-bootstrap';
+import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
 import Select from 'react-select';
 import { connect } from 'react-redux';
 import * as salesAction  from '../../actions/salesAction';
@@ -7,11 +7,13 @@ import DatePicker from "react-datepicker";
 import SessionManager from '../../components/session_manage';
 import API from '../../components/api'
 import Axios from 'axios';
+import history from '../../history';
 import { trls } from '../../components/translate';
 import $ from 'jquery';
 import * as Auth   from '../../components/auth';
 import FileDrop from 'react-file-drop';
 import * as Common from '../../components/common';
+import DraggableModalDialog from '../../components/draggablemodal';
 
 const mapStateToProps = state => ({ 
     ...state.auth,
@@ -25,7 +27,8 @@ const mapDispatchToProps = (dispatch) => ({
     saveSalesOder: (params) =>
         dispatch(salesAction.saveSalesOrder(params))
 });
-class Purchaseform extends Component {
+
+class Purchaseupdateform extends Component {
     _isMounted = false;
     constructor(props) {
         super(props);
@@ -150,9 +153,8 @@ class Purchaseform extends Component {
             return fileArray;
         });
         this.props.onHide();
-        Common.hideSlideForm();
         if(!this.props.purchaseData){
-            this.props.onloadPurchaseDetail(purchaseid);
+            history.push('/purchase-order-detail',{ newId: purchaseid, supplierCode:this.state.val1.value, newSubmit:false});
         }else{
             this.props.getPurchaseOrder();
         }
@@ -240,11 +242,6 @@ class Purchaseform extends Component {
         }
     }
 
-    onHide = () => {
-        this.props.onHide();
-        Common.hideSlideForm();
-    }
-
     render(){   
         let fileData = this.state.files;
         let purchaseData = [];
@@ -252,12 +249,26 @@ class Purchaseform extends Component {
             purchaseData = this.props.purchaseData;
         }
         return (
-            <div className = "slide-form__controls open" style={{height: "100%"}}>
-                <div style={{marginBottom:30}}>
-                    <i className="fas fa-times slide-close" style={{ fontSize: 20, cursor: 'pointer'}} onClick={()=>this.onHide()}></i>
-                </div>
-                <Form className="container" onSubmit = { this.handleSubmit }>
-                    <Col className="title add-product">{trls('Add_purchase')}</Col>
+            <Modal
+            // id={"myModal"}
+            dialogAs={DraggableModalDialog}
+            show={this.props.show}
+            onHide={this.props.onHide}
+            size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+            backdrop= "static"
+            centered
+            >
+            <Modal.Header closeButton>
+                <Modal.Title id="contained-modal-title-vcenter">
+                    {!this.props.purchaseData?(
+                        trls('Purchase_Order')
+                    ):trls('Edit')}
+                    
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form className="container product-form" onSubmit = { this.handleSubmit }>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
                         <Form.Label column sm="3">
                             {trls('IsTransport')}
@@ -268,11 +279,15 @@ class Purchaseform extends Component {
                             ): 
                             <Form.Check type="checkbox" style={{marginTop: 8}} disabled defaultChecked = {purchaseData.istransport} onChange={(val)=>this.transportInvoice(val)} name="transport" />
                             }
+                                
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextSupplier">
+                        <Form.Label column sm="3">
+                            {trls('Supplier')} 
+                        </Form.Label>
                         {!this.props.purchaseData&&(
-                            <Col>
+                            <Col sm="9" className="product-text">
                                 {!this.state.transportFlag ?(
                                     <Select
                                         name="supplier"
@@ -290,7 +305,7 @@ class Purchaseform extends Component {
                                         defaultValue = {this.getSupplierData()}
                                     />
                                 }
-                                <label className="placeholder-label">{trls('Supplier')}</label>
+                                
                                 {!this.props.disabled && !this.props.purchaseData && (
                                     <input
                                         onChange={val=>console.log()}
@@ -345,7 +360,6 @@ class Purchaseform extends Component {
                                     />
                                 )
                                 }
-                                <label className="placeholder-label">{trls('Supplier')}</label>
                                 { !this.props.purchaseData || this.state.checkFlag ? (
                                     <input
                                         onChange={val=>console.log()}
@@ -360,30 +374,39 @@ class Purchaseform extends Component {
                         )}
                         
                     </Form.Group>
-                    <Form.Group className="product-text" as={Row} controlId="formPlaintextPassword">
-                        <Col>
-                            <Form.Control type="text" name="invoicenr" defaultValue = {purchaseData.invoicenr} required placeholder={trls('Invoice')} />
-                            <label className="placeholder-label">{trls('Invoice')}</label>
+                    <Form.Group as={Row} controlId="formPlaintextPassword">
+                        <Form.Label column sm="3">
+                            {trls('Invoice')}    
+                        </Form.Label>
+                        <Col sm="9" className="product-text">
+                            <Form.Control type="text" name="invoicenr" defaultValue = {purchaseData.invoicenr} required placeholder="Invoicenr " />
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Col className="product-text">
+                        <Form.Label column sm="3">
+                            {trls('Invoice_date')}   
+                        </Form.Label>
+                        <Col sm="9" className="product-text">
                             {this.state.invoicedateflag || !this.props.purchaseData? (
                                 <DatePicker name="invoicedate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.invoicedate} onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>} />
                             ) : <DatePicker name="invoicedate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.purchaseData.invoicedate)} onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>}  />
                             } 
-                            <label className="placeholder-label">{trls('Invoice_date')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Col className="product-text">
-                            <Form.Control type="text" name="description" defaultValue = {purchaseData.description} required placeholder={trls("Description")} />
-                            <label className="placeholder-label">{trls('Description')}</label>
+                        <Form.Label column sm="3">
+                            {trls('Description')}
+                        </Form.Label>
+                        <Col sm="9" className="product-text">
+                            <Form.Control type="text" name="description" defaultValue = {purchaseData.description} required placeholder="Description  " />
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextSupplier">
-                        <Col className="product-text input-div" style={{height: "auto"}}>
-                            <div id="react-file-drop-demo" style={{border: '1px solid #ced4da', color: 'black', padding: 7, borderRadius: 3, minHeight: 40 }}>
+                        <Form.Label column sm="3" >
+                            {trls('File')}   
+                        </Form.Label>
+                        <Col sm="9" className="product-text input-div" style={{height: "auto"}}>
+                            <div id="react-file-drop-demo" style={{border: '1px solid #ced4da', color: 'black', padding: 7, borderRadius: 3 }}>
                                 <FileDrop onDrop={this.handleDrop}>
                                     {fileData.length>0?(
                                         fileData.map((data,i) =>(
@@ -397,17 +420,15 @@ class Purchaseform extends Component {
                                      <input id="inputFile" name="file" type="file" accept="*.*"  onChange={this.onChange} style={{display: "none"}} />   
                                 </FileDrop>
                             </div>
-                            <label className="placeholder-label">{trls('File')}</label>
                         </Col>
                     </Form.Group>
-                    <Form.Group>
-                        <Col>
-                            <Button type="submit" style={{width:"100px"}}>{trls('Save')}</Button>
-                        </Col>
+                    <Form.Group style={{textAlign:"center"}}>
+                        <Button type="submit" style={{width:"100px"}}>{trls('Save')}</Button>
                     </Form.Group>
                 </Form>
-            </div>
+            </Modal.Body>
+            </Modal>
         );
     }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Purchaseform);
+export default connect(mapStateToProps, mapDispatchToProps)(Purchaseupdateform);

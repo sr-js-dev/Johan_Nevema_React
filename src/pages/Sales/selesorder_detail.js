@@ -1,12 +1,12 @@
 import React, {Component} from 'react'
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import { Row, Col, Form, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import * as salesAction  from '../../actions/salesAction';
 import SessionManager from '../../components/session_manage';
 import Axios from 'axios';
 import API from '../../components/api'
 import { trls } from '../../components/translate';
-import  Salesform  from './salesform'
+import  Salesupdateform  from './salesupdateform'
 import  Addproductform  from './addproduct_form';
 import  Updateorderline  from './updateorderLine_fomr';
 import  Updatetransport  from './update_transport';
@@ -52,7 +52,7 @@ class Salesorderdtail extends Component {
 
     getSalesOrder() {
         var params={
-            "salesorderid":this.props.location.state.newId
+            "salesorderid":this.props.newid
         }
         var headers = SessionManager.shared().getAuthorizationHeader();
             Axios.post(API.GetSalesDetail, params, headers)
@@ -63,7 +63,7 @@ class Salesorderdtail extends Component {
 
     getSalesItem () {
         var params={
-            "orderid":this.props.location.state.newId
+            "orderid":this.props.newid
         }
         var headers = SessionManager.shared().getAuthorizationHeader();
             Axios.post(API.GetSalesOrderLines, params, headers)
@@ -74,7 +74,7 @@ class Salesorderdtail extends Component {
 
     getSalesOrderTransports() {
         var params={
-            "orderid":this.props.location.state.newId
+            "orderid":this.props.newid
         }
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.post(API.GetSalesOrderTransports, params, headers)
@@ -87,7 +87,7 @@ class Salesorderdtail extends Component {
         this.setState({sendingFlag: true})
         var headers = SessionManager.shared().getAuthorizationHeader();
         var params = {
-            salesid: this.props.location.state.newId
+            salesid: this.props.newid
         }
         Axios.post(API.PostSalesOrderExact, params, headers)
         .then(result => {
@@ -144,134 +144,169 @@ class Salesorderdtail extends Component {
         });
     }
 
+    onHide = () => {
+        this.props.onHide();
+        Common.hideSlideForm();
+    }
+
+    updownInfo = (id) =>{
+        console.log('333', id)
+        let salesArray = this.state.salesItems;
+        salesArray.map((data, i)=>{
+            if(data.id===id){
+                if(!data.checked){
+
+                    data.checked = true;
+                }else{
+                    data.checked = false;
+                }
+            }
+            return data;
+        })
+        this.setState({salesItems: salesArray});
+    }
+
     render () {
-        let detailData = this.state.salesorder;
+        let detailData = this.props.salesdetaildata;
+        console.log('11111', detailData);
         let salesItems = this.state.salesItems;
         let transporter = this.state.salesTransport;
         return (
-            <div>
-                <div className="content__header content__header--with-line">
-                    <h2 className="title">{trls('Sales_Order_Details')}</h2>
+            <div className="slide-form__controls open slide-product__detail">
+                <div style={{marginBottom:30, padding:"0 20px"}}>
+                    <i className="fas fa-times slide-close" style={{ fontSize: 20, cursor: 'pointer'}} onClick={()=>this.onHide()}></i>
                 </div>
-                <div className="place-and-orders">
-                    <div className="place-and-orders__top">
-                        <Container className="sales-details">
-                            <Row>
-                                <Col>
-                                    <Form className="container product-form">
-                                        <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                            <Form.Label column sm="3">
-                                                {trls("Customer")}
-                                            </Form.Label>
-                                            <Col sm="9" className="product-text">
-                                                {detailData &&(
-                                                    <input type="text" readOnly defaultValue={detailData.Customer} className="input input-detail"/>
-                                                )}
-                                            </Col>
-                                        </Form.Group>
-                                        <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                            <Form.Label column sm="3">
-                                                {trls("Supplier")}
-                                            </Form.Label>
-                                            <Col sm="9" className="product-text">
-                                                {detailData &&(
-                                                    <input type="text" readOnly defaultValue={detailData.Supplier} className="input input-detail"/>
-                                                )}
-                                            </Col>
-                                        </Form.Group>
-                                        <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                            <Form.Label column sm="3">
-                                                {trls("Reference_customer")}
-                                            </Form.Label>
-                                            <Col sm="9" className="product-text">
-                                                {detailData &&(
-                                                    <input type="text" readOnly defaultValue={detailData.referencecustomer} className="input input-detail"/>
-                                                )}
-                                            </Col>
-                                        </Form.Group>
-                                        {detailData.arrivaldate!=="1900-01-01T00:00:00"&&(
-                                            <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                                <Form.Label column sm="3">
-                                                    {trls("Arrival_date")}
-                                                </Form.Label>
-                                                <Col sm="9" className="product-text">
-                                                    {detailData.arrivaldate ?(
-                                                        <input type="text" readOnly defaultValue={Common.formatDate(detailData.arrivaldate)} className="input input-detail"/>
-                                                    ): <input type="text" readOnly className="input input-detail"/>}
-                                                </Col>
-                                            </Form.Group>
-                                        )}
-                                        <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                            <Form.Label column sm="3">
-                                                {trls("Loading_date")}
-                                            </Form.Label>
-                                            <Col sm="9" className="product-text">
-                                                {detailData.loadingdate ?(
-                                                    <input type="text" readOnly defaultValue={detailData.arrivaldate!=="1900-01-01T00:00:00" ? Common.formatDate(detailData.arrivaldate) : Common.formatDate(detailData.loadingdate)} className="input input-detail"/>
-                                                ): <input type="text" readOnly className="input input-detail"/>}
-                                            </Col>
-                                        </Form.Group>
-                                        
-                                        <Form.Group as={Row} controlId="formPlaintextSupplier" >
-                                            <Form.Label column sm="3">
-                                            </Form.Label>
-                                            <Col sm="9" className="product-text">
-                                                <Button variant="primary" onClick={()=>this.setState({modalShow:true, exactFlag: false})} style={{width: 80, marginLeft: "auto", marginRight: -20, float: "right"}}>{trls("Edit")}</Button>
-                                            </Col>
-                                        </Form.Group>
-                                    </Form>
-                                </Col>
-                            </Row>
-                        </Container>
-                    </div>
-                    {/* <div className="table-responsive"> */}
-                        <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
-                            <thead>
-                                <tr>
-                                    <th>{trls("Product")}</th>
-                                    <th>{trls("Sales_Quantity")}</th>
-                                    <th>{trls("Sales_Price")}</th>
-                                    <th>{trls("Sales_Amount")}</th>
-                                    <th>{trls("Purchase_Quantity")}</th>
-                                    <th>{trls("Purchase_Price")}</th>
-                                    <th>{trls("Purchase_Amount")}</th>
-                                    <th style={{width: 50}}>{trls("Packing_slip_number")}</th>
-                                    <th style={{width: 50}}>{trls("Container_number")}</th>
-                                    <th style={{width: 50}}>{trls("ShippingDocumentnumber")}</th>
-                                    <th style={{width: "109px"}}>{trls("ReportingDate")}</th>
-                                    <th style={{width: 100}}>{trls("Action")}</th>
-                                </tr>
-                            </thead>
-                            {salesItems && (<tbody>
-                                {
-                                    salesItems.map((data,i) =>(
-                                    <tr id={data.id} key={i}>
-                                        <td>{data.productcode}</td>
-                                        <td>{data.salesquantity}</td>
-                                        <td>{Common.formatMoney(data.SalesPrice)}</td>
-                                        <td>{Common.formatMoney(data.SalesAmount)}</td>
-                                        <td>{data.purchasequantity}</td>
-                                        <td>{Common.formatMoney(data.purchaseprice)}</td>
-                                        <td>{Common.formatMoney(data.purchaseamount)}</td>
-                                        <td>{data.PackingSlip}</td>
-                                        <td>{data.Container}</td>
-                                        <td>{data.Shipping}</td>
-                                        <td>{Common.formatDate(data.ReportingDate)==="01-01-1970" ? '' : Common.formatDate(data.ReportingDate)}</td>
-                                        <td>
-                                            <Row style={{justifyContent:"space-around"}}>
-                                                <i id={data.Id} className="far fa-trash-alt statu-item" onClick={()=>this.orderLineDelete(data.id)}></i>
-                                                <i id={data.Id} className="fas fa-pen statu-item" onClick={()=>this.orderLineEdit(data)} ></i>
-                                            </Row>
-                                        </td>
+                <div className="content__header content__header--with-line product-detail__data--detail">
+                    <h2 className="title">{trls("Order")} #{this.props.newid}</h2>
+                </div>
+                <div className="place-and-orders__top">
+                    <Row className="product-detail__data-div">
+                        <Col sm={4}>
+                            <div>
+                                <Form.Label>
+                                    {trls("Customer")}
+                                </Form.Label>
+                                <p className="product-detail__data">{detailData.Customer}</p>
+                            </div>
+                            <div style={{paddingTop: 30}}>
+                                <Form.Label>
+                                    {trls("Reference_customer")}
+                                </Form.Label>
+                                <p className="product-detail__data">{detailData.referencecustomer}</p>
+                            </div>
+                            <div>
+                                <Button variant="light" style={{marginRight: 10}} onClick={()=>this.setState({modalShow:true, exactFlag: false})}><img src={require('../../assets/images/edit.svg')} alt="edit" style={{marginRight: 10}}></img>{trls('Edit_project_detail')}</Button>
+                            </div>
+                        </Col>
+                        <Col sm={4}>
+                            <div>
+                                <Form.Label>
+                                    {trls("Supplier")}
+                                </Form.Label>
+                                <p className="product-detail__data">{detailData.Supplier}</p>
+                            </div>
+                            {detailData.arrivaldate!=="1900-01-01T00:00:00" && (
+                                <div style={{paddingTop: 30}}>
+                                    <Form.Label>
+                                        {trls("Arrival_date")}
+                                    </Form.Label>
+                                    {detailData.arrivaldate &&(
+                                        <p className="product-detail__data">{Common.formatDate(detailData.arrivaldate)}</p>
+                                    )}
+                                </div>
+                            )}
+                        </Col>
+                        <Col sm={4}>
+                            <div>
+                                <Form.Label>
+                                    {trls("Loading_date")}
+                                </Form.Label>
+                                {detailData.loadingdate &&(
+                                    <p>{detailData.arrivaldate!=="1900-01-01T00:00:00" ? Common.formatDate(detailData.arrivaldate) : Common.formatDate(detailData.loadingdate)}</p>
+                                )}
+                            </div>
+                        </Col>
+                    </Row>
+                </div>
+                <div className="product-detail-table">
+                    <div className="product-price-table">
+                        <div className="purchase-price__div">
+                            <p className="purprice-title"><i className="fas fa-caret-right add-icon" style={{color: "#4697D1"}}></i>{trls("Products")}</p>
+                            <Button variant="outline-secondary" style={{marginLeft: "auto"}} onClick={()=>this.setState({showModalProduct: true})}><i className="fas fa-plus add-icon"></i>{trls('Add_product')}</Button>
+                        </div>
+                        <div className="table-responsive prurprice-table__div">
+                            <table id="example" className="place-and-orders__table table" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>{trls("Product")}</th>
+                                        <th>{trls("Sales_Quantity")}</th>
+                                        <th>{trls("Sales_Price")}</th>
+                                        <th>{trls("Sales_Amount")}</th>
+                                        <th>{trls("Purchase_Quantity")}</th>
+                                        <th>{trls("Purchase_Price")}</th>
+                                        <th>{trls("Purchase_Amount")}</th>
+                                        <th style={{width: "109px"}}>{trls("ReportingDate")}</th>
+                                        <th style={{width: 250}}>{trls("Action")}</th>
                                     </tr>
-                                ))
+                                </thead>
+                                {salesItems && (<tbody>
+                                    {
+                                    salesItems.map((data,i)=>(
+                                        <React.Fragment key={i}>
+                                            <tr>
+                                                <td className={data.checked ? "order-product__td order-product__first-td" : ''}>{data.productcode}</td>
+                                                <td className={data.checked ? "order-product__td" : ''}>
+                                                    {data.salesquantity}
+                                                </td>
+                                                <td className={data.checked ? "order-product__td" : ''}>{Common.formatMoney(data.SalesPrice)}</td>
+                                                <td className={data.checked ? "order-product__td" : ''}>{Common.formatMoney(data.SalesAmount)}</td>
+                                                <td className={data.checked ? "order-product__td" : ''}>{data.purchasequantity}</td>
+                                                <td className={data.checked ? "order-product__td" : ''}>{Common.formatMoney(data.purchaseprice)}</td>
+                                                <td className={data.checked ? "order-product__td" : ''}>{Common.formatMoney(data.purchaseamount)}</td>
+                                                <td className={data.checked ? "order-product__td" : ''}>{Common.formatDate(data.ReportingDate)==="01-01-1970" ? '' : Common.formatDate(data.ReportingDate)}</td>
+                                                <td className={data.checked ? "order-product__td order-product__last-td" : ''}>
+                                                    <Row style={{justifyContent:"space-around", width: 200}}>
+                                                        <Button className="price-action__button" variant="light" onClick={()=>this.orderLineDelete(data.id)}><i className="far fa-trash-alt add-icon" ></i>{trls('Delete')}</Button>
+                                                        <Button className="price-action__button" variant="light" onClick={()=>this.orderLineEdit(data)}><i className="fas fa-pen add-icon" ></i>{trls('Edit')}</Button>
+                                                        <Button className="price-action__button" variant="light" onClick={()=>this.updownInfo(data.id)}><i className={data.checked ? "fas fa-caret-up" : "fas fa-caret-down"}></i></Button>
+                                                    </Row>
+                                                </td>
+                                            </tr>
+                                            {data.checked && (
+                                                <tr>
+                                                    <td className={data.checked ? "order-product__first-td" : ''}></td>
+                                                    <td>
+                                                        <div>{trls("Packing_slip_number")}</div>
+                                                        <div style={{paddingTop: 20}}>{data.PackingSlip}</div>
+                                                    </td>
+                                                    <td>
+                                                        <div>{trls("Container_number")}</div>
+                                                        <div style={{paddingTop: 20}}>{data.Container}</div>
+                                                    </td>
+                                                    <td>
+                                                        <div>{trls("ShippingDocumentnumber")}</div>
+                                                        <div style={{paddingTop: 20}}>{data.Shipping}</div>
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td className={data.checked ? "order-product__last-td" : ''}></td>
+                                                </tr>
+                                            )}
+                                        </React.Fragment>
+                                    ))
                                 }
                             </tbody>)}
-                    </table>
-                    <Button variant="primary" style={{height: 40, borderRadius: 20, float: 'right'}} onClick={()=>this.setState({showModalProduct: true})}>{trls('Add')}</Button>
-                {/* </div> */}
-                <div className="table-responsive">
-                        <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
+                        </table>
+                    </div>
+                </div>
+                <div className="product-price-table">
+                    <div className="purchase-price__div">
+                        <p className="purprice-title"><i className="fas fa-caret-right add-icon" style={{color: "#4697D1"}}></i>{trls("Transporter")}</p>
+                    </div>
+                    <div className="table-responsive prurprice-table__div">
+                        <table id="example" className="place-and-orders__table table" width="100%">
                             <thead>
                                 <tr>
                                     <th>{trls("Transporter")}</th>
@@ -295,32 +330,34 @@ class Salesorderdtail extends Component {
                                         <td>{data.container}</td>
                                         <td>{data.shipping}</td>
                                         <td >
-                                            <Row style={{justifyContent:"space-around"}}>
-                                                <i id={data.id} className="far fa-trash-alt statu-item" onClick={()=>this.transporterDelete(data.id)}></i>
-                                                <i id={data.id} className="fas fa-pen statu-item" onClick={()=>this.transporterEdit(data)}></i>
+                                            <Row style={{justifyContent:"space-around", width: 200}}>
+                                                <Button className="price-action__button" variant="light" onClick={()=>this.transporterDelete(data.id)}><i className="far fa-trash-alt add-icon" ></i>{trls('Delete')}</Button>
+                                                <Button className="price-action__button" variant="light" onClick={()=>this.transporterEdit(data)}><i className="fas fa-pen add-icon" ></i>{trls('Edit')}</Button>
                                             </Row>
                                         </td>
                                     </tr>
                                 ))
                                 }
                             </tbody>)}
-                    </table>
+                        </table>
+                    </div>
                 </div>
-                <Salesform
+            </div>
+                <Salesupdateform
                     show={this.state.modalShow}
                     onHide={() => this.setState({modalShow: false})}
-                    salesOrder={this.state.salesorder}
-                    arrivaldate={this.state.salesorder.arrivaldate!=="1900-01-01T00:00:00" ? true : false}
+                    salesOrder={this.props.salesdetaildata}
+                    arrivaldate={this.props.salesdetaildata.arrivaldate!=="1900-01-01T00:00:00" ? true : false}
                     getSalesOrderData={()=>this.getSalesOrder()}
                 />
                 {detailData.loadingdate&&(
                     <Addproductform
                         show={this.state.showModalProduct}
                         onHide={() => this.setState({showModalProduct: false})}
-                        customercode={this.props.location.state.customercode}
-                        suppliercode={this.props.location.state.suppliercode}
+                        customercode={this.props.customercode}
+                        suppliercode={this.props.suppliercode}
                         loadingdate={detailData.loadingdate}
-                        orderid={this.props.location.state.newId}
+                        orderid={this.props.newid}
                         getSalesOrderLine={()=>this.getSalesItem()}
                         getTransport={()=>this.getSalesOrderTransports()}
                         showTransportModal={(transportData) => this.addTransport(transportData)}
@@ -344,10 +381,9 @@ class Salesorderdtail extends Component {
                     loadingdate={this.state.salesorder.loadingdate}
                     transportResult={this.state.transportResult}
                     transportdata={this.state.transportData}
-                    orderid={this.props.location.state.newId}
+                    orderid={this.props.newid}
                     getSalesOrderLine={()=>this.getSalesOrderTransports()}
                 />
-            </div>
         </div>
         )
     };

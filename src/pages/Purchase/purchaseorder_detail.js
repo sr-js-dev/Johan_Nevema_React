@@ -1,11 +1,11 @@
 import React, {Component} from 'react'
-import { Container, Row, Col, Form, Button, Spinner} from 'react-bootstrap';
+import { Row, Col, Form, Button, Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import SessionManager from '../../components/session_manage';
 import Axios from 'axios';
 import API from '../../components/api'
 import { trls } from '../../components/translate';
-import Purchaseform  from './purchaseform'
+import Updatepurchaseform  from './updatepurchase_form'
 import Addpurchaseform  from './addpruchase_form'
 import * as Common from '../../components/common'
 import FlashMassage from 'react-flash-message';
@@ -46,7 +46,7 @@ class Purchaseorderdtail extends Component {
     }
     getPurchaseOrder() {
         var params= {
-            "purchaseorderid":this.props.location.state.newId
+            "purchaseorderid":this.props.newId
         }
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.post(API.GetPurchaseOrder, params, headers)
@@ -105,7 +105,7 @@ class Purchaseorderdtail extends Component {
             updateManualData: [],
         })
         var params = {
-            purchaseorderid:this.props.location.state.newId
+            purchaseorderid:this.props.newId
         }
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.post(API.GetPurchaseOrderLines, params, headers)
@@ -127,7 +127,7 @@ class Purchaseorderdtail extends Component {
     getPurchaseTransportManual () {
         this.setState({updateManualData: []})
         var params = {
-            orderid:this.props.location.state.newId
+            orderid:this.props.newId
         }
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.post(API.GetPurchaseTransportManual, params, headers)
@@ -151,7 +151,7 @@ class Purchaseorderdtail extends Component {
         this.setState({sendingFlag: true, exactFlag: false})
         var headers = SessionManager.shared().getAuthorizationHeader();
         var params = {
-            purchaseid: this.props.location.state.newId
+            purchaseid: this.props.newId
         }
         Axios.post(API.PostPurchaseOrderExact, params, headers)
         .then(result => {
@@ -169,7 +169,6 @@ class Purchaseorderdtail extends Component {
     }
 
     transportManualLineEdit = (data) => {
-        console.log('66666', data);
         this.setState({updateManualData: data, showModalManully: true})
     }
 
@@ -198,6 +197,11 @@ class Purchaseorderdtail extends Component {
         
     }
 
+    onHide = () => {
+        this.props.onHide();
+        Common.hideSlideForm(); 
+    }
+
     render () {
         let detailData = [];
         if(this.state.purchaseOrder){
@@ -205,168 +209,130 @@ class Purchaseorderdtail extends Component {
         }
         let alltotal_Amounnt = this.state.totalAmount+this.state.totalManualAmount;
         return (
-            
-            <div>
-                <div className="content__header content__header--with-line">
-                    <h2 className="title">{trls('Purchase_Order_Details')}</h2>
+            <div className = "slide-form__controls open slide-product__detail">
+                <div style={{marginBottom:30, padding:"0 20px"}}>
+                    <i className="fas fa-times slide-close" style={{ fontSize: 20, cursor: 'pointer'}} onClick={()=>this.onHide()}></i>
                 </div>
-                <div className="place-and-orders">
-                    {this.state.exactFlag&&(
-                        <div>
-                            <FlashMassage duration={2000}>
-                                <div className="alert alert-success" style={{marginTop:10}}>
-                                    <strong><i className="fas fa-check-circle"></i> Success!</strong>
-                                </div>
-                            </FlashMassage>
-                        </div>
-                    )
-                    }
-                    {this.state.sendingFlag&&(
-                        <div style={{marginTop:10}}><Spinner animation="border" variant="info"/><span style={{marginTp:10, fontWeight: "bold", fontSize: 16}}> {trls('Sending')}...</span></div>
-                    )}
-                    <Button variant="primary" onClick={()=>this.generatePurchaseInvoiceXmlExact()} style={{marginTop: 20}}>{trls("Send_to_Exact")}</Button>
-                        <div className="place-and-orders__top">
-                            <Container className="sales-details">
-                                <Row>
-                                    <Col sm={6}>
-                                        <Form className="container product-form">
-                                            <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                                <Form.Label column sm="3">
-                                                    {trls("Supplier")}
-                                                </Form.Label>
-                                                <Col sm="9" className="product-text">
-                                                    {detailData &&(
-                                                        <input type="text" readOnly defaultValue={detailData.Customer} className="input input-detail"/>
-                                                    )}
-                                                </Col>
-                                            </Form.Group>
-                                            <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                                <Form.Label column sm="3">
-                                                    {trls("Invoice")}
-                                                </Form.Label>
-                                                <Col sm="9" className="product-text">
-                                                    {detailData &&(
-                                                        <input type="text" readOnly defaultValue={detailData.invoicenr} className="input input-detail"/>
-                                                    )}
-                                                </Col>
-                                            </Form.Group>
-                                                <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                                <Form.Label column sm="3">
-                                                    {trls("Invoice_date")}
-                                                </Form.Label>
-                                                <Col sm="9" className="product-text">
-                                                    {detailData.invoicedate ?(
-                                                        <input type="text" readOnly defaultValue={Common.formatDate(detailData.invoicedate)} className="input input-detail"/>
-                                                    ): <input type="text" readOnly className="input input-detail"/>}
-                                                </Col>
-                                            </Form.Group>
-                                        </Form>
-                                    </Col>
-                                    <Col sm={6}>
-                                        <Form className="container product-form">
-                                            <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                                <Form.Label column sm="3">
-                                                    {trls("Description")}
-                                                </Form.Label>
-                                                <Col sm="9" className="product-text">
-                                                    {detailData &&(
-                                                        <input type="text" readOnly defaultValue={ detailData.description} className="input input-detail"/>
-                                                    )}
-                                                </Col>
-                                            </Form.Group>
-                                            <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                                <Form.Label column sm="3">
-                                                    {trls("IsTransport")}
-                                                </Form.Label>
-                                                <Col sm="9" className="product-text">
-                                                    {/* <i className="fas fa-circle inactive-icon"></i><div>Inactive</div> */}
-                                                    {detailData &&(
-                                                        <Form.Check type="checkbox" disabled style={{padding: 10, marginLeft: 33}} defaultChecked={detailData.istransport} name="transport" />
-                                                    )}
-                                                </Col>
-                                            </Form.Group>
-                                            <Form.Group as={Row} controlId="formPlaintextSupplier">
-                                                <Form.Label column sm="3">
-                                                </Form.Label>
-                                                <Col sm="9" className="product-text">
-                                                    <Button variant="primary" style={{float: "right", marginRight: -20}} onClick={()=>this.setState({modalShow:true, exactFlag: false})}>{trls('Edit')}</Button>
-                                                </Col>
-                                            </Form.Group>
-                                            
-                                        </Form>
-                                    </Col>
-                                </Row>
-                            </Container>
-                        </div>
-                        <div className="table-responsive">
-                            {!this.state.purchaseOrder.istransport ? (
-                                <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
-                                    <thead>
-                                        <tr>
-                                            <th>{trls('Product')}</th>
-                                            <th>{trls('Quantity')}</th>
-                                            <th>{trls('Purchase_Unit')}</th>
-                                            <th>{trls('Price')}</th>
-                                            <th>{trls('Amount')}</th>
-                                            <th>{trls('VATCode')}</th>
-                                            <th>{trls('Reporting_Date')}</th>
-                                            </tr>
-                                    </thead>
-                                    {this.state.purchaseOrderLine && (<tbody>
-                                        {
-                                            this.state.purchaseOrderLine.map((data,i) =>(
-                                            <tr id={data.id} key={i}>
-                                                <td>{data.productcode}</td>
-                                                <td>{data.quantity}</td>
-                                                <td>{data.unit}</td>
-                                                <td>{Common.formatMoney(data.price)}</td>
-                                                <td>{Common.formatMoney(data.amount)}</td>
-                                                <td>{data.VAT}</td>
-                                                <td>{Common.formatDate(data.reportingdate)}</td>
-                                            </tr>
-                                        ))
-                                        }
-                                        <tr style={{backgroundColor: 'rgb(157, 202, 159)', fontWeight: 'bold'}}>
-                                            <td>{trls('Total')}</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td style={{textAlign: 'right'}}>{Common.formatMoney(this.state.totalAmount)}</td>
-                                        </tr>
-                                    </tbody>)}
-                                </table>
-                            ):
-                                <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
-                                    <thead>
-                                        <tr>
-                                            <th>{trls('Pricingtype')}</th>
-                                            <th>{trls('Price')}</th>
-                                        </tr>
-                                    </thead>
-                                    {this.state.purchaseOrderLine && (<tbody>
-                                        {
-                                            this.state.purchaseOrderLine.map((data,i) =>(
-                                            <tr id={data.id} key={i}>
-                                                <td>{data.pricingtype}</td>
-                                                <td>{Common.formatMoney(data.price)}</td>
-                                            </tr>
-                                        ))
-                                        }
-                                        <tr style={{backgroundColor: 'rgb(157, 202, 159)', fontWeight: 'bold'}}>
-                                            <td>{trls('Total')}</td>
-                                            <td style={{textAlign: 'right'}}>{Common.formatMoney(this.state.totalAmount)}</td>
-                                        </tr>
-                                    </tbody>)}
-                                </table>
-                            }
-                            
-                        <Button variant="primary" style={{height: 40, borderRadius: 20, float: 'right'}} onClick={()=>this.setState({showModalPurchaase: true})}>{trls('Add')}</Button>
+                <div className="content__header content__header--with-line product-detail__data--detail">
+                    <h2 className="title">{trls("Purchase_Order_Details")}</h2>
+                    <Button variant="primary" onClick={()=>this.generatePurchaseInvoiceXmlExact()} style={{marginLeft: 'auto'}}>{trls("Send_to_Exact")}</Button>
+                </div>
+                {this.state.exactFlag&&(
+                    <div>
+                        <FlashMassage duration={2000}>
+                            <div className="alert alert-success" style={{marginTop:10}}>
+                                <strong><i className="fas fa-check-circle"></i> Success!</strong>
+                            </div>
+                        </FlashMassage>
                     </div>
-                    {/* {this.state.purchaseOrder.istransport&&( */}
-                        <div className="table-responsive">
-                            <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
+                )
+                }
+                {this.state.sendingFlag&&(
+                    <div style={{marginTop:10}}><Spinner animation="border" variant="info"/><span style={{marginTp:10, fontWeight: "bold", fontSize: 16}}> {trls('Sending')}...</span></div>
+                )}
+                <div className="place-and-orders__top">
+                    <Row className="product-detail__data-div">
+                        <Col sm={6}>
+                            <Col style={{padding: 0}}>
+                                <Form.Control type="text" readOnly defaultValue={detailData.Customer}/>
+                                <label className="placeholder-label purhcase-placeholder">{trls('Supplier')}</label>
+                            </Col>
+                            <Col style={{display: 'flex', justifyContent: "space-between", padding: "20px 0px" }}>
+                                <Col style={{paddingRight: 10, paddingLeft: 0}}>
+                                    <Form.Control type="text" readOnly defaultValue={detailData.invoicenr}/>
+                                    <label className="placeholder-label purhcase-placeholder">{trls('Invoice')}</label>
+                                </Col>
+                                <Col style={{paddingLeft: 10, paddingRight: 0}}>
+                                    <Form.Control type="text" readOnly defaultValue={detailData.invoicedate ? Common.formatDate(detailData.invoicedate) : ''}/>
+                                    <label className="placeholder-label" style={{left: "1.5em"}}>{trls('Invoice_date')}</label>
+                                </Col>
+                            </Col>
+                            <Col style={{padding: 0}}>
+                                <Form.Control type="text" readOnly defaultValue={detailData.description}/>
+                                <label className="placeholder-label purhcase-placeholder">{trls('Description')}</label>
+                            </Col>
+                            <Col style={{padding: "20px 0px"}}>
+                                {detailData &&(
+                                    <Form.Check type="checkbox" label={trls("IsTransport")} disabled  defaultChecked={detailData.istransport} name="transport" />
+                                )}
+                            </Col>
+                            <div>
+                                <Button variant="light" style={{marginRight: 10}} onClick={()=>this.setState({modalShow:true, exactFlag: false})}><img src={require('../../assets/images/edit.svg')} alt="edit" style={{marginRight: 10}}></img>{trls('Edit_project_detail')}</Button>
+                            </div>
+                        </Col>
+                    </Row>
+                </div>
+                <div className="product-detail-table">
+                    <div className="product-price-table">
+                        <div className="purchase-price__div">
+                            <p className="purprice-title"><i className="fas fa-caret-right add-icon" style={{color: "#4697D1"}}></i>{trls("Products")}</p>
+                            <Button variant="outline-secondary" style={{marginLeft: "auto"}} onClick={()=>this.setState({showModalPurchaase: true})}><i className="fas fa-plus add-icon"></i>{trls('Add_product')}</Button>
+                        </div>
+                        <div className="table-responsive prurprice-table__div">
+                            {!this.state.purchaseOrder.istransport ? (
+                                    <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>{trls('Product')}</th>
+                                                <th>{trls('Quantity')}</th>
+                                                <th>{trls('Purchase_Unit')}</th>
+                                                <th>{trls('Price')}</th>
+                                                <th>{trls('Amount')}</th>
+                                                <th>{trls('VATCode')}</th>
+                                                <th>{trls('Reporting_Date')}</th>
+                                                </tr>
+                                        </thead>
+                                        {this.state.purchaseOrderLine && (<tbody>
+                                            {
+                                                this.state.purchaseOrderLine.map((data,i) =>(
+                                                <tr id={data.id} key={i}>
+                                                    <td>{data.productcode}</td>
+                                                    <td>{data.quantity}</td>
+                                                    <td>{data.unit}</td>
+                                                    <td>{Common.formatMoney(data.price)}</td>
+                                                    <td>{Common.formatMoney(data.amount)}</td>
+                                                    <td>{data.VAT}</td>
+                                                    <td>{Common.formatDate(data.reportingdate)}</td>
+                                                </tr>
+                                            ))
+                                            }
+                                            <tr style={{backgroundColor: '#D3EDD0', fontWeight: 'bold'}}>
+                                                <td colSpan={7} style={{textAlign: 'right'}}><span className="purchase-child-total">{trls('Total')}</span><span className="purchase-child-total amount">{Common.formatMoney(this.state.totalAmount)}</span></td>
+                                            </tr>
+                                        </tbody>)}
+                                    </table>
+                                ):
+                                    <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>{trls('Pricingtype')}</th>
+                                                <th>{trls('Price')}</th>
+                                            </tr>
+                                        </thead>
+                                        {this.state.purchaseOrderLine && (<tbody>
+                                            {
+                                                this.state.purchaseOrderLine.map((data,i) =>(
+                                                <tr id={data.id} key={i}>
+                                                    <td>{data.pricingtype}</td>
+                                                    <td>{Common.formatMoney(data.price)}</td>
+                                                </tr>
+                                            ))
+                                            }
+                                            <tr style={{backgroundColor: '#D3EDD0', fontWeight: 'bold'}}>
+                                                <td colSpan={2} style={{textAlign: 'right'}}><span className="purchase-child-total">{trls('Total')}</span><span className="purchase-child-total amount">{Common.formatMoney(this.state.totalAmount)}</span></td>
+                                            </tr>
+                                        </tbody>)}
+                                    </table>
+                                }
+                        </div>
+                    </div>
+                    <div className="product-price-table">
+                        <div className="purchase-price__div">
+                            <p className="purprice-title"><i className="fas fa-caret-right add-icon" style={{color: "#4697D1"}}></i>{trls("Custom_products")}</p>
+                            <Button variant="outline-secondary" style={{marginLeft: "auto"}} onClick={()=>this.setState({showModalManully: true})}><i className="fas fa-plus add-icon"></i>{trls('Add_product')}</Button>
+                        </div>
+                        <div className="table-responsive prurprice-table__div">
+                        <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
                                 <thead>
                                     <tr>
                                         <th>{trls('Product')}</th>
@@ -395,48 +361,43 @@ class Purchaseorderdtail extends Component {
                                         </tr>
                                     ))
                                     }
-                                    <tr style={{backgroundColor: 'rgb(157, 202, 159)', fontWeight: 'bold'}}>
-                                        <td>{trls('Total')}</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td style={{textAlign: 'right'}}>{Common.formatMoney(this.state.totalManualAmount)}</td>
+                                    <tr style={{backgroundColor: '#D3EDD0', fontWeight: 'bold', fontSize: 13, lineHeight: 16}}>
+                                        <td colSpan={6} style={{textAlign: 'right'}}><span className="purchase-child-total">{trls('Total')}</span><span className="purchase-child-total amount"> {Common.formatMoney(this.state.totalManualAmount)}</span></td>
                                     </tr>
                                 </tbody>)}
                             </table>
-                            <Button variant="primary" style={{height: 40, borderRadius: 20, float: 'right'}} onClick={()=>this.setState({showModalManully: true})}>{trls('Add')}</Button>
                         </div>
-                     {/* )} */}
-                    <div style={{textAlign: 'right', fontWeight: 'bold', padding: 10, marginBottom: 20, marginTop: 10, backgroundColor: '#E6DAB7'}}>
-                        {trls('Total')}:  <span style={{fontWeight: 'bold', fontSize: 18}}>{Common.formatMoney(alltotal_Amounnt)}</span>
                     </div>
-                    <Purchaseform
+                </div>
+                <div className="purchase-amount" style={{textAlign: 'right', fontWeight: 'bold', padding: 10, marginBottom: 20, marginTop: 10, backgroundColor: '#609C5A'}}>
+                    {trls('Total')}  <span >{Common.formatMoney(alltotal_Amounnt)}</span>
+                </div>
+                {this.state.purchaseOrder.id && (
+                    <Updatepurchaseform
                         show={this.state.modalShow}
                         onHide={() => this.setState({modalShow: false})}
                         purchaseData={this.state.purchaseOrder}
                         getPurchaseOrder={()=>this.getPurchaseOrder()}
                     />
-                    <Addpurchaseform
-                        show={this.state.showModalPurchaase}
-                        onHide={() => this.setState({showModalPurchaase: false})}
-                        suppliercode={this.state.supplierCode}
-                        purchaseid={this.props.location.state.newId}
-                        defaultVatCode={this.state.defaultVatCode}
-                        vatCodeList={this.state.vatCodeList}
-                        getPurchaseOrderLines={()=>this.getPurchaseOrderLines()}
-                        transport={this.state.purchaseOrder.istransport}
-                    />
-                    <Addmanuallytranspor
-                        show={this.state.showModalManully}
-                        onHide={() => this.setState({showModalManully: false})}
-                        reportingDate={detailData.invoicedate}
-                        orderid={this.props.location.state.newId}
-                        getPurchaseTransportManual={()=>this.getPurchaseTransportManual()}
-                        updateData={this.state.updateManualData}
-                    />
-                    
-                </div>
+                )}
+                <Addpurchaseform
+                    show={this.state.showModalPurchaase}
+                    onHide={() => this.setState({showModalPurchaase: false})}
+                    suppliercode={this.state.supplierCode}
+                    purchaseid={this.props.newId}
+                    defaultVatCode={this.state.defaultVatCode}
+                    vatCodeList={this.state.vatCodeList}
+                    getPurchaseOrderLines={()=>this.getPurchaseOrderLines()}
+                    transport={this.state.purchaseOrder.istransport}
+                />
+                <Addmanuallytranspor
+                    show={this.state.showModalManully}
+                    onHide={() => this.setState({showModalManully: false})}
+                    reportingDate={detailData.invoicedate}
+                    orderid={this.props.newId}
+                    getPurchaseTransportManual={()=>this.getPurchaseTransportManual()}
+                    updateData={this.state.updateManualData}
+                />
             </div>
         )
         };

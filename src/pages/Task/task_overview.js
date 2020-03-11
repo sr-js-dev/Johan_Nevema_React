@@ -2,13 +2,15 @@ import React, {Component} from 'react'
 import { connect } from 'react-redux';
 import $ from 'jquery';
 import { BallBeat } from 'react-pure-loaders';
-import { Button, Form, Row } from 'react-bootstrap';
+import { Button, Form, Row, Col } from 'react-bootstrap';
 import  Taskupdate  from './taskupdate_form'
 import { trls } from '../../components/translate';
 import 'datatables.net';
 import SessionManager from '../../components/session_manage';
 import API from '../../components/api'
 import Axios from 'axios';
+import Filtercomponent from '../../components/filtercomponent';
+import * as Common  from '../../components/common';
 
 const mapStateToProps = state => ({
      ...state.auth,
@@ -24,11 +26,15 @@ class Taskoverview extends Component {
         this.state = {  
             loading:true,
             taskOverviewData:[],
-            text: 1111
+            text: 1111,
+            originFilterData: [],
+            filterFlag: false,
+            filterData: []
         };
       }
 componentDidMount() {
     this.getTaskData();
+    this.setFilterData();
 }
 
 getUpdateTaskData = (event) => {
@@ -52,11 +58,15 @@ detailmode = () =>{
     this.setState({taskId: ""})
 }
 
-getTaskData = () => {
+getTaskData = (data) => {
     var header = SessionManager.shared().getAuthorizationHeader();
     Axios.get(API.GetTasks, header)
     .then(result => {
-        this.setState({taskOverviewData:result.data.Items})
+        if(!data){
+            this.setState({taskOverviewData: result.data.Items, originFilterData: result.data.Items});
+        }else{
+            this.setState({taskOverviewData: data});
+        }
         this.setState({loading:false})
         $('#example-task').dataTable().fnDestroy();
         $('#example-task').DataTable(
@@ -79,6 +89,36 @@ getTaskData = () => {
           );
     });
 }
+
+// filter module
+setFilterData = () => {
+    let filterData = [
+        {"label": trls('Tasktype'), "value": "Tasktype", "type": 'text'},
+        {"label": trls('Subject'), "value": "subject", "type": 'text'},
+        {"label": trls('TaskStatus'), "value": "TaskStatus", "type": 'text'},
+        {"label": trls('User'), "value": "User", "type": 'date'},
+    ]
+    this.setState({filterData: filterData});
+}
+
+filterOptionData = (filterOption) =>{
+    let dataA = []
+    dataA = Common.filterData(filterOption, this.state.originFilterData);
+    if(!filterOption.length){
+        dataA=null;
+    }
+    $('#sales_table').dataTable().fnDestroy();
+    this.getsalesData(dataA);
+}
+
+changeFilter = () => {
+    if(this.state.filterFlag){
+        this.setState({filterFlag: false})
+    }else{
+        this.setState({filterFlag: true})
+    }
+}
+// filter module
 componentWillUnmount() {
 }
 
@@ -93,13 +133,28 @@ render () {
                 <h2 className="title">{trls('Task_Overview')}</h2>
             </div>
             <div className="orders">
-                <div className="orders__filters justify-content-between">
-                    <Button variant="primary" onClick={()=>this.setState({modalShow:true})}><i className="fas fa-plus add-icon"></i>{trls('Add_Task')}</Button> 
-                    <div className="has-search">
-                        <span className="fa fa-search form-control-feedback"></span>
-                        <Form.Control className="form-control" type="text" name="number"placeholder={trls("Quick_search")}/>
-                    </div>
-                </div>
+                <Row>
+                    <Col sm={6}>
+                        <Button variant="primary" onClick={()=>this.setState({modalShow:true})}><i className="fas fa-plus add-icon"></i>{trls('Add_Task')}</Button> 
+                    </Col>
+                    <Col sm={6} className="has-search">
+                        <div style={{display: 'flex', float: 'right'}}>
+                            <Button variant="light" onClick={()=>this.changeFilter()}><i className="fas fa-filter add-icon"></i>{trls('Filter')}</Button>   
+                            <div style={{marginLeft: 20}}>
+                                <span className="fa fa-search form-control-feedback"></span>
+                                <Form.Control className="form-control fitler" type="text" name="number"placeholder={trls("Quick_search")}/>
+                            </div>
+                        </div>
+                    </Col>
+                    {this.state.filterData.length&&(
+                        <Filtercomponent
+                            onHide={()=>this.setState({filterFlag: false})}
+                            filterData={this.state.filterData}
+                            onFilterData={(filterOption)=>this.filterOptionData(filterOption)}
+                            showFlag={this.state.filterFlag}
+                        />
+                    )}
+                </Row>
                 <div className="table-responsive purchase-order-table">
                     <table id="example-task" className="place-and-orders__table table" width="100%">
                         <thead>

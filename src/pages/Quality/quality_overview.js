@@ -11,8 +11,9 @@ import Axios from 'axios';
 import Select from 'react-select';
 import * as Common from '../../components/common';
 import FlashMassage from 'react-flash-message'
-import DatePicker from "react-datepicker";
-import Salesdetailfrom from "../Sales/salesorder_detailform";
+// import Salesdetailfrom from "../Sales/salesorder_detailform";
+import Filtercomponent from '../../components/filtercomponent';
+import Salesorderdetail from '../Sales/selesorder_detail';
 
 const mapStateToProps = state => ({
      ...state.auth,
@@ -28,12 +29,10 @@ class Taskoverview extends Component {
         this.state = {  
             loading:true,
             qualityData:[],
-            showModeList: [{"value": "1", "label": trls('Show_all')}, {"value": "2", "label": trls('Show_just_not_completed')}, {"value": "3", "label": trls('Show_just_completed')}],
-            showMode: "2",
+            showModeList: [{"value": 1, "label": trls('Show_all')}, {"value": 2, "label": trls('Show_just_not_completed')}, {"value": 3, "label": trls('Show_just_completed')}],
+            showMode: 2,
             exactFlag: false,
             sendingFlag: false,
-            originQualityData: [],
-            showModeData: [],
             fistFilterWeek: 0,
             secondFilterWeek: 0,
             firstFilterDate: new Date(),
@@ -43,74 +42,161 @@ class Taskoverview extends Component {
             orderId: '',
             customerCode: '',
             supplierCode: '',
-            detailFlag: ''
+            detailFlag: '',
+            filterData: [],
+            originpurchaseorders: [],
+            filterFlag: false,
+            filteredData: [],
+            slideDetailFlag: false,
+            customerData: [],
+            supplierData: []
         };
       }
 componentDidMount() {
+    this._isMounted = true;
     this.getQualityData();
+    this.setFilterData();
+    this.getCustomerData();
+    this.getSupplierData();
 }
 
 detailmode = () =>{
     this.setState({taskId: ""})
 }
 
-getQualityData = () => {
+getQualityData = (data) => {
     this.setState({loading:true})
     var header = SessionManager.shared().getAuthorizationHeader();
     Axios.get(API.GetQualityControl, header)
     .then(result => {
         let optionarray = [];
-        if(result.data.Items){
-            result.data.Items.map((data, index) => {
-                if(!data.isCompleted){
-                    optionarray.push(data);
-                }
-                return data;
-            })
-        }
-        this.setState({originQualityData: result.data.Items, qualityData: optionarray, showModeData: optionarray, loading: false})
-        // if(!this.state.exactFlag){
-        //     $('#example-task thead tr').clone(true).appendTo( '#example-task thead' );
-        //     $('#example-task thead tr:eq(1) th').each( function (i) {
-        //         $(this).html( '<input type="text" class="search-table-input" style="width: 100%" placeholder="Search" />' );
-        //         $(this).addClass("sort-style");
-        //         $( 'input', this ).on( 'keyup change', function () {
-        //             if ( table.column(i).search() !== this.value ) {
-        //                 table
-        //                     .column(i)
-        //                     .search( this.value )
-        //                     .draw();
-        //             }
-        //         } );
-        //     } );
-        // }
-        // $('#example-task').dataTable().fnDestroy();
-            $('#example-task').DataTable(
-            {
-                "language": {
-                    "lengthMenu": trls("Show")+" _MENU_ "+trls("Result_on_page"),
-                    "zeroRecords": "Nothing found - sorry",
-                    "info": trls("Show_page")+" _PAGE_ "+trls('Results_of')+" _PAGES_",
-                    "infoEmpty": "No records available",
-                    "infoFiltered": "(filtered from _MAX_ total records)",
-                    "search": trls('Search'),
-                    "paginate": {
-                      "previous": trls('Previous'),
-                      "next": trls('Next')
+        if(!data){
+            if(result.data.Items){
+                result.data.Items.map((value, index) => {
+                    if(this.state.showMode===1){
+                        optionarray.push(value);
+                    }else if(this.state.showMode===2){
+                        if(!value.isCompleted){
+                            optionarray.push(value);
+                        }
+                    }else{
+                        if(value.isCompleted){
+                            optionarray.push(value);
+                        }
                     }
-                },
-                  "searching": false,
-                  "dom": 't<"bottom-datatable" lip>'
-              }
-          );
+                    return value;
+                })
+            }
+            this.setState({qualityData: optionarray, showModeData: optionarray, loading: false, originFilterData: result.data.Items})
+        }else{
+            data.map((value, index) => {
+                if(this.state.showMode===1){
+                    optionarray.push(value);
+                }else if(this.state.showMode===2){
+                    if(!value.isCompleted){
+                        optionarray.push(value);
+                    }
+                }else{
+                    if(value.isCompleted){
+                        optionarray.push(value);
+                    }
+                }
+                return value;
+            })
+            this.setState({qualityData: optionarray, showModeData: optionarray, loading: false, originFilterData: result.data.Items})
+        }
+        $('#example-task').dataTable().fnDestroy();
+        $('#example-task').DataTable(
+        {
+            "language": {
+                "lengthMenu": trls("Show")+" _MENU_ "+trls("Result_on_page"),
+                "zeroRecords": "Nothing found - sorry",
+                "info": trls("Show_page")+" _PAGE_ "+trls('Results_of')+" _PAGES_",
+                "infoEmpty": "No records available",
+                "infoFiltered": "(filtered from _MAX_ total records)",
+                "search": trls('Search'),
+                "paginate": {
+                    "previous": trls('Previous'),
+                    "next": trls('Next')
+                }
+            },
+                "searching": false,
+                "dom": 't<"bottom-datatable" lip>'
+            }
+        );
     });
 }
 
+// filter module
+setFilterData = () => {
+    let filterData = [
+        {"label": trls('Supplier'), "value": "supplier", "type": 'text'},
+        {"label": trls('Customer'), "value": "customer", "type": 'text'},
+        {"label": trls('Purchase_Amount'), "value": "PurchaseAmount", "type": 'date'},
+	    {"label": trls('Sales_Amount'), "value": "SalesAmount", "type": 'date'},
+        {"label": trls('Loading_date'), "value": "Loadingdate", "type": 'text'},
+	    {"label": trls('Loading_week'), "value": "Loadingweek", "type": 'text'}
+    ]
+    this.setState({filterData: filterData});
+}
+
+filterOptionData = (filterOption) =>{
+    let dataA = []
+    dataA = Common.filterData(filterOption, this.state.originFilterData);
+    if(!filterOption.length){
+        dataA=null;
+    }
+    this.setState({filteredData: dataA})
+    $('#example-task').dataTable().fnDestroy();
+    this.getQualityData(dataA);
+}
+
+changeFilter = () => {
+    if(this.state.filterFlag){
+        this.setState({filterFlag: false})
+    }else{
+        this.setState({filterFlag: true})
+    }
+}
+// filter module
+
 componentWillUnmount() {
+    this._isMounted = false;
+}
+
+getCustomerData = () => {
+    var header = SessionManager.shared().getAuthorizationHeader();
+    Axios.get(API.GetCustomerData, header)
+    .then(result => {
+        if(this._isMounted){
+            this.setState({customerData: result.data.Items})
+        }
+    });
+}
+
+getSupplierData = () => {
+    var header = SessionManager.shared().getAuthorizationHeader();
+    Axios.get(API.GetSuppliersDropdown, header)
+    .then(result => {
+        if(this._isMounted){
+            this.setState({supplierData: result.data.Items})
+        }
+    });
 }
 
 loadSalesDetail = (data)=>{
-    this.setState({orderId: data.Id, customerCode: data.customercode, supplierCode: data.suppliercode, detailFlag: true, modalShow: true})
+    Common.showSlideForm();
+    let detailData = [];
+    let customerData = this.state.customerData.filter(item => item.key===data.customercode.trim());
+    let supplierData = this.state.supplierData.filter(item => item.key===data.suppliercode.trim());
+    detailData = data;
+    detailData.Customer = customerData[0].value;
+    detailData.Supplier = supplierData[0].value;
+    detailData.CustomerCode = customerData[0].key;
+    detailData.SupplierCode = supplierData[0].key;
+    detailData.arrivaldate = "1900-01-01T00:00:00";
+    detailData.loadingdate = data.Loadingdate;
+    this.setState({newId: data.Id, salesDetailData: data, customercode:data.customercode, suppliercode: data.suppliercode, slideDetailFlag: true})
 }
 
 completeOrder = (id) => {
@@ -136,91 +222,13 @@ completeOrder = (id) => {
 
 changeShowMode = (value) =>{
     this.setState({showMode: value}, ()=>{
-        let optionarray = [];
-        if(this.state.showMode==="2"){
-            if(this.state.originQualityData){
-                this.state.originQualityData.map((data, index) => {
-                    if(!data.isCompleted){
-                        optionarray.push(data);
-                    }
-                    return data;
-                })
-            }
-        }else if(this.state.showMode==="3"){
-            if(this.state.originQualityData){
-                this.state.originQualityData.map((data, index) => {
-                    if(data.isCompleted){
-                        optionarray.push(data);
-                    }
-                    return data;
-                })
-            }
+        if(this.state.filteredData.length){
+            this.getQualityData(this.state.filteredData);
         }else{
-            optionarray = this.state.originQualityData;
+            this.getQualityData();
         }
         
-        this.setState({
-            qualityData: optionarray, 
-            showModeData: optionarray,
-            fistFilterWeek: 0,
-            secondFilterWeek: 0,
-            firstFilterDate: new Date(),
-            secondFilterDate: new Date(),
-            filterDateFlag: false,
-            filterWeekFlag: false
-        });
     });
-}
-
-onChangeWeeks = (evt, mode) => {
-    if(mode==='first'){
-        this.setState({fistFilterWeek: evt.target.value, filterWeekFlag: true}, () => {
-            this.filterData();
-        })
-    }else{
-        this.setState({secondFilterWeek: evt.target.value, filterWeekFlag: true}, () => {
-            this.filterData();
-        })
-    }
-}
-
-onChangeDateFilter = (date, mode) => {
-    if(mode==="first"){
-        this.setState({firstFilterDate: date, filterDateFlag: true}, ()=>{
-            this.filterData();
-        })
-    }else{
-        this.setState({secondFilterDate: date, filterDateFlag: true}, ()=>{
-            this.filterData();
-        })
-    }
-}
-
-filterData = () => {
-    let qualityData = [];
-    let showModeData = this.state.showModeData;
-    if(this.state.fistFilterWeek<=this.state.secondFilterWeek){
-        this.state.showModeData.map((val, key) => {
-            if(this.state.filterDateFlag && this.state.filterWeekFlag){
-                if(this.state.secondFilterWeek>=val.Loadingweek && this.state.fistFilterWeek<=val.Loadingweek && new Date(this.state.firstFilterDate)<=new Date(val.Loadingdate) && new Date(this.state.secondFilterDate)>=new Date(val.Loadingdate)){
-                    qualityData.push(val)
-                }
-            }else if(this.state.filterDateFlag&&!this.state.filterWeekFlag){
-                if(new Date(this.state.firstFilterDate)<=new Date(val.Loadingdate) && new Date(this.state.secondFilterDate)>=new Date(val.Loadingdate)){
-                    qualityData.push(val)
-                }
-            }else if(!this.state.filterDateFlag&&this.state.filterWeekFlag){
-                if(this.state.secondFilterWeek>=val.Loadingweek && this.state.fistFilterWeek<=val.Loadingweek){
-                    qualityData.push(val)
-                }
-            }
-            
-            return val;  
-        })
-        this.setState({qualityData: qualityData});
-    }else{
-        this.setState({qualityData: showModeData});
-    }
 }
 
 render () {
@@ -248,7 +256,7 @@ render () {
             )}
             <div className="orders">
                 <Row className="order_filter">
-                    <Col xl={3} style={{paddingLeft: 0, paddingTop: 10}}>
+                    <Col sm={6}>
                         <Select
                             name="filter"
                             options={this.state.showModeList}
@@ -257,20 +265,23 @@ render () {
                             defaultValue={{"value": "2", "label":trls('Show_just_not_completed')}}
                         />
                     </Col>
-                    <Col xl={4} style={{display: "flex", marginRight: 30, paddingLeft: 0, paddingTop: 10}}>
-                        <span style={{marginTop:6}}>{trls('Week')}</span>
-                        <div style={{display: "flex", paddingLeft: 12}}>
-                            <Form.Control type="text" className="order-filter_date" value={this.state.fistFilterWeek} name="firstweek" onChange={(evt)=>this.onChangeWeeks(evt, "first")} />
-                            <Form.Control type="text" className="order-filter_date" value={this.state.secondFilterWeek} name="secondweek" onChange={(evt)=>this.onChangeWeeks(evt, "second")} />
+                    <Col sm={6} className="has-search">
+                        <div style={{display: 'flex', float: 'right'}}>
+                            <Button variant="light" onClick={()=>this.changeFilter()}><i className="fas fa-filter add-icon"></i>{trls('Filter')}</Button>
+                            <div style={{marginLeft: 20}}>
+                                <span className="fa fa-search form-control-feedback"></span>
+                                <Form.Control className="form-control fitler" type="text" name="number"placeholder={trls("Quick_search")}/>
+                            </div>
                         </div>
                     </Col>
-                    <Col xl={4} style={{display: "flex", paddingLeft: 0, paddingTop: 10}}>
-                        <span style={{marginTop:6}}>{trls('Date')}</span>
-                        <div style={{display: "flex"}}>
-                            <DatePicker name="startdate" className="myDatePicker order-filter_date" dateFormat="dd-MM-yyyy" selected={this.state.firstFilterDate} onChange={(date) =>this.onChangeDateFilter(date, 'first')} />
-                            <DatePicker name="startdate" className="myDatePicker order-filter_date" dateFormat="dd-MM-yyyy" selected={this.state.secondFilterDate} onChange={(date) =>this.onChangeDateFilter(date, 'second')} />
-                        </div>
-                    </Col>
+                    {this.state.filterData.length&&(
+                        <Filtercomponent
+                            onHide={()=>this.setState({filterFlag: false})}
+                            filterData={this.state.filterData}
+                            onFilterData={(filterOption)=>this.filterOptionData(filterOption)}
+                            showFlag={this.state.filterFlag}
+                        />
+                    )}
                 </Row>
                 <div className="table-responsive purchase-order-table">
                     <table id="example-task" className="place-and-orders__table table" width="100%">
@@ -320,7 +331,16 @@ render () {
                             />
                         </div>
                     )}
-                    <Salesdetailfrom
+                    {this.state.slideDetailFlag ? (
+                        <Salesorderdetail
+                            newid={this.state.newId}
+                            onHide={() => this.setState({slideDetailFlag: false})}
+                            customercode={this.state.customercode}
+                            suppliercode={this.state.suppliercode}
+                            salesdetaildata={this.state.salesDetailData}
+                        />
+                    ): null}
+                    {/* <Salesdetailfrom
                         show={this.state.modalShow}
                         onHide={() => this.setState({modalShow: false})}
                         onSetDetailFlag={()=>this.setState({detailFlag: false})}
@@ -328,7 +348,7 @@ render () {
                         orderid={this.state.orderId}
                         customercode={this.state.customerCode}
                         suppliercode={this.state.supplierCode}
-                    />
+                    /> */}
                 </div>
             </div>
         </div>

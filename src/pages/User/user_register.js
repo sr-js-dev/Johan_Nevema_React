@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Form,Row } from 'react-bootstrap';
+import { Form, Row, Col } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import Adduserform from './adduserform';
@@ -13,6 +13,8 @@ import { trls } from '../../components/translate';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import 'datatables.net';
+import * as Common from '../../components/common';
+import Filtercomponent from '../../components/filtercomponent';
 
 const mapStateToProps = state => ({ ...state.auth });
 
@@ -27,24 +29,33 @@ class Userregister extends Component {
             userData:[],
             flag:'',
             userUpdateData:[],
-            loading:true
+            loading:true,
+            slideFormFlag: false,
+            originFilterData: [],
+            filterFlag: false,
+            filterData: []
         };
       }
     componentDidMount() {
         this._isMounted=true
-        this.getUserData()
+        this.getUserData();
+        this.setFilterData();
     }
     componentWillUnmount() {
         this._isMounted = false
     }
-    getUserData () {
+    getUserData (data) {
         this._isMounted = true;
         this.setState({loading:true})
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.get(API.GetUserData, headers)
         .then(result => {
             if(this._isMounted){
-                this.setState({userData:result.data})
+                if(!data){
+                    this.setState({userData: result.data, originFilterData: result.data});
+                }else{
+                    this.setState({userData: data});
+                }
                 this.setState({loading:false})
                 $('#example').dataTable().fnDestroy();
                 $('#example').DataTable(
@@ -68,11 +79,39 @@ class Userregister extends Component {
             }
         });
     }
-    
-    userUpdate = (event) => {
-        let userID=event.currentTarget.id;
+
+    // filter module
+    setFilterData = () => {
+        let filterData = [
+            {"label": trls('UserName'), "value": "UserName", "type": 'text'},
+            {"label": trls('Email'), "value": "Email", "type": 'text'},
+        ]
+        this.setState({filterData: filterData});
+    }
+
+    filterOptionData = (filterOption) =>{
+        let dataA = []
+        dataA = Common.filterData(filterOption, this.state.originFilterData);
+        if(!filterOption.length){
+            dataA=null;
+        }
+        $('#project_table').dataTable().fnDestroy();
+        this.getUserData(dataA);
+    }
+
+    changeFilter = () => {
+        if(this.state.filterFlag){
+            this.setState({filterFlag: false})
+        }else{
+            this.setState({filterFlag: true})
+        }
+    }
+    // filter module
+
+    userUpdate = (id) => {
+        let userID=id;
         var settings = {
-            "url": API.GetUserDataById+event.currentTarget.id,
+            "url": API.GetUserDataById+id,
             "method": "GET",
             "headers": {
                 "Content-Type": "application/json",
@@ -82,8 +121,8 @@ class Userregister extends Component {
         $.ajax(settings).done(function (response) {
         })
         .then(response => {
-            this.setState({userUpdateData: response})
-            this.setState({modalShow:true, mode:"update",userID:userID, flag:true})
+            this.setState({userUpdateData: response, mode:"update",userID:userID, flag:true, slideFormFlag: true});
+            Common.showSlideForm();
         });
     }
     viewUserData = (event) => {
@@ -105,8 +144,8 @@ class Userregister extends Component {
             this.getUserData();               
         });
     }
-    userDeleteConfirm = (event) => {
-        this.setState({userId:event.currentTarget.id})
+    userDeleteConfirm = (id) => {
+        this.setState({userId: id})
         confirmAlert({
             title: 'Confirm',
             message: 'Are you sure to do this.',
@@ -124,6 +163,12 @@ class Userregister extends Component {
             ]
           });
     }
+
+    addUser = () => {
+        this.setState({mode:"add", flag:false, slideFormFlag: true})
+        Common.showSlideForm();
+    }
+
     render () {
         let userData=this.state.userData;
         let optionarray = [];
@@ -141,13 +186,28 @@ class Userregister extends Component {
                     <h2 className="title">{trls('Users')}</h2>
                 </div>
                 <div className="orders">
-                    <div className="orders__filters justify-content-between">
-                        <Button variant="primary" onClick={()=>this.setState({modalShow:true, mode:"add", flag:false})}><i className="fas fa-plus add-icon"></i>{trls('Add_User')}</Button> 
-                        <div className="has-search">
-                            <span className="fa fa-search form-control-feedback"></span>
-                            <Form.Control className="form-control" type="text" name="number"placeholder={trls("Quick_search")}/>
-                        </div>
-                    </div>
+                    <Row>
+                        <Col sm={6}>
+                            <Button variant="primary" onClick={()=>this.addUser()}><i className="fas fa-plus add-icon"></i>{trls('Add_User')}</Button> 
+                        </Col>
+                        <Col sm={6} className="has-search">
+                            <div style={{display: 'flex', float: 'right'}}>
+                                <Button variant="light" onClick={()=>this.changeFilter()}><i className="fas fa-filter add-icon"></i>{trls('Filter')}</Button>
+                                <div style={{marginLeft: 20}}>
+                                    <span className="fa fa-search form-control-feedback"></span>
+                                    <Form.Control className="form-control fitler" type="text" name="number"placeholder={trls("Quick_search")}/>
+                                </div>
+                            </div>
+                        </Col>
+                        {this.state.filterData.length&&(
+                            <Filtercomponent
+                                onHide={()=>this.setState({filterFlag: false})}
+                                filterData={this.state.filterData}
+                                onFilterData={(filterOption)=>this.filterOptionData(filterOption)}
+                                showFlag={this.state.filterFlag}
+                            />
+                        )}
+                    </Row>
                     <div className="table-responsive credit-history">
                         <table id="example" className="place-and-orders__table table" width="100%">
                         <thead>
@@ -173,11 +233,8 @@ class Userregister extends Component {
                                         </td>
                                         <td >
                                             <Row style={{justifyContent:"space-around"}}>
-                                                <Button id={data.Id} variant="light" onClick={()=>this.userDeleteConfirm()} className="action-button"><i className="fas fa-trash-alt add-icon"></i>{trls('Delete')}</Button>
-                                                <Button id={data.Id} variant="light" onClick={()=>this.userUpdate()} className="action-button"><i className="fas fa-pen add-icon"></i>{trls('Edit')}</Button>
-                                                {/* <i id={data.Id} className="far fa-trash-alt statu-item" onClick={this.userDeleteConfirm}></i>
-                                                <i id={data.Id} className="fas fa-pen statu-item" onClick={this.userUpdate} ></i>
-                                                <i id={data.Id} className="far fa-eye statu-item" onClick={this.viewUserData} ></i> */}
+                                                <Button variant="light" onClick={()=>this.userDeleteConfirm(data.Id)} className="action-button"><i className="fas fa-trash-alt add-icon"></i>{trls('Delete')}</Button>
+                                                <Button variant="light" onClick={()=>this.userUpdate(data.Id)} className="action-button"><i className="fas fa-pen add-icon"></i>{trls('Edit')}</Button>
                                             </Row>
                                         </td>
                                     </tr>
@@ -195,14 +252,17 @@ class Userregister extends Component {
                         )}
                     </div>
                 </div>
-                <Adduserform
-                    show={this.state.modalShow}
-                    mode={this.state.mode}
-                    onHide={() => this.setState({modalShow: false})}
-                    onGetUser={() => this.getUserData()}
-                    userUpdateData={this.state.userUpdateData}
-                    userID={this.state.userID}
-                /> 
+                {this.state.slideFormFlag ? (
+                    <Adduserform
+                        show={this.state.modalShow}
+                        mode={this.state.mode}
+                        onHide={() => this.setState({slideFormFlag: false})}
+                        onGetUser={() => this.getUserData()}
+                        userUpdateData={this.state.userUpdateData}
+                        userID={this.state.userID}
+                    /> 
+                ): null}
+                
             </div>
         )
         };

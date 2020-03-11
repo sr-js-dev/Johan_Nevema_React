@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
+import { Form, Button, Row, Col } from 'react-bootstrap';
 import Select from 'react-select';
 import { connect } from 'react-redux';
 import * as authAction  from '../../actions/authAction';
@@ -8,7 +8,7 @@ import API from '../../components/api'
 import Axios from 'axios';
 import ListErrors from '../../components/listerrors';
 import { trls } from '../../components/translate';
-import DraggableModalDialog from '../../components/draggablemodal';
+import * as Common from '../../components/common';
 
 const mapStateToProps = state => ({ 
     ...state.auth,
@@ -28,14 +28,18 @@ class Adduserform extends Component {
             selectrolvalue:"Select...",
             selectrollabel:"Select...",
             val1:'',
-            selectflag:true
+            selectflag:true,
+            errorFlag: false
         };
     }
+
     componentWillUnmount() {
         this._isMounted = false;
     }
+    
     componentDidMount() {
     }
+
     handleSubmit = (event) => {
         event.preventDefault();
         const clientFormData = new FormData(event.target);
@@ -43,9 +47,9 @@ class Adduserform extends Component {
         for (let key of clientFormData.keys()) {
             data[key] = clientFormData.get(key);
         }
+        this.setState({errorFlag: false})
         if(this.props.mode==="add"){
             var params = {
-                // "UserName": data.UserName,
                 "Email": data.email1,
                 "PhoneNumber": data.PhoneNumber,
                 "password": data.password1,
@@ -56,11 +60,13 @@ class Adduserform extends Component {
             Axios.post(API.PostUserData, params, headers)
             .then(result => {
                 this.props.onGetUser()
-                this.props.onHide();
+                this.onHide();
                 this.setState({selectflag:true})
                 this.props.removeState();
             })
             .catch(err => {
+                this.setState({errorFlag: true})
+                console.log('111111', err.response.data.ModelState)
                 if(err.response.data.ModelState[""]){
                     this.props.postUserError(err.response.data.ModelState[""])
                 }else if(err.response.data.ModelState["model.Password"] && !err.response.data.ModelState["model.ConfirmPassword"]){
@@ -72,13 +78,13 @@ class Adduserform extends Component {
             params = {
                 "Id": this.props.userID,
                 "PhoneNumber": data.PhoneNumber,
-                "RoleName": data.RoleName,
+                "RoleName": data.roles,
             }
             headers = SessionManager.shared().getAuthorizationHeader();
             Axios.put( "https://cors-anywhere.herokuapp.com/"+API.PostUserUpdate, params, headers)
             .then(result => {
                 this.props.onGetUser()
-                this.props.onHide();
+                this.onHide();
                 this.setState({selectflag:true})
                 this.props.removeState();
             })
@@ -86,54 +92,33 @@ class Adduserform extends Component {
             });
         }
     }
+
     getRoles (value) {
-        this.setState({selectrollabel:value.label, selectrolvalue:value.value})
         this.setState({val1:value.value})
-        this.setState({selectflag:false})
     }
+    
+    onHide = () => {
+        this.props.onHide();
+        Common.hideSlideForm();
+    }
+
     render(){   
         let updateData = [];
         let roles = [];
-        let roledata=''
+        // let roledata=''
         if(this.props.userUpdateData){
             updateData=this.props.userUpdateData;
             roles = updateData.roles;
             if(roles){
-                roledata=roles[0].name;
+                // roledata=roles[0].name;
             }
         }
         return (
-            <Modal
-            show={this.props.show}
-            dialogAs={DraggableModalDialog}
-            onHide={this.props.onHide}
-            size="lg"
-            aria-labelledby="contained-modal-title-vcenter"
-            backdrop= "static"
-            centered
-            >
-            <Modal.Header closeButton>
-                {this.props.mode==="add" ? (
-                    <Modal.Title id="contained-modal-title-vcenter">
-                        {trls('Add_User')}
-                    </Modal.Title>
-                ) : <div/>
-                }
-                {this.props.mode==="view" ? (
-                    <Modal.Title id="contained-modal-title-vcenter">
-                        {trls('View_User')}
-                    </Modal.Title>
-                ) : <div/>
-                }
-                {this.props.mode==="update" ? (
-                    <Modal.Title id="contained-modal-title-vcenter">
-                        {trls('Edit_User')}
-                    </Modal.Title>
-                ) : <div/>
-                }
-            </Modal.Header>
-            <Modal.Body>
-                { this.props.mode==="view" ? (
+            <div className = "slide-form__controls open" style={{height: "100%"}}>
+                <div style={{marginBottom:30}}>
+                    <i className="fas fa-times slide-close" style={{ fontSize: 20, cursor: 'pointer'}} onClick={()=>this.onHide()}></i>
+                </div>
+                {/* { this.props.mode==="view" ? (
                     <Form className="container product-form" onSubmit = { this.handleSubmit }>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
                         <Form.Label column sm="3">
@@ -180,93 +165,54 @@ class Adduserform extends Component {
                         </Col>
                     </Form.Group>
                 </Form>
-                ) : 
-                <Form className="container product-form" onSubmit = { this.handleSubmit }>
-                    <ListErrors errors={this.props.error} />
-                    {/* {this.props.mode==="add" && (
-                        <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls('UserName')}     
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
-                                { updateData&&this.props.mode==="update" ? (
-                                    <Form.Control type="text" name="UserName" defaultValue={updateData.UserName} required placeholder={trls('UserName')} />
-                                ) : <Form.Control type="text" name="UserName" placeholder={trls('UserName')} />
-                                }
-                            </Col>
-                        </Form.Group>
-                    )
-                    } */}
+                ) :  */}
+                <Form className="container" onSubmit = { this.handleSubmit }>
+                    <Col className="title add-product">{trls('Add_Product')}</Col>
+                    {this.state.errorFlag && (
+                        <ListErrors errors={this.props.error}/>
+                    )}
                     {this.props.mode==="add" && (
                         <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls('Email')}     
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
-                                { updateData&&this.props.mode==="update" ? (
-                                    <Form.Control type="email" name="email1" defaultValue={updateData.Email} required placeholder={trls('Email')}/>
-                                ) : <Form.Control type="email" name="email1" required placeholder={trls('Email')}/>
-                                }
+                            <Col className="product-text">
+                                <Form.Control type="email" name="email1" defaultValue={this.props.mode==="update" ? updateData.Email : ''} required placeholder={trls('Email')}/>
+                                <label className="placeholder-label">{trls('Email')}</label>
                             </Col>
                         </Form.Group>
                     )
                     }
-                    <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls('PhoneNumber')}     
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
-                            { updateData&&this.props.mode==="update" ? (
-                                <Form.Control type="text" name="PhoneNumber" defaultValue={updateData.PhoneNumber} required placeholder={trls('PhoneNumber')} />
-                            ) : <Form.Control type="text" name="PhoneNumber" placeholder={trls('PhoneNumber')} />
-                            }
-                            
+                    {this.props.mode==="add" && (
+                        <Form.Group as={Row} controlId="formPlaintextPassword">
+                            <Col className="product-text">
+                                <Form.Control type="password" name="password1" required placeholder={trls('Password')}/>
+                                <label className="placeholder-label">{trls('Password')}</label>
+                            </Col>
+                        </Form.Group>
+                    )
+                    }
+                    {this.props.mode==="add" && (
+                        <Form.Group as={Row} controlId="formPlaintextPassword">
+                            <Col className="product-text">
+                                <Form.Control type="password" name="confirmpassword1" required placeholder={trls('ConfirmPassword')}/>
+                                <label className="placeholder-label">{trls('ConfirmPassword')}</label>
+                            </Col>
+                        </Form.Group>
+                    )
+                    }
+                    <Form.Group as={Row} controlId="formPlaintext">
+                        <Col className="product-text">
+                            <Form.Control type="text" name="PhoneNumber" defaultValue={this.props.mode==="update" ? updateData.PhoneNumber : ''} required placeholder={trls('PhoneNumber')} />
+                            <label className="placeholder-label">{trls('PhoneNumber')}</label>
                         </Col>
                     </Form.Group>
-                    {this.props.mode==="add" && (
-                        <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls('Password')}     
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
-                                
-                                <Form.Control type="password" name="password1" required placeholder={trls('Password')} />
-                            </Col>
-                        </Form.Group>
-                    )
-                    }
-                    {this.props.mode==="add" && (
-                        <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls('ConfirmPassword')}     
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
-                                <Form.Control type="password" name="confirmpassword1" required placeholder={trls('ConfirmPassword')}/>
-                            </Col>
-                        </Form.Group>
-                    )
-                    }
                     <Form.Group as={Row} controlId="formPlaintextSupplier">
-                        <Form.Label column sm="3">
-                            {trls('Roles')} 
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
-                            { roledata&&this.state.selectflag&&this.props.mode==="update" ? (
-                                <Select
-                                    name="roles"
-                                    placeholder={trls('Select')}
-                                    options={this.state.roles}
-                                    value={{"value":roledata,"label":roledata}}
-                                    onChange={val => this.getRoles(val)}
-                                />
-                            ) : <Select
-                                    name="roles"
-                                    placeholder={trls('Select')}
-                                    options={this.state.roles}
-                                    onChange={val => this.getRoles(val)}
-                                />
-                            }
-                            
+                        <Col>
+                            <Select
+                                name="roles"
+                                placeholder={trls('Roles')}
+                                options={this.state.roles}
+                                onChange={val => this.setState({val1: val})}
+                            />
+                            <label className="placeholder-label">{trls('Roles')}</label>
                             {!this.props.disabled&&this.props.mode==="add" && (
                                 <input
                                     onChange={val=>console.log()}
@@ -275,18 +221,18 @@ class Adduserform extends Component {
                                     style={{ opacity: 0, height: 0 }}
                                     value={this.state.val1}
                                     required
-                                    />
-                                )}
+                                />
+                            )}
                         </Col>
                     </Form.Group>
-                    <Form.Group style={{textAlign:"center"}}>
-                        <Button type="submit" style={{width:"100px"}}>{trls('Save')}</Button>
+                    <Form.Group >
+                        <Col>
+                            <Button type="submit" style={{width:"100px"}}>{trls('Save')}</Button>
+                        </Col>
                     </Form.Group>
                 </Form>
-                }
-                
-            </Modal.Body>
-            </Modal>
+                {/* } */}
+            </div>
         );
     }
 }

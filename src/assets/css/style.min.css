@@ -1233,7 +1233,8 @@ table {
 }
 
 .orders {
-	padding: 0 30px
+	padding: 0 30px;
+	padding-top: 40px
 }
 
 .orders__filters {

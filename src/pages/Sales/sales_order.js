@@ -2,15 +2,16 @@ import React, {Component} from 'react'
 import { connect } from 'react-redux';
 import $ from 'jquery';
 import { BallBeat } from 'react-pure-loaders';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Col, Row } from 'react-bootstrap';
 import  Salesform  from './salesform'
 import { trls } from '../../components/translate';
 import 'datatables.net';
 import SessionManager from '../../components/session_manage';
 import API from '../../components/api'
 import Axios from 'axios';
-import history from '../../history';
 import * as Common  from '../../components/common';
+import Salesorderdetail from './selesorder_detail';
+import Filtercomponent from '../../components/filtercomponent';
 
 const mapStateToProps = state => ({
      ...state.auth,
@@ -25,34 +26,31 @@ class Salesorder extends Component {
         super(props);
         this.state = {  
             loading:true,
-            salesData:[]
+            salesData:[],
+            slideFormFlag: false,
+            slideDetailFlag: false,
+            salesDetailData: [],
+            originFilterData: [],
+            filterFlag: false,
+            filterData: []
         };
       }
 componentDidMount() {
     this.getsalesData();
+    this.setFilterData();
 }
 
-getsalesData = () => {
+getsalesData = (data) => {
     var header = SessionManager.shared().getAuthorizationHeader();
     Axios.get(API.GetSalesData, header)
     .then(result => {
-        this.setState({salesData:result.data.Items})
+        if(!data){
+            this.setState({salesData: result.data.Items, originFilterData: result.data.Items});
+        }else{
+            this.setState({salesData: data});
+        }
         this.setState({loading:false})
-        // $('#sales_table thead tr').clone(true).appendTo( '#sales_table thead' );
-        // $('#sales_table thead tr:eq(1) th').each( function (i) {
-        //     $(this).html( '<input type="text" class="search-table-input" style="width: 100%" placeholder="Search" />' );
-        //     // $(this).removeClass("sorting");
-        //     $(this).addClass("sort-style");
-        //     $( 'input', this ).on( 'keyup change', function () {
-        //         if ( table.column(i).search() !== this.value ) {
-        //             table
-        //                 .column(i)
-        //                 .search( this.value )
-        //                 .draw();
-        //         }
-        //     } );
-        // } );
-        // $('#sales_table').dataTable().fnDestroy();
+        $('#sales_table').dataTable().fnDestroy();
         $('#sales_table').DataTable(
             {
                 "language": {
@@ -73,25 +71,51 @@ getsalesData = () => {
           );
     });
 }
+// filter module
+    setFilterData = () => {
+        let filterData = [
+            {"label": trls('Customer'), "value": "Customer", "type": 'text'},
+            {"label": trls('Supplier'), "value": "Supplier", "type": 'text'},
+            {"label": trls('Reference_customer'), "value": "referencecustomer", "type": 'text'},
+            {"label": trls('Loading_date'), "value": "loadingdate", "type": 'date'},
+            {"label": trls('Arrival_date'), "value": "arrivaldate", "type": 'date'},
+            {"label": trls('Productcode'), "value": "ProductCode", "type": 'text'},
+            {"label": trls('Quantity'), "value": "Quantity", "type": 'text'},
+            {"label": trls('PackingSlip'), "value": "PackingSlip", "type": 'text'},
+            {"label": trls('Container'), "value": "Container", "type": 'text'}
+        ]
+        this.setState({filterData: filterData});
+    }
+
+  filterOptionData = (filterOption) =>{
+    let dataA = []
+    dataA = Common.filterData(filterOption, this.state.originFilterData);
+    if(!filterOption.length){
+        dataA=null;
+    }
+    $('#sales_table').dataTable().fnDestroy();
+    this.getsalesData(dataA);
+  }
+
+  changeFilter = () => {
+    if(this.state.filterFlag){
+        this.setState({filterFlag: false})
+    }else{
+        this.setState({filterFlag: true})
+    }
+  }
+  // filter module
 
 loadSalesDetail = (data)=>{
-    var header = SessionManager.shared().getAuthorizationHeader();
-    Axios.get(API.GetSuppliersDropdown, header)
-    .then(result => {
-        let supplierData = result.data.Items;
-        let supplierCode = '';
-        supplierData.map((supplier, index)=>{
-            if(supplier.value===data.Supplier){
-                supplierCode = supplier.key;
-            }
-            return supplierData;
-        });
-        history.push({
-            pathname: '/sales-order-detail',
-            state: { newId: data.id, customercode:data.CustomerCode, suppliercode: supplierCode, newSubmit:true, quality: false}
-        })
-    });
+    Common.showSlideForm();
+    this.setState({newId: data.id, salesDetailData: data, customercode:data.CustomerCode, suppliercode: data.SupplierCode, slideDetailFlag: true})
 }
+
+addSales = () => {
+    this.setState({copyProduct: '', copyFlag: 1, slideFormFlag: true});
+    Common.showSlideForm();
+}
+
 render () {
     let salesData = this.state.salesData
     salesData.sort(function(a, b) {
@@ -103,13 +127,28 @@ render () {
                 <h2 className="title">{trls('Sales_Order')}</h2>
             </div>
             <div className="orders">
-                <div className="orders__filters justify-content-between">
-                    <Button variant="primary" onClick={()=>this.setState({modalShow:true})}><i className="fas fa-plus add-icon"></i>{trls('Sales_Order')}</Button>   
-                    <div className="has-search">
-                        <span className="fa fa-search form-control-feedback"></span>
-                        <Form.Control className="form-control" type="text" name="number"placeholder={trls("Quick_search")}/>
-                    </div>
-                </div>
+                <Row>
+                    <Col sm={6}>
+                        <Button variant="primary" onClick={()=>this.addSales()}><i className="fas fa-plus add-icon"></i>{trls('Sales_Order')}</Button>   
+                    </Col>
+                    <Col sm={6} className="has-search">
+                        <div style={{display: 'flex', float: 'right'}}>
+                            <Button variant="light" onClick={()=>this.changeFilter()}><i className="fas fa-filter add-icon"></i>{trls('Filter')}</Button>   
+                            <div style={{marginLeft: 20}}>
+                                <span className="fa fa-search form-control-feedback"></span>
+                                <Form.Control className="form-control fitler" type="text" name="number"placeholder={trls("Quick_search")}/>
+                            </div>
+                        </div>
+                    </Col>
+                    {this.state.filterData.length&&(
+                        <Filtercomponent
+                            onHide={()=>this.setState({filterFlag: false})}
+                            filterData={this.state.filterData}
+                            onFilterData={(filterOption)=>this.filterOptionData(filterOption)}
+                            showFlag={this.state.filterFlag}
+                        />
+                    )}
+                </Row>
                 <div className="table-responsive purchase-order-table">
                     <table id="sales_table" className="place-and-orders__table table" width="100%">
                         <thead>
@@ -155,11 +194,23 @@ render () {
                     )}
                 </div>
             </div>
-            <Salesform
-                show={this.state.modalShow}
-                onHide={() => this.setState({modalShow: false})}
-                // customerData
-            />
+            {this.state.slideFormFlag ? (
+                <Salesform
+                    show={this.state.modalShow}
+                    onHide={() => this.setState({slideFormFlag: false})}
+                    onloadSalesDetail={(data) => this.loadSalesDetail(data)}
+                />
+            ): null}
+            {this.state.slideDetailFlag ? (
+                <Salesorderdetail
+                    newid={this.state.newId}
+                    onHide={() => this.setState({slideDetailFlag: false})}
+                    customercode={this.state.customercode}
+                    suppliercode={this.state.suppliercode}
+                    salesdetaildata={this.state.salesDetailData}
+                />
+            ): null}
+            
         </div>
     )
 };
