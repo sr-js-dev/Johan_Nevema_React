@@ -12,6 +12,7 @@ import $ from 'jquery';
 import * as Common from '../../components/common';
 import Purchaseorderdetail from './purchaseorder_detail';
 import Filtercomponent from '../../components/filtercomponent';
+import Contextmenu from '../../components/contextmenu';
 
 const mapStateToProps = state => ({
      ...state.auth,
@@ -33,6 +34,14 @@ class Purchaseorder extends Component {
             filterData: [],
             originpurchaseorders: [],
             filterFlag: false,
+            filterColunm: [
+                {"label": trls('Id'), "value": "Id", "type": 'text', "show": true},
+                {"label": trls('Supplier'), "value": "Supplier", "type": 'text', "show": true},
+                {"label": trls('Invoice'), "value": "invoicenr", "type": 'text', "show": true},
+                {"label": trls('Invoice_date'), "value": "invoicedate", "type": 'date', "show": true},
+                {"label": trls('IsTransport'), "value": "IsTransport", "type": 'text', "show": true},
+                {"label": trls('Total_amount'), "value": "total", "type": 'text', "show": true}
+            ],
         };
       }
 componentDidMount() {
@@ -113,8 +122,26 @@ changeFilter = () => {
 }
 // filter module
 
+removeColumn = (value) => {
+    let filterColunm = this.state.filterColunm;
+    filterColunm = filterColunm.filter(function(item, key) {
+      if(item.label===value){
+        item.show = false;
+      }
+      return item;
+    })
+    this.setState({filterColunm: filterColunm})
+  }
+
+  showColumn = (value) => {
+    let filterColum = this.state.filterColunm;
+    filterColum = filterColum.filter((item, key)=>item.label===value);
+    return filterColum[0].show;
+  }
+
 render () {
     let salesData = this.state.purhaseorders;
+    const {filterColunm} = this.state;
     return (
         <div className="order_div">
             <div className="content__header content__header--with-line">
@@ -147,33 +174,36 @@ render () {
                     <table id="example" className="place-and-orders__table table" width="100%">
                         <thead>
                             <tr>
-                                <th>{trls('Id')}</th>
-                                <th>{trls('Supplier')}</th>
-                                <th>{trls('Invoice')}</th>
-                                <th>{trls('Invoice_date')}</th>
-                                <th>{trls('IsTransport')}</th>
-                                <th>{trls('Total_amount')}</th>
-                                
+                                {filterColunm.map((item, key)=>(
+                                    <th className={!item.show ? "filter-show__hide" : ''} key={key}>
+                                        <Contextmenu
+                                            triggerTitle = {item.label}
+                                            addFilterColumn = {(value)=>this.addFilterColumn(value)}
+                                            removeColumn = {(value)=>this.removeColumn(value)}
+                                        />
+                                    </th>
+                                    )
+                                )}
                             </tr>
                         </thead>
                         {salesData && !this.state.loading &&(<tbody>
                             {
                             salesData.map((data,i) =>(
                                 <tr id={data.id} key={i}>
-                                    <td>{data.id}</td>
-                                    <td>
+                                    <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}>{data.id}</td>
+                                    <td className={!this.showColumn(filterColunm[1].label) ? "filter-show__hide" : ''}>
                                         <div id={data.id} style={{cursor: "pointer", color:'#004388', fontSize:"14px", fontWeight:'bold'}} onClick={()=>this.loadPurchaseDetail(data.id)}>{data.Supplier}</div>
                                     </td>
-                                    <td>{data.invoicenr}</td>
-                                    <td>{Common.formatDate(data.invoicedate)}</td>
-                                    <td>
+                                    <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{data.invoicenr}</td>
+                                    <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.invoicedate)}</td>
+                                    <td className={!this.showColumn(filterColunm[4].label) ? "filter-show__hide" : ''}>
                                         {data.istransport ? (
                                             <i className ="fas fa-check-circle active-icon"></i>
                                         ):
                                             <i className ="fas fa-check-circle inactive-icon"></i>
                                         }
                                     </td>
-                                    <td>{Common.formatMoney(data.total)}</td>
+                                    <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>{Common.formatMoney(data.total)}</td>
                                 </tr>
                             ))
                             }

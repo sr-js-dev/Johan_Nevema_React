@@ -15,6 +15,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import 'datatables.net';
 import * as Common from '../../components/common';
 import Filtercomponent from '../../components/filtercomponent';
+import Contextmenu from '../../components/contextmenu';
 
 const mapStateToProps = state => ({ ...state.auth });
 
@@ -33,7 +34,13 @@ class Userregister extends Component {
             slideFormFlag: false,
             originFilterData: [],
             filterFlag: false,
-            filterData: []
+            filterData: [],
+            filterColunm: [
+                {"label": trls('UserName'), "value": "UserName", "type": 'text', "show": true},
+                {"label": trls('Email'), "value": "Email", "type": 'text', "show": true},
+                {"label": trls('Active'), "value": "active", "type": 'text', "show": true},
+                {"label": trls('Action'), "value": "action", "type": 'text', "show": true},
+            ]
         };
       }
     componentDidMount() {
@@ -121,10 +128,12 @@ class Userregister extends Component {
         $.ajax(settings).done(function (response) {
         })
         .then(response => {
+            console.log('1112312', response)
             this.setState({userUpdateData: response, mode:"update",userID:userID, flag:true, slideFormFlag: true});
             Common.showSlideForm();
         });
     }
+
     viewUserData = (event) => {
         this._isMounted = true;
         var headers = SessionManager.shared().getAuthorizationHeader();
@@ -136,14 +145,24 @@ class Userregister extends Component {
             }
         });
     }
+
     userDelete = () => {
-        var headers = SessionManager.shared().getAuthorizationHeader();
-        Axios.delete("https://cors-anywhere.herokuapp.com/"+API.DeleteUserData+this.state.userId, headers)
-        .then(result => {
+        var settings = {
+            "url": API.DeleteUserData+this.state.userId,
+            "method": "post",
+            "headers": {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer "+getUserToken(),
+        }
+        }
+        $.ajax(settings).done(function (response) {
+        })
+        .then(response => {
             this.setState({loading:true})
-            this.getUserData();               
+            this.getUserData();    
         });
     }
+
     userDeleteConfirm = (id) => {
         this.setState({userId: id})
         confirmAlert({
@@ -169,7 +188,25 @@ class Userregister extends Component {
         Common.showSlideForm();
     }
 
+    removeColumn = (value) => {
+        let filterColunm = this.state.filterColunm;
+        filterColunm = filterColunm.filter(function(item, key) {
+            if(item.label===value){
+            item.show = false;
+            }
+            return item;
+        })
+        this.setState({filterColunm: filterColunm})
+    }
+
+    showColumn = (value) => {
+        let filterColum = this.state.filterColunm;
+        filterColum = filterColum.filter((item, key)=>item.label===value);
+        return filterColum[0].show;
+    }
+
     render () {
+        const {filterColunm} = this.state;
         let userData=this.state.userData;
         let optionarray = [];
         if(userData){
@@ -212,26 +249,32 @@ class Userregister extends Component {
                         <table id="example" className="place-and-orders__table table" width="100%">
                         <thead>
                             <tr>
-                                <th>{trls('UserName')}</th>
-                                <th>{trls('Email')}</th>
-                                <th>{trls('Active')}</th>
-                                <th style={{width: "15%"}}>{trls('Action')}</th>
+                                {filterColunm.map((item, key)=>(
+                                    <th className={!item.show ? "filter-show__hide" : ''} key={key}>
+                                        <Contextmenu
+                                            triggerTitle = {item.label}
+                                            addFilterColumn = {(value)=>this.addFilterColumn(value)}
+                                            removeColumn = {(value)=>this.removeColumn(value)}
+                                        />
+                                    </th>
+                                    )
+                                )}
                             </tr>
                         </thead>
                         {optionarray && !this.state.loading &&(<tbody >
                             {
                                 optionarray.map((data,i) =>(
                                     <tr id={i} key={i}>
-                                        <td>{data.UserName}</td>
-                                        <td>{data.Email}</td>
-                                        <td>
+                                        <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}>{data.UserName}</td>
+                                        <td className={!this.showColumn(filterColunm[1].label) ? "filter-show__hide" : ''}>{data.Email}</td>
+                                        <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>
                                             {data.IsActive ? (
                                                 <i className ="fas fa-check-circle active-icon"></i>
                                             ):
                                                 <i className ="fas fa-check-circle inactive-icon"></i>
                                             }
                                         </td>
-                                        <td >
+                                        <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''} style={{width: 200}}>
                                             <Row style={{justifyContent:"space-around"}}>
                                                 <Button variant="light" onClick={()=>this.userDeleteConfirm(data.Id)} className="action-button"><i className="fas fa-trash-alt add-icon"></i>{trls('Delete')}</Button>
                                                 <Button variant="light" onClick={()=>this.userUpdate(data.Id)} className="action-button"><i className="fas fa-pen add-icon"></i>{trls('Edit')}</Button>

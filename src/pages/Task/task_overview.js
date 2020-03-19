@@ -11,6 +11,7 @@ import API from '../../components/api'
 import Axios from 'axios';
 import Filtercomponent from '../../components/filtercomponent';
 import * as Common  from '../../components/common';
+import Contextmenu from '../../components/contextmenu';
 
 const mapStateToProps = state => ({
      ...state.auth,
@@ -29,7 +30,15 @@ class Taskoverview extends Component {
             text: 1111,
             originFilterData: [],
             filterFlag: false,
-            filterData: []
+            filterData: [],
+            filterColunm: [
+                {"label": trls('Id'), "value": "Id", "type": 'text', "show": true},
+                {"label": trls('Tasktype'), "value": "Tasktype", "type": 'text', "show": true},
+                {"label": trls('Subject'), "value": "subject", "type": 'text', "show": true},
+                {"label": trls('TaskStatus'), "value": "TaskStatus", "type": 'text', "show": true},
+                {"label": trls('User'), "value": "User", "type": 'date', "show": true},
+                {"label": trls('Action'), "value": "Action", "type": 'text', "show": true},
+            ],
         };
       }
 componentDidMount() {
@@ -122,11 +131,29 @@ changeFilter = () => {
 componentWillUnmount() {
 }
 
+removeColumn = (value) => {
+    let filterColunm = this.state.filterColunm;
+    filterColunm = filterColunm.filter(function(item, key) {
+        if(item.label===value){
+        item.show = false;
+        }
+        return item;
+    })
+    this.setState({filterColunm: filterColunm})
+}
+
+showColumn = (value) => {
+    let filterColum = this.state.filterColunm;
+    filterColum = filterColum.filter((item, key)=>item.label===value);
+    return filterColum[0].show;
+}
+
 render () {
     let taskOverviewData = this.state.taskOverviewData
     taskOverviewData.sort(function(a, b) {
         return a.id - b.id;
     });
+    const {filterColunm} = this.state;
     return (
         <div className="order_div">
             <div className="content__header content__header--with-line">
@@ -159,24 +186,28 @@ render () {
                     <table id="example-task" className="place-and-orders__table table" width="100%">
                         <thead>
                             <tr>
-                                <th>{trls('Id')}</th>
-                                <th>{trls('Tasktype')}</th>
-                                <th>{trls('Subject')}</th>
-                                <th>{trls('TaskStatus')}</th>
-                                <th>{trls('User')}</th>
-                                <th>{trls('Action')}</th>
+                                {filterColunm.map((item, key)=>(
+                                    <th className={!item.show ? "filter-show__hide" : ''} key={key}>
+                                        <Contextmenu
+                                            triggerTitle = {item.label}
+                                            addFilterColumn = {(value)=>this.addFilterColumn(value)}
+                                            removeColumn = {(value)=>this.removeColumn(value)}
+                                        />
+                                    </th>
+                                    )
+                                )}
                             </tr>
                         </thead>
                         {taskOverviewData && !this.state.loading &&(<tbody >
                             {
                                 taskOverviewData.map((data,i) =>(
                                 <tr id={data.id} key={i}>
-                                    <td>{i+1}</td>
-                                    <td>{data.Tasktype}</td>
-                                    <td>{data.subject}</td>
-                                    <td>{data.TaskStatus}</td>
-                                    <td>{data.User}</td>
-                                    <td>
+                                    <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}>{i+1}</td>
+                                    <td className={!this.showColumn(filterColunm[1].label) ? "filter-show__hide" : ''}>{data.Tasktype}</td>
+                                    <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{data.subject}</td>
+                                    <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''}>{data.TaskStatus}</td>
+                                    <td className={!this.showColumn(filterColunm[4].label) ? "filter-show__hide" : ''}>{data.User}</td>
+                                    <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>
                                         <Row style={{justifyContent:"center"}}>
                                             <Button id={data.id} variant="light" onClick={()=>this.getUpdateTaskData()} className="action-button"><i className="fas fa-pen add-icon"></i>{trls('Edit')}</Button>
                                         </Row>

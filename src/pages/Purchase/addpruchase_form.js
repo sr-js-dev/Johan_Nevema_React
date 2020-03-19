@@ -184,7 +184,8 @@ class Addpurchase extends Component {
                         }
                         Axios.post(API.CheckMultipleLines, params, headers)
                         .then(result => {
-                            if(result.data.Success){
+
+                            if(result.data.Items[0].multiplelines==="true"){
                                 Sweetalert(trls('already_purchaseinvoice'));
                             }
                             // 

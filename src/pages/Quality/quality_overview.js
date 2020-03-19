@@ -14,6 +14,7 @@ import FlashMassage from 'react-flash-message'
 // import Salesdetailfrom from "../Sales/salesorder_detailform";
 import Filtercomponent from '../../components/filtercomponent';
 import Salesorderdetail from '../Sales/selesorder_detail';
+import Contextmenu from '../../components/contextmenu';
 
 const mapStateToProps = state => ({
      ...state.auth,
@@ -49,7 +50,17 @@ class Taskoverview extends Component {
             filteredData: [],
             slideDetailFlag: false,
             customerData: [],
-            supplierData: []
+            supplierData: [],
+            filterColunm: [
+                {"label": trls('Id'), "value": "Id", "type": 'text', "show": true},
+                {"label": trls('Supplier'), "value": "supplier", "type": 'text', "show": true},
+                {"label": trls('Customer'), "value": "customer", "type": 'text', "show": true},
+                {"label": trls('Purchase_Amount'), "value": "PurchaseAmount", "type": 'date', "show": true},
+                {"label": trls('Sales_Amount'), "value": "SalesAmount", "type": 'date', "show": true},
+                {"label": trls('Loading_date'), "value": "Loadingdate", "type": 'text', "show": true},
+                {"label": trls('Loading_week'), "value": "Loadingweek", "type": 'text', "show": true},
+                {"label": trls('Complete'), "value": "Complete", "type": 'text', "show": true},
+            ],
         };
       }
 componentDidMount() {
@@ -231,7 +242,25 @@ changeShowMode = (value) =>{
     });
 }
 
+removeColumn = (value) => {
+    let filterColunm = this.state.filterColunm;
+    filterColunm = filterColunm.filter(function(item, key) {
+        if(item.label===value){
+        item.show = false;
+        }
+        return item;
+    })
+    this.setState({filterColunm: filterColunm})
+}
+
+showColumn = (value) => {
+    let filterColum = this.state.filterColunm;
+    filterColum = filterColum.filter((item, key)=>item.label===value);
+    return filterColum[0].show;
+}
+
 render () {
+    const {filterColunm} = this.state;
     let qualityData = this.state.qualityData
     qualityData.sort(function(a, b) {
         return a.id - b.id;
@@ -287,28 +316,30 @@ render () {
                     <table id="example-task" className="place-and-orders__table table" width="100%">
                         <thead>
                             <tr>
-                                <th>{trls('Id')}</th>
-                                <th>{trls('Supplier')}</th>
-                                <th>{trls('Customer')}</th>
-                                <th>{trls('Purchase_Amount')}</th>
-                                <th>{trls('Sales_Amount')}</th>
-                                <th>{trls('Loading_date')}</th>
-                                <th>{trls('Loading_week')}</th>
-                                <th>{trls('Complete')}</th>
-                            </tr>
+                                {filterColunm.map((item, key)=>(
+                                    <th className={!item.show ? "filter-show__hide" : ''} key={key}>
+                                        <Contextmenu
+                                            triggerTitle = {item.label}
+                                            addFilterColumn = {(value)=>this.addFilterColumn(value)}
+                                            removeColumn = {(value)=>this.removeColumn(value)}
+                                        />
+                                    </th>
+                                    )
+                                )}
+                          </tr>
                         </thead>
                         {qualityData && !this.state.loading &&(<tbody >
                             {
                                 qualityData.map((data,i) =>(
                                 <tr id={data.id} key={i}>
-                                    <td><div id={data.id} style={{cursor: "pointer", color:'#004388', fontSize:"14px", fontWeight:'bold'}} onClick={()=>this.loadSalesDetail(data)}>{data.Id}</div></td>
-                                    <td>{data.supplier}</td>
-                                    <td>{data.customer}</td>
-                                    <td>{Common.formatMoney(data.PurchaseAmount)}</td>
-                                    <td>{Common.formatMoney(data.SalesAmount)}</td>
-                                    <td>{Common.formatDate(data.Loadingdate)}</td>
-                                    <td>{data.Loadingweek}</td>
-                                    <td>
+                                    <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}><div id={data.id} style={{cursor: "pointer", color:'#004388', fontSize:"14px", fontWeight:'bold'}} onClick={()=>this.loadSalesDetail(data)}>{data.Id}</div></td>
+                                    <td className={!this.showColumn(filterColunm[1].label) ? "filter-show__hide" : ''}>{data.supplier}</td>
+                                    <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{data.customer}</td>
+                                    <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''}>{Common.formatMoney(data.PurchaseAmount)}</td>
+                                    <td className={!this.showColumn(filterColunm[4].label) ? "filter-show__hide" : ''}>{Common.formatMoney(data.SalesAmount)}</td>
+                                    <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.Loadingdate)}</td>
+                                    <td className={!this.showColumn(filterColunm[6].label) ? "filter-show__hide" : ''}>{data.Loadingweek}</td>
+                                    <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>
                                         <Row style={{justifyContent:"center"}}>
                                             {!data.isCompleted && data.referencecustomer!=="" && !data.Temporary?(
                                                 <Button type="submit" style={{width:"auto", height: 35}} onClick={()=>this.completeOrder(data.Id)}>{trls('Send_salesinvoice')}</Button>

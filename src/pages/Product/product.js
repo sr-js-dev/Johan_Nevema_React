@@ -17,7 +17,6 @@ import Productdetail from './product_detail';
 import Filtercomponent from '../../components/filtercomponent';
 import Contextmenu from '../../components/contextmenu';
 
-
 const mapStateToProps = state => ({ ...state.auth });
 
 const mapDispatchToProps = dispatch => ({
@@ -300,7 +299,7 @@ class Product extends Component {
                                   </th>
                                 )
                             )}
-                            </tr>
+                          </tr>
                         </thead>
                         {productData && !this.state.loading&&(<tbody>
                             {

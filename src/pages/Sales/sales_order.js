@@ -12,6 +12,7 @@ import Axios from 'axios';
 import * as Common  from '../../components/common';
 import Salesorderdetail from './selesorder_detail';
 import Filtercomponent from '../../components/filtercomponent';
+import Contextmenu from '../../components/contextmenu';
 
 const mapStateToProps = state => ({
      ...state.auth,
@@ -32,7 +33,18 @@ class Salesorder extends Component {
             salesDetailData: [],
             originFilterData: [],
             filterFlag: false,
-            filterData: []
+            filterData: [],
+            filterColunm: [
+                {"label": trls('Customer'), "value": "Customer", "type": 'text', "show": true},
+                {"label": trls('Supplier'), "value": "Supplier", "type": 'text', "show": true},
+                {"label": trls('Reference_customer'), "value": "referencecustomer", "type": 'text', "show": true},
+                {"label": trls('Loading_date'), "value": "loadingdate", "type": 'date', "show": true},
+                {"label": trls('Arrival_date'), "value": "arrivaldate", "type": 'date', "show": true},
+                {"label": trls('Productcode'), "value": "ProductCode", "type": 'text', "show": true},
+                {"label": trls('Quantity'), "value": "Quantity", "type": 'text', "show": true},
+                {"label": trls('PackingSlip'), "value": "PackingSlip", "type": 'text', "show": true},
+                {"label": trls('Container'), "value": "Container", "type": 'text', "show": true}
+            ],
         };
       }
 componentDidMount() {
@@ -116,8 +128,26 @@ addSales = () => {
     Common.showSlideForm();
 }
 
+removeColumn = (value) => {
+    let filterColunm = this.state.filterColunm;
+    filterColunm = filterColunm.filter(function(item, key) {
+      if(item.label===value){
+        item.show = false;
+      }
+      return item;
+    })
+    this.setState({filterColunm: filterColunm})
+  }
+
+  showColumn = (value) => {
+    let filterColum = this.state.filterColunm;
+    filterColum = filterColum.filter((item, key)=>item.label===value);
+    return filterColum[0].show;
+  }
+
 render () {
-    let salesData = this.state.salesData
+    let salesData = this.state.salesData;
+    const {filterColunm} = this.state;
     salesData.sort(function(a, b) {
         return a.id - b.id;
     });
@@ -153,32 +183,33 @@ render () {
                     <table id="sales_table" className="place-and-orders__table table" width="100%">
                         <thead>
                             <tr>
-                                <th>{trls('Customer')}</th>
-                                <th>{trls('Supplier')}</th>
-                                <th>{trls('Reference_customer')}</th>
-                                <th>{trls('Loading_date')}</th>
-                                <th>{trls('Arrival_date')}</th>
-                                <th>{trls('Productcode')}</th>
-                                <th>{trls('Quantity')}</th>
-                                <th>{trls('PackingSlip')}</th>
-                                <th>{trls('Container')}</th>
+                                {filterColunm.map((item, key)=>(
+                                    <th className={!item.show ? "filter-show__hide" : ''} key={key}>
+                                        <Contextmenu
+                                            triggerTitle = {item.label}
+                                            addFilterColumn = {(value)=>this.addFilterColumn(value)}
+                                            removeColumn = {(value)=>this.removeColumn(value)}
+                                        />
+                                    </th>
+                                    )
+                                )}
                             </tr>
                         </thead>
                         {salesData && !this.state.loading &&(<tbody >
                             {
                                 salesData.map((data,i) =>(
                                 <tr id={data.id} key={i}>
-                                    <td>
+                                    <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}>
                                         <div id={data.id} style={{cursor: "pointer", color:'#004388', fontSize:"14px", fontWeight:'bold'}} onClick={()=>this.loadSalesDetail(data)}>{data.Customer}</div>
                                     </td>
-                                    <td>{data.Supplier}</td>
-                                    <td>{data.referencecustomer}</td>
-                                    <td>{Common.formatDate(data.loadingdate)}</td>
-                                    <td>{Common.formatDate(data.arrivaldate)}</td>
-                                    <td>{data.ProductCode}</td>
-                                    <td>{data.Quantity}</td>
-                                    <td>{data.PackingSlip}</td>
-                                    <td>{data.Container}</td>
+                                    <td className={!this.showColumn(filterColunm[1].label) ? "filter-show__hide" : ''}>{data.Supplier}</td>
+                                    <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{data.referencecustomer}</td>
+                                    <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.loadingdate)}</td>
+                                    <td className={!this.showColumn(filterColunm[4].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.arrivaldate)}</td>
+                                    <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>{data.ProductCode}</td>
+                                    <td className={!this.showColumn(filterColunm[6].label) ? "filter-show__hide" : ''}>{data.Quantity}</td>
+                                    <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>{data.PackingSlip}</td>
+                                    <td className={!this.showColumn(filterColunm[8].label) ? "filter-show__hide" : ''}>{data.Container}</td>
                                 </tr>
                             ))
                             }

@@ -92,13 +92,8 @@ export const filterData = (filterOption, filterData) =>{
                     startDate = new Date(startDate.getFullYear()+'-'+parseInt(startDate.getMonth()+1)+'-'+startDate.getDate());
                     endDate = new Date(endDate.getFullYear()+'-'+parseInt(endDate.getMonth()+1)+'-'+endDate.getDate());
                     return filterDate>=startDate && filterDate<=endDate;
-                    // if(filterDate>=startDate && filterDate<=endDate){
-                        
-                    // }
-                    
                 })
             }
-            
         }else if(data.condition === "And"){
             if(!data.dateFlag){
                 if(data.mode==="Contains"){
@@ -117,7 +112,6 @@ export const filterData = (filterOption, filterData) =>{
                     return filterDate>=startDate && filterDate<=endDate;
                 })
             }
-            
         }else{
             if(!data.dateFlag){
                 if(data.mode==="Contains"){

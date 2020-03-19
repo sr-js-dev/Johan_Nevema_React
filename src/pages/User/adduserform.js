@@ -81,7 +81,7 @@ class Adduserform extends Component {
                 "RoleName": data.roles,
             }
             headers = SessionManager.shared().getAuthorizationHeader();
-            Axios.put( "https://cors-anywhere.herokuapp.com/"+API.PostUserUpdate, params, headers)
+            Axios.post(API.PostUserUpdate, params, headers)
             .then(result => {
                 this.props.onGetUser()
                 this.onHide();
@@ -109,6 +109,7 @@ class Adduserform extends Component {
         if(this.props.userUpdateData){
             updateData=this.props.userUpdateData;
             roles = updateData.roles;
+            console.log('11123', updateData)
             if(roles){
                 // roledata=roles[0].name;
             }
@@ -118,54 +119,6 @@ class Adduserform extends Component {
                 <div style={{marginBottom:30}}>
                     <i className="fas fa-times slide-close" style={{ fontSize: 20, cursor: 'pointer'}} onClick={()=>this.onHide()}></i>
                 </div>
-                {/* { this.props.mode==="view" ? (
-                    <Form className="container product-form" onSubmit = { this.handleSubmit }>
-                    <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls('UserName')}     
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
-                            { updateData&&this.props.mode==="view" ? (
-                                <Form.Control type="text" name="username" readOnly defaultValue={updateData.UserName} required placeholder={trls('UserName')} />
-                            ) : <div/>
-                            }
-                        </Col>
-                    </Form.Group>
-                    <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls('Email')}     
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
-                            { updateData&&this.props.mode==="view" ? (
-                                <Form.Control type="email" name="email1" readOnly defaultValue={updateData.Email} required placeholder={trls('Email')}/>
-                            ) : <Form.Control type="email" name="email1" required placeholder={trls('Email')} />
-                            }
-                        </Col>
-                    </Form.Group>
-                    <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls('PhoneNumber')}     
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
-                            { updateData&&this.props.mode==="view" ? (
-                                <Form.Control type="text" name="PhoneNumber" readOnly defaultValue={updateData.PhoneNumber} required placeholder={trls('PhoneNumber')}/>
-                            ) : <Form.Control type="text" name="PhoneNumber" required placeholder={trls('PhoneNumber')} />
-                            }
-                        </Col>
-                    </Form.Group>
-                    <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls('Active')}     
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
-                            { updateData&&this.props.mode==="view" ? (
-                                <Form.Check inline name="active" type="checkbox" disabled defaultChecked={updateData.IsActive} style={{marginTop:15}} id="Intrastat" />
-                            ) : <div/>
-                            }
-                        </Col>
-                    </Form.Group>
-                </Form>
-                ) :  */}
                 <Form className="container" onSubmit = { this.handleSubmit }>
                     <Col className="title add-product">{trls('Add_Product')}</Col>
                     {this.state.errorFlag && (
