@@ -116,7 +116,7 @@ class Salesupdateform extends Component {
                 reference: data.reference,
                 loadingdate: Common.formatDateSecond(data.orderdate),
                 arrivaldate: Common.formatDateSecond(data.arrivaldate),
-                iscompleted: true
+                // iscompleted: true
             }
             data.id = this.props.salesOrder.id;
             Axios.post(API.PutSalesOrder, params, headers)
