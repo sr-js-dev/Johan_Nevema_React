@@ -12,10 +12,10 @@ import './assets/css/contextmenu.css';
 import './assets/css/contextcustom.css';
 
 const store = configureStore()
-// window.localStorage.setItem('nevema_lang',  'nl_BE');
-// window.localStorage.setItem('nevema_label',  'Nl');
-window.localStorage.setItem('nevema_lang',  'en_US');
-window.localStorage.setItem('nevema_label',  'En');
+window.localStorage.setItem('nevema_lang',  'nl_BE');
+window.localStorage.setItem('nevema_label',  'Nl');
+// window.localStorage.setItem('nevema_lang',  'en_US');
+// window.localStorage.setItem('nevema_label',  'En');
 window.React = React
 
 ReactDOM.render(
