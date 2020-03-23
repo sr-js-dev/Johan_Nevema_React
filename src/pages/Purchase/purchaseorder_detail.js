@@ -93,6 +93,21 @@ class Purchaseorderdtail extends Component {
                         }
                         return supplierData;
                     });
+                    var suparams = {
+                        supplier: supplierCode
+                    }
+                    Axios.post(API.GetDefaultVatCode, suparams, headers)
+                    .then(result => {
+                        if(result.data.Success){
+                            let defaultVatCode = result.data.Items[0].VatCode
+                            Axios.get(API.GetVATCode, headers)
+                            .then(result => {
+                                    let vatCode = result.data.Items.map( s => ({value:s.key,label:s.value}));
+                                    var item = vatCode.filter(item => item.value===defaultVatCode);
+                                    this.setState({vatCodeList: vatCode, defaultVatCode: item})
+                            });
+                        }
+                    });
                     this.setState({supplierCode: supplierCode})
                 });
             }
@@ -307,6 +322,7 @@ class Purchaseorderdtail extends Component {
                                             <tr>
                                                 <th>{trls('Pricingtype')}</th>
                                                 <th>{trls('Price')}</th>
+                                                <th>{trls('VATCode')}</th>
                                             </tr>
                                         </thead>
                                         {this.state.purchaseOrderLine && (<tbody>
@@ -315,11 +331,13 @@ class Purchaseorderdtail extends Component {
                                                 <tr id={data.id} key={i}>
                                                     <td>{data.pricingtype}</td>
                                                     <td>{Common.formatMoney(data.price)}</td>
+                                                    <td>{data.VAT}</td>
                                                 </tr>
                                             ))
                                             }
                                             <tr style={{backgroundColor: '#D3EDD0', fontWeight: 'bold'}}>
                                                 <td colSpan={2} style={{textAlign: 'right'}}><span className="purchase-child-total">{trls('Total')}</span><span className="purchase-child-total amount">{Common.formatMoney(this.state.totalAmount)}</span></td>
+                                                <td></td>
                                             </tr>
                                         </tbody>)}
                                     </table>

@@ -210,7 +210,7 @@ class Addpurchase extends Component {
                     params = {
                         purchaseid: this.props.purchaseid,
                         id: product.id,
-                        vatid: ''
+                        vatid: product.vatCode ? product.vatCode : Number(this.props.defaultVatCode[0].value)
                     }
                     Axios.post(API.PostPurchaseOrderLineTransport, params, headers)
                     .then(result => {
@@ -352,7 +352,7 @@ class Addpurchase extends Component {
                                     <th>{!this.props.transport ? trls('Productcode') : trls('Pricingtype')}</th>
                                     <th style={{width: "25%"}}>{!this.props.transport ? trls('Quantity') : trls('Price')}</th>
                                     {!this.props.transport&&(<th>{trls('Purchase_Unit')}</th>)}
-                                    {!this.props.transport&&(<th>{trls('VATCode')}</th>)}
+                                    <th>{trls('VATCode')}</th>
                                 </tr>
                             </thead>
                             {this.state.productData.length>0 ? (
@@ -365,7 +365,7 @@ class Addpurchase extends Component {
                                         {!this.props.transport?(
                                             <td style={{verticalAlign: 'top'}}>{data.PurchaseQuantity }</td>
                                         ):
-                                            <td style={{verticalAlign: 'top', display: 'flex'}}>
+                                            <td style={{verticalAlign: 'top'}}>
                                                 
                                                 {!data.editFlag || !this.state.priceEditFlag ?(
                                                     <span>{Common.formatMoney(data.price)}</span>
@@ -381,7 +381,7 @@ class Addpurchase extends Component {
                                             </td>
                                         }
                                         {!this.props.transport&&(<td style={{verticalAlign: 'top'}}>{data.unit}</td>)}
-                                        {!this.props.transport&&(<td style={{verticalAlign: 'top'}}>
+                                        <td style={{verticalAlign: 'top', width: 200, textAlign: 'left'}}>
                                             <Select
                                                 name="vat"
                                                 placeholder={trls('Supplier')}
@@ -389,14 +389,14 @@ class Addpurchase extends Component {
                                                 onChange={val => this.setVatCode(data.id, val.value)}
                                                 defaultValue = {this.props.defaultVatCode}
                                             />
-                                        </td>)}
+                                        </td>
                                     </tr>
                                 ))
                                 }
                             </tbody>):
                             <tbody>
                                 <tr>
-                                    {!this.props.transport?(<td colSpan='5' style={{verticalAlign: 'top'}}>{trls('No_Result')}</td>):<td colSpan='3' style={{verticalAlign: 'top'}}>{trls('No_Result')}</td>}
+                                    {!this.props.transport?(<td colSpan='5' style={{verticalAlign: 'top'}}>{trls('No_Result')}</td>):<td colSpan='4' style={{verticalAlign: 'top'}}>{trls('No_Result')}</td>}
                                 </tr>
                             </tbody>}
                         </table>

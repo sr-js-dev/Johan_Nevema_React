@@ -128,7 +128,7 @@ margin: 0.375rem;
   margin-top: 10px;
   border-collapse: separate;
   border-radius: 6px;
-  overflow: hidden;
+  /* overflow: hidden; */
   border-bottom: 1px;
 }
 .login-page{
@@ -789,7 +789,7 @@ input[name="search"].form-control::-webkit-input-placeholder {
   padding: 0 45px;
 }
 .prurprice-table__div{
-  padding: 0 20px;
+  padding: 0 10px;
 }
 .price-action__button{
   margin-top: 5px;
@@ -864,4 +864,7 @@ input[name="search"].form-control::-webkit-input-placeholder {
 }
 .filter-show__hide{
   display: none;
+}
+.css-kj6f9i-menu{
+  /* z-index: 20 !important; */
 }
