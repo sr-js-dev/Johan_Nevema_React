@@ -77,8 +77,11 @@ getTaskData = (data) => {
             this.setState({taskOverviewData: data});
         }
         this.setState({loading:false})
+        $('.fitler').on( 'keyup', function () {
+            table.search( this.value ).draw();
+        } );
         $('#example-task').dataTable().fnDestroy();
-        $('#example-task').DataTable(
+        var table = $('#example-task').DataTable(
             {
                 "language": {
                     "lengthMenu": trls("Show")+" _MENU_ "+trls("Result_on_page"),
@@ -92,7 +95,6 @@ getTaskData = (data) => {
                       "next": trls('Next')
                     }
                 },
-                  "searching": false,
                   "dom": 't<"bottom-datatable" lip>'
               }
           );

@@ -66,7 +66,6 @@ class Adduserform extends Component {
             })
             .catch(err => {
                 this.setState({errorFlag: true})
-                console.log('111111', err.response.data.ModelState)
                 if(err.response.data.ModelState[""]){
                     this.props.postUserError(err.response.data.ModelState[""])
                 }else if(err.response.data.ModelState["model.Password"] && !err.response.data.ModelState["model.ConfirmPassword"]){

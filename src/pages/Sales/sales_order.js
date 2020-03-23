@@ -62,8 +62,11 @@ getsalesData = (data) => {
             this.setState({salesData: data});
         }
         this.setState({loading:false})
+        $('.fitler').on( 'keyup', function () {
+            table.search( this.value ).draw();
+        } );
         $('#sales_table').dataTable().fnDestroy();
-        $('#sales_table').DataTable(
+        var table = $('#sales_table').DataTable(
             {
                 "language": {
                     "lengthMenu": trls("Show")+" _MENU_ "+trls("Result_on_page"),
@@ -77,29 +80,28 @@ getsalesData = (data) => {
                       "next": trls('Next')
                     }
                 },
-                  "searching": false,
                   "dom": 't<"bottom-datatable" lip>'
               }
           );
     });
 }
 // filter module
-    setFilterData = () => {
-        let filterData = [
-            {"label": trls('Customer'), "value": "Customer", "type": 'text'},
-            {"label": trls('Supplier'), "value": "Supplier", "type": 'text'},
-            {"label": trls('Reference_customer'), "value": "referencecustomer", "type": 'text'},
-            {"label": trls('Loading_date'), "value": "loadingdate", "type": 'date'},
-            {"label": trls('Arrival_date'), "value": "arrivaldate", "type": 'date'},
-            {"label": trls('Productcode'), "value": "ProductCode", "type": 'text'},
-            {"label": trls('Quantity'), "value": "Quantity", "type": 'text'},
-            {"label": trls('PackingSlip'), "value": "PackingSlip", "type": 'text'},
-            {"label": trls('Container'), "value": "Container", "type": 'text'}
-        ]
-        this.setState({filterData: filterData});
-    }
+setFilterData = () => {
+    let filterData = [
+        {"label": trls('Customer'), "value": "Customer", "type": 'text'},
+        {"label": trls('Supplier'), "value": "Supplier", "type": 'text'},
+        {"label": trls('Reference_customer'), "value": "referencecustomer", "type": 'text'},
+        {"label": trls('Loading_date'), "value": "loadingdate", "type": 'date'},
+        {"label": trls('Arrival_date'), "value": "arrivaldate", "type": 'date'},
+        {"label": trls('Productcode'), "value": "ProductCode", "type": 'text'},
+        {"label": trls('Quantity'), "value": "Quantity", "type": 'text'},
+        {"label": trls('PackingSlip'), "value": "PackingSlip", "type": 'text'},
+        {"label": trls('Container'), "value": "Container", "type": 'text'}
+    ]
+    this.setState({filterData: filterData});
+}
 
-  filterOptionData = (filterOption) =>{
+filterOptionData = (filterOption) =>{
     let dataA = []
     dataA = Common.filterData(filterOption, this.state.originFilterData);
     if(!filterOption.length){
@@ -107,15 +109,15 @@ getsalesData = (data) => {
     }
     $('#sales_table').dataTable().fnDestroy();
     this.getsalesData(dataA);
-  }
+}
 
-  changeFilter = () => {
+changeFilter = () => {
     if(this.state.filterFlag){
         this.setState({filterFlag: false})
     }else{
         this.setState({filterFlag: true})
     }
-  }
+}
   // filter module
 
 loadSalesDetail = (data)=>{

@@ -69,7 +69,7 @@ class Product extends Component {
       this.getProductGroup();
       this.getUnitData();
       this.getUserData();
-      // this.setFilterData();
+      this.setFilterData();
     }
     getUserData = () => {
       var headers = SessionManager.shared().getAuthorizationHeader();
@@ -102,26 +102,28 @@ class Product extends Component {
               this.setState({productData: data});
           }
           this.setState({loading:false})
-        $('#project_table').dataTable().fnDestroy();
-        $('#project_table').DataTable(
-          {
-            "language": {
-                "lengthMenu": trls("Show")+" _MENU_ "+trls("Result_on_page"),
-                "zeroRecords": "Nothing found - sorry",
-                "info": trls("Show_page")+" _PAGE_ "+trls('Results_of')+" _PAGES_",
-                "infoEmpty": "No records available",
-                "infoFiltered": "(filtered from _MAX_ total records)",
-                "search": trls('Search'),
-                "paginate": {
-                  "previous": trls('Previous'),
-                  "next": trls('Next')
-                }
-            },
-              "searching": false,
-              "dom": 't<"bottom-datatable" lip>'
+          $('.fitler').on( 'keyup', function () {
+              table.search( this.value ).draw();
+          } );
+          $('#project_table').dataTable().fnDestroy();
+          var table = $('#project_table').DataTable(
+            {
+              "language": {
+                  "lengthMenu": trls("Show")+" _MENU_ "+trls("Result_on_page"),
+                  "zeroRecords": "Nothing found - sorry",
+                  "info": trls("Show_page")+" _PAGE_ "+trls('Results_of')+" _PAGES_",
+                  "infoEmpty": "No records available",
+                  "infoFiltered": "(filtered from _MAX_ total records)",
+                  "search": trls('Search'),
+                  "paginate": {
+                    "previous": trls('Previous'),
+                    "next": trls('Next')
+                  }
+              },
+                "dom": 't<"bottom-datatable" lip>'
+            }
+            );
           }
-          );
-        }
       });
     }
 
@@ -204,6 +206,23 @@ class Product extends Component {
       this._isMounted = false
     }
 
+    setFilterData = () => {
+      let filterData = [
+          {"label": trls('Productcode'), "value": "Productcode", "type": 'text'},
+          {"label": trls('Supplier'), "value": "Supplier", "type": 'text'},
+          {"label": trls('Product'), "value": "Product", "type": 'text'},
+          {"label": trls('Customer'), "value": "Customer", "type": 'text'},
+          {"label": trls('Product_Name'), "value": "Product", "type": 'text'},
+          {"label": trls('Sales_Price'), "value": "SalesPrice", "type": 'text'},
+          {"label": trls('Purchase_Price'), "value": "PurchasePrice", "type": 'text'},
+          {"label": trls('Sales_Unit'), "value": "SalesUnit", "type": 'text'},
+          {"label": trls('Purchase_Unit'), "value": "PurchaseUnit", "type": 'text'},
+          {"label": trls('Kilogram'), "value": "Kilogram", "type": 'text'},
+          {"label": trls('Copy_Product'), "value": "copyproduct", "type": 'text'}
+      ]
+      this.setState({filterData: filterData});
+  }
+
     filterOptionData = (filterOption) =>{
       let dataA = []
       dataA = Common.filterData(filterOption, this.state.originFilterData);
@@ -223,17 +242,17 @@ class Product extends Component {
     }
     // filter module
     addFilterColumn = (value) => {
-      let filterColum = this.state.filterColunm;
-      let filterData = this.state.filterData;
-      let filterItem = [];
-      filterColum = filterColum.filter(function(item, key) {
-        return item.label === value
-      })
-      filterItem = filterData.filter((item, key)=>item.label===value);
-      if(!filterItem[0]){
-        filterData.push(filterColum[0]);
-      }
-      this.setState({filterData: filterData})
+      // let filterColum = this.state.filterColunm;
+      // let filterData = this.state.filterData;
+      // let filterItem = [];
+      // filterColum = filterColum.filter(function(item, key) {
+      //   return item.label === value
+      // })
+      // filterItem = filterData.filter((item, key)=>item.label===value);
+      // if(!filterItem[0]){
+      //   filterData.push(filterColum[0]);
+      // }
+      // this.setState({filterData: filterData})
     }
 
     removeColumn = (value) => {

@@ -61,8 +61,11 @@ getPurchaseOrders(data) {
             this.setState({purhaseorders: data});
         }
         this.setState({loading:false})
+        $('.fitler').on( 'keyup', function () {
+            table.search( this.value ).draw();
+        } );
         $('#example').dataTable().fnDestroy();
-        $('#example').DataTable(
+        var table = $('#example').DataTable(
             {
                 "language": {
                     "lengthMenu": trls("Show")+" _MENU_ "+trls("Result_on_page"),
@@ -76,7 +79,6 @@ getPurchaseOrders(data) {
                     "next": trls('Next')
                     }
                 },
-                "searching": false,
                 "dom": 't<"bottom-datatable" lip>'
             }
         );
