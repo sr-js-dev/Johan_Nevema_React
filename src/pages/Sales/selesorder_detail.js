@@ -150,7 +150,6 @@ class Salesorderdtail extends Component {
     }
 
     updownInfo = (id) =>{
-        console.log('333', id)
         let salesArray = this.state.salesItems;
         salesArray.map((data, i)=>{
             if(data.id===id){
@@ -168,7 +167,6 @@ class Salesorderdtail extends Component {
 
     render () {
         let detailData = this.props.salesdetaildata;
-        console.log('11111', detailData);
         let salesItems = this.state.salesItems;
         let transporter = this.state.salesTransport;
         return (
@@ -265,7 +263,7 @@ class Salesorderdtail extends Component {
                                                 <td className={data.checked ? "order-product__td" : ''}>{Common.formatMoney(data.purchaseamount)}</td>
                                                 <td className={data.checked ? "order-product__td" : ''}>{Common.formatDate(data.ReportingDate)==="01-01-1970" ? '' : Common.formatDate(data.ReportingDate)}</td>
                                                 <td className={data.checked ? "order-product__td order-product__last-td" : ''}>
-                                                    <Row style={{justifyContent:"space-around", width: 200}}>
+                                                    <Row style={{justifyContent:"space-around", width: 250}}>
                                                         <Button className="price-action__button" variant="light" onClick={()=>this.orderLineDelete(data.id)}><i className="far fa-trash-alt add-icon" ></i>{trls('Delete')}</Button>
                                                         <Button className="price-action__button" variant="light" onClick={()=>this.orderLineEdit(data)}><i className="fas fa-pen add-icon" ></i>{trls('Edit')}</Button>
                                                         <Button className="price-action__button" variant="light" onClick={()=>this.updownInfo(data.id)}><i className={data.checked ? "fas fa-caret-up" : "fas fa-caret-down"}></i></Button>

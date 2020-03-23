@@ -110,7 +110,7 @@ class Salesupdateform extends Component {
             });
         }else{
             params = {
-                id: this.props.salesOrder.id,
+                id: this.props.salesOrder.Id,
                 customer: data.customer,
                 supplier: data.supplier,
                 reference: data.reference,

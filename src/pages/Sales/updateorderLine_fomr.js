@@ -46,6 +46,8 @@ class Updateorderline extends Component {
         var headers = SessionManager.shared().getAuthorizationHeader();
         params = {
             orderlineid: this.props.updatedata.id,
+            salesquantity: data.salesquantity,
+            purchasequantity: data.purchasequantity,
             purchasePrice: data.purchaseprice,
             salesPrice: data.salesprice,
             purchaseAmount: data.purhcaseamount,
@@ -128,7 +130,7 @@ class Updateorderline extends Component {
                             {trls("Sales_Quantity")}  
                         </Form.Label>
                         <Col sm="9" className="product-text"> 
-                            <Form.Control type="text" name="quantity" defaultValue={updateData.salesquantity} readOnly  placeholder={trls("Purchase_Price")} />
+                            <Form.Control type="text" name="salesquantity" defaultValue={updateData.salesquantity} readOnly  placeholder={trls("Purchase_Price")} />
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
@@ -136,7 +138,7 @@ class Updateorderline extends Component {
                             {trls("Purchase_Quantity")}  
                         </Form.Label>
                         <Col sm="9" className="product-text"> 
-                            <Form.Control type="text" name="quantity" defaultValue={updateData.purchasequantity} readOnly placeholder={trls("Purchase_Price")} />
+                            <Form.Control type="text" name="purchasequantity" defaultValue={updateData.purchasequantity} readOnly placeholder={trls("Purchase_Price")} />
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
