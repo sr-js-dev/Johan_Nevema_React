@@ -865,6 +865,9 @@ input[name="search"].form-control::-webkit-input-placeholder {
 .filter-show__hide{
   display: none;
 }
-.css-kj6f9i-menu{
-  /* z-index: 20 !important; */
+@media (max-width: 1300px)
+{
+  .multi-filter__div {
+    max-width: 55%;
+  }
 }

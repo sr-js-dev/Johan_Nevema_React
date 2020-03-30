@@ -113,4 +113,6 @@ export default {
     CheckMultipleLines   : `${BASEURL}/api/factory/execute/Appmakerz-Test/checkMultipleLines`,
     GetSalesOrdersExact   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getSalesOrdersExact`,
     GetPurchaseOrdersExact   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getPurchaseOrdersExact`,
+    DeletePurchaseOrderLine   : `${BASEURL}/api/factory/execute/Appmakerz-Test/deletePurchaseOrderLine`,
   }; 
+   

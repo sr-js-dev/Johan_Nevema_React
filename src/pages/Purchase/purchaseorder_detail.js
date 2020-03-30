@@ -208,8 +208,20 @@ class Purchaseorderdtail extends Component {
                 });
             } else {
             }
-          });
-        
+        });
+    }
+
+    deletePurchaseOrderLine = (id) => {
+        var headers = SessionManager.shared().getAuthorizationHeader();
+        let params = {
+            id: id
+        }
+        Axios.post(API.DeletePurchaseOrderLine, params, headers)
+        .then(result => {
+            if(result.data.Success){
+                this.getPurchaseOrderLines();
+            }
+        });
     }
 
     onHide = () => {
@@ -295,6 +307,7 @@ class Purchaseorderdtail extends Component {
                                                 <th>{trls('Amount')}</th>
                                                 <th>{trls('VATCode')}</th>
                                                 <th>{trls('Reporting_Date')}</th>
+                                                <th>{trls('Action')}</th>
                                                 </tr>
                                         </thead>
                                         {this.state.purchaseOrderLine && (<tbody>
@@ -308,11 +321,16 @@ class Purchaseorderdtail extends Component {
                                                     <td>{Common.formatMoney(data.amount)}</td>
                                                     <td>{data.VAT}</td>
                                                     <td>{Common.formatDate(data.reportingdate)}</td>
+                                                    <td >
+                                                        <Row style={{justifyContent:"space-around", width: 100}}>
+                                                            <Button className="price-action__button" variant="light" onClick={()=>this.deletePurchaseOrderLine(data.id)}><i className="far fa-trash-alt add-icon" ></i>{trls('Delete')}</Button>
+                                                        </Row>
+                                                    </td>
                                                 </tr>
                                             ))
                                             }
                                             <tr style={{backgroundColor: '#D3EDD0', fontWeight: 'bold'}}>
-                                                <td colSpan={7} style={{textAlign: 'right'}}><span className="purchase-child-total">{trls('Total')}</span><span className="purchase-child-total amount">{Common.formatMoney(this.state.totalAmount)}</span></td>
+                                                <td colSpan={8} style={{textAlign: 'right'}}><span className="purchase-child-total">{trls('Total')}</span><span className="purchase-child-total amount">{Common.formatMoney(this.state.totalAmount)}</span></td>
                                             </tr>
                                         </tbody>)}
                                     </table>
@@ -323,6 +341,7 @@ class Purchaseorderdtail extends Component {
                                                 <th>{trls('Pricingtype')}</th>
                                                 <th>{trls('Price')}</th>
                                                 <th>{trls('VATCode')}</th>
+                                                <th>{trls('Action')}</th>
                                             </tr>
                                         </thead>
                                         {this.state.purchaseOrderLine && (<tbody>
@@ -332,11 +351,16 @@ class Purchaseorderdtail extends Component {
                                                     <td>{data.pricingtype}</td>
                                                     <td>{Common.formatMoney(data.price)}</td>
                                                     <td>{data.VAT}</td>
+                                                    <td >
+                                                        <Row style={{justifyContent:"space-around", width: 100}}>
+                                                            <Button className="price-action__button" variant="light" onClick={()=>this.deletePurchaseOrderLine(data.id)}><i className="far fa-trash-alt add-icon" ></i>{trls('Delete')}</Button>
+                                                        </Row>
+                                                    </td>
                                                 </tr>
                                             ))
                                             }
                                             <tr style={{backgroundColor: '#D3EDD0', fontWeight: 'bold'}}>
-                                                <td colSpan={2} style={{textAlign: 'right'}}><span className="purchase-child-total">{trls('Total')}</span><span className="purchase-child-total amount">{Common.formatMoney(this.state.totalAmount)}</span></td>
+                                                <td colSpan={3} style={{textAlign: 'right'}}><span className="purchase-child-total">{trls('Total')}</span><span className="purchase-child-total amount">{Common.formatMoney(this.state.totalAmount)}</span></td>
                                                 <td></td>
                                             </tr>
                                         </tbody>)}

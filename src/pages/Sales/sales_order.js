@@ -35,6 +35,7 @@ class Salesorder extends Component {
             filterFlag: false,
             filterData: [],
             filterColunm: [
+                {"label": trls('Id'), "value": "id", "type": 'text', "show": true},
                 {"label": trls('Customer'), "value": "Customer", "type": 'text', "show": true},
                 {"label": trls('Supplier'), "value": "Supplier", "type": 'text', "show": true},
                 {"label": trls('Reference_customer'), "value": "referencecustomer", "type": 'text', "show": true},
@@ -88,6 +89,7 @@ getsalesData = (data) => {
 // filter module
 setFilterData = () => {
     let filterData = [
+        {"label": trls('Id'), "value": "id", "type": 'text', "show": true},
         {"label": trls('Customer'), "value": "Customer", "type": 'text'},
         {"label": trls('Supplier'), "value": "Supplier", "type": 'text'},
         {"label": trls('Reference_customer'), "value": "referencecustomer", "type": 'text'},
@@ -202,7 +204,10 @@ render () {
                                 salesData.map((data,i) =>(
                                 <tr id={data.id} key={i}>
                                     <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}>
-                                        <div id={data.id} style={{cursor: "pointer", color:'#004388', fontSize:"14px", fontWeight:'bold'}} onClick={()=>this.loadSalesDetail(data)}>{data.Customer}</div>
+                                        <div id={data.id} style={{cursor: "pointer", color:'#004388', fontSize:"14px", fontWeight:'bold'}} onClick={()=>this.loadSalesDetail(data)}>{data.id}</div>
+                                    </td>
+                                    <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}>
+                                        <div>{data.Customer}</div>
                                     </td>
                                     <td className={!this.showColumn(filterColunm[1].label) ? "filter-show__hide" : ''}>{data.Supplier}</td>
                                     <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{data.referencecustomer}</td>
