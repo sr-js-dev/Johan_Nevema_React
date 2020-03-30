@@ -192,9 +192,9 @@ render () {
                             {
                             salesData.map((data,i) =>(
                                 <tr id={data.id} key={i}>
-                                    <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}>{data.id}</td>
+                                    <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}><div id={data.id} style={{cursor: "pointer", color:'#004388', fontSize:"14px", fontWeight:'bold'}} onClick={()=>this.loadPurchaseDetail(data.id)}>{data.id}</div></td>
                                     <td className={!this.showColumn(filterColunm[1].label) ? "filter-show__hide" : ''}>
-                                        <div id={data.id} style={{cursor: "pointer", color:'#004388', fontSize:"14px", fontWeight:'bold'}} onClick={()=>this.loadPurchaseDetail(data.id)}>{data.Supplier}</div>
+                                        {data.Supplier}
                                     </td>
                                     <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{data.invoicenr}</td>
                                     <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.invoicedate)}</td>
