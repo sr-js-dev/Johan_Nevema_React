@@ -114,5 +114,10 @@ export default {
     GetSalesOrdersExact   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getSalesOrdersExact`,
     GetPurchaseOrdersExact   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getPurchaseOrdersExact`,
     DeletePurchaseOrderLine   : `${BASEURL}/api/factory/execute/Appmakerz-Test/deletePurchaseOrderLine`,
+    CheckMultipleInvoice   : `${BASEURL}/api/factory/execute/Appmakerz-Test/checkMultipleInvoice`,
+    GetSupplierDescription   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getSupplierDescription`,
+    GetSalesDocuments   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getSalesDocuments`,
+    GetPurchaseDocuments   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getPurchaseDocuments`,
+    GetDownloadFile   : `${BASEURL}/api/factory/download-file/`,
   }; 
-   
+  

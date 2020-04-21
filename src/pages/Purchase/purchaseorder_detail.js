@@ -36,7 +36,8 @@ class Purchaseorderdtail extends Component {
             totalManualAmount: 0,
             updateManualData: [],
             defaultVatCode: '',
-            vatCodeList: []
+            vatCodeList: [], 
+            purchaseOrderDocList: []
         }
       }
     componentDidMount() {
@@ -51,7 +52,17 @@ class Purchaseorderdtail extends Component {
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.post(API.GetPurchaseOrder, params, headers)
         .then(result => {
+            params = {
+                orderid: this.props.newId
+            }
+            Axios.post(API.GetPurchaseDocuments, params, headers)
+            .then(result => {
+                if(result.data.Items){
+                    this.setState({purchaseOrderDocList: result.data.Items})
+                }
+            })
             this.setState({purchaseOrder: result.data.Items[0]});
+            
             if(!result.data.Items[0].istransport){
                 Axios.get(API.GetSuppliersDropdown, headers)
                 .then(result => {
@@ -224,6 +235,10 @@ class Purchaseorderdtail extends Component {
         });
     }
 
+    downLoadFile = (fileId) => {
+        window.open(API.GetDownloadFile+fileId);
+    }
+
     onHide = () => {
         this.props.onHide();
         Common.hideSlideForm(); 
@@ -235,6 +250,7 @@ class Purchaseorderdtail extends Component {
             detailData = this.state.purchaseOrder;
         }
         let alltotal_Amounnt = this.state.totalAmount+this.state.totalManualAmount;
+        const { purchaseOrderDocList } = this.state;
         return (
             <div className = "slide-form__controls open slide-product__detail">
                 <div style={{marginBottom:30, padding:"0 20px"}}>
@@ -282,6 +298,19 @@ class Purchaseorderdtail extends Component {
                                 {detailData &&(
                                     <Form.Check type="checkbox" label={trls("IsTransport")} disabled  defaultChecked={detailData.istransport} name="transport" />
                                 )}
+                            </Col>
+                            <Col style={{padding: "20px 0px", paddingTop: 0}}>
+                                <div id="react-file-drop-demo" className = "purhcase-order__doc">
+                                    {purchaseOrderDocList.length>0&&(
+                                        purchaseOrderDocList.map((data,i) =>(
+                                            <div id={i} key={i} style={{cursor: "pointer", padding: '5px 5px'}} onClick={()=>this.downLoadFile(data.FileStorageId)}>
+                                                {data.FileName}
+                                            </div>
+                                        ))
+                                    )
+                                    }
+                                </div>
+                                <label className="placeholder-label_purchase purhcase-placeholder">{trls('File')}</label>
                             </Col>
                             <div>
                                 <Button variant="light" style={{marginRight: 10}} onClick={()=>this.setState({modalShow:true, exactFlag: false})}><img src={require('../../assets/images/edit.svg')} alt="edit" style={{marginRight: 10}}></img>{trls('Edit_project_detail')}</Button>

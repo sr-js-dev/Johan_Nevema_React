@@ -61,13 +61,11 @@ export const formatEasyTypeDate = (value, e) =>{
 }
 
 export const showSlideForm = () =>{
-    // $(".slide-form__controls").toggleClass("open")
     $(".fade-display").toggleClass("fade modal-backdrop show"); 
     return true;
 }
 
 export const hideSlideForm = () =>{
-    // $(".slide-form__controls").toggleClass("open");
     $(".fade-display").toggleClass("fade modal-backdrop show");
     return true;
 }

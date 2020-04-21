@@ -130,7 +130,6 @@ class Userregister extends Component {
         $.ajax(settings).done(function (response) {
         })
         .then(response => {
-            console.log('1112312', response)
             this.setState({userUpdateData: response, mode:"update",userID:userID, flag:true, slideFormFlag: true});
             Common.showSlideForm();
         });

@@ -12,6 +12,7 @@ import $ from 'jquery';
 import * as Auth   from '../../components/auth';
 import FileDrop from 'react-file-drop';
 import * as Common from '../../components/common';
+import Sweetalert from 'sweetalert';
 
 const mapStateToProps = state => ({ 
     ...state.auth,
@@ -40,7 +41,9 @@ class Purchaseform extends Component {
             val1: '',
             val2: '',
             files: [],
-            checkFlag: false
+            checkFlag: false,
+            setSupplierCode: '',
+            setDescription: ''
         };
     }
 
@@ -49,10 +52,6 @@ class Purchaseform extends Component {
     }
 
     componentDidMount() {
-        // $("#myModal").draggable({
-        //     handle: ".modal-header"
-        // });
-      
         this.getSupplierList();
         this.getTransportersList();     
     }
@@ -78,36 +77,51 @@ class Purchaseform extends Component {
         event.preventDefault();
         const clientFormData = new FormData(event.target);
         const data = {};
+        let params = {};
         for (let key of clientFormData.keys()) {
             data[key] = clientFormData.get(key);
         }
         var headers = SessionManager.shared().getAuthorizationHeader();
-        if(!this.props.purchaseData){
-            let params = {
-                "supplier": data.supplier,
-                "invoicenr": data.invoicenr,
-                "invoicedate": Common.formatDateSecond(data.invoicedate),
-                "description": data.description,
-                "transport": data.transport==="on"?true: false
-            }
-            Axios.post(API.PostPurchaseOrder, params, headers)
-            .then(result => {
-                this.fileUploadData(result.data.NewId);
-            });
-        }else{
-            let params = {
-                "id": this.props.purchaseData.id,
-                "suppliercode": data.supplier,
-                "invoicenr": data.invoicenr,
-                "invoicedate": Common.formatDateSecond(data.invoicedate),
-                "description": data.description,
-                "istransport": data.transport==="on"?true: false
-            }
-            Axios.post(API.PutPurchaseOrder+'?id='+this.props.purchaseData.id, params, headers)
-            .then(result => {
-                this.fileUploadData(this.props.purchaseData.id);
-            });
+        params = {
+            supplier: this.state.setSupplierCode,
+            invoice: data.invoicenr
         }
+        Axios.post(API.CheckMultipleInvoice, params, headers)
+        .then(result => {
+            if(result.data.Items){
+                if(result.data.Items[0].multipleinvoice === "true") {
+                    Sweetalert(trls('already_invoice'));
+                    return;
+                }else{
+                    if(!this.props.purchaseData){
+                        params = {
+                            "supplier": data.supplier,
+                            "invoicenr": data.invoicenr,
+                            "invoicedate": Common.formatDateSecond(data.invoicedate),
+                            "description": data.description,
+                            "transport": data.transport==="on"?true: false
+                        }
+                        Axios.post(API.PostPurchaseOrder, params, headers)
+                        .then(result => {
+                            this.fileUploadData(result.data.NewId);
+                        });
+                    }else{
+                        params = {
+                            "id": this.props.purchaseData.id,
+                            "suppliercode": data.supplier,
+                            "invoicenr": data.invoicenr,
+                            "invoicedate": Common.formatDateSecond(data.invoicedate),
+                            "description": data.description,
+                            "istransport": data.transport==="on"?true: false
+                        }
+                        Axios.post(API.PutPurchaseOrder+'?id='+this.props.purchaseData.id, params, headers)
+                        .then(result => {
+                            this.fileUploadData(this.props.purchaseData.id);
+                        });
+                    }
+                }
+            }
+        });
     }
 
     openUploadFile = () =>{
@@ -240,6 +254,20 @@ class Purchaseform extends Component {
         }
     }
 
+    changeSupplier = (val) => {
+        var headers = SessionManager.shared().getAuthorizationHeader();
+        let params = {
+            supplier: val.value
+        }
+        Axios.post(API.GetSupplierDescription, params, headers)
+        .then(result => {
+            if(result.data.Items){
+                this.setState({setDescription: result.data.Items[0].Description})
+            }
+        });
+        this.setState({val1:val, setSupplierCode: val.value})
+    }
+
     onHide = () => {
         this.props.onHide();
         Common.hideSlideForm();
@@ -278,7 +306,8 @@ class Purchaseform extends Component {
                                         name="supplier"
                                         placeholder={trls('Supplier')}
                                         options={this.state.supplier}
-                                        onChange={val => this.setState({val1:val})}
+                                        // onChange={val => this.setState({val1:val, setSupplierCode: val.value})}
+                                        onChange={val => this.changeSupplier(val)}
                                         defaultValue = {this.getSupplierData()}
                                     />
                                 ):
@@ -286,7 +315,7 @@ class Purchaseform extends Component {
                                         name="supplier"
                                         placeholder={trls('Supplier')}
                                         options={this.state.transport}
-                                        onChange={val => this.setState({val1:val})}
+                                        onChange={val => this.setState({val1:val, setSupplierCode: val.value})}
                                         defaultValue = {this.getSupplierData()}
                                     />
                                 }
@@ -310,7 +339,7 @@ class Purchaseform extends Component {
                                         name="supplier"
                                         placeholder={trls('Supplier')}
                                         options={this.state.supplier}
-                                        onChange={val => this.setState({val1:val})}
+                                        onChange={val => this.setState({val1:val, setSupplierCode: val.value})}
                                         defaultValue = {this.getSupplierData()}
                                     />
                                 )
@@ -320,7 +349,7 @@ class Purchaseform extends Component {
                                         name="supplier"
                                         placeholder={trls('Supplier')}
                                         options={this.state.transport}
-                                        onChange={val => this.setState({val1:val})}
+                                        onChange={val => this.setState({val1:val, setSupplierCode: val.value})}
                                         defaultValue = {this.getSupplierData()}
                                     />
                                 )
@@ -330,7 +359,7 @@ class Purchaseform extends Component {
                                         name="supplier"
                                         placeholder={trls('Supplier')}
                                         options={this.state.supplier}
-                                        onChange={val => this.setState({val1:val})}
+                                        onChange={val => this.setState({val1:val, setSupplierCode: val.value})}
                                         defaultValue = {this.getSupplierData()}
                                     />
                                 )
@@ -340,7 +369,7 @@ class Purchaseform extends Component {
                                         name="supplier"
                                         placeholder={trls('Supplier')}
                                         options={this.state.transport}
-                                        onChange={val => this.setState({val1:val})}
+                                        onChange={val => this.setState({val1:val, setSupplierCode: val.value})}
                                         defaultValue = {this.getSupplierData()}
                                     />
                                 )
@@ -377,7 +406,7 @@ class Purchaseform extends Component {
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
                         <Col className="product-text">
-                            <Form.Control type="text" name="description" defaultValue = {purchaseData.description} required placeholder={trls("Description")} />
+                            <Form.Control type="text" name="description" defaultValue = {this.state.setDescription} required placeholder={trls("Description")} />
                             <label className="placeholder-label">{trls('Description')}</label>
                         </Col>
                     </Form.Group>

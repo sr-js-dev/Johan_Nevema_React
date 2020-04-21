@@ -871,3 +871,30 @@ input[name="search"].form-control::-webkit-input-placeholder {
     max-width: 55%;
   }
 }
+.placeholder-label_purchase{
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 16px;
+    color: #585858;
+    padding: 0 0.2em;
+    position: absolute;
+    top: -0.6em;
+    left: 1.8em;
+    background-color: white;
+}
+.purhcase-order__doc{
+  border: 1px solid #ced4da;
+  color: #0f68b5; 
+  padding: 7px;
+  border-radius: 3px; 
+  min-Height: 40px;
+  text-decoration:underline;
+}
+.order-booking__icon-active{
+  color: #4697D1;
+  font-size: 20px;
+}
+.order-booking__icon-inactive{
+  color: #A3CBE8;
+  font-size: 20px;
+}

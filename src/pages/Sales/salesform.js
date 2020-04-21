@@ -98,7 +98,8 @@ class Salesform extends Component {
                 supplier: data.supplier,
                 reference: data.reference,
                 loadingdate: Common.formatDateSecond(data.orderdate),
-                arrivaldate: this.state.arrivaleFlag ? Common.formatDateSecond(data.arrivaldate): ''
+                arrivaldate: this.state.arrivaleFlag ? Common.formatDateSecond(data.arrivaldate): '',
+                comments: data.comments
             }
             Axios.post(API.PostSalesOrder, params, headers)
             .then(result => {
@@ -113,6 +114,7 @@ class Salesform extends Component {
                 reference: data.reference,
                 loadingdate: Common.formatDateSecond(data.orderdate),
                 arrivaldate: Common.formatDateSecond(data.arrivaldate),
+                comments: data.comments
                 // iscompleted: true
             }
             data.id = this.props.salesOrder.id;
@@ -290,6 +292,10 @@ class Salesform extends Component {
         Common.hideSlideForm();
     }
 
+    downLoadFile = (fileId) => {
+        window.open(API.GetDownloadFile+fileId);
+    }
+
     render(){
         let fileData = this.state.files;
         let customer = [];
@@ -405,6 +411,12 @@ class Salesform extends Component {
                                 </FileDrop>
                                 <label className="placeholder-label">{trls('Attachments')}</label>
                             </div>
+                        </Col>
+                    </Form.Group>
+                    <Form.Group as={Row} controlId="formPlaintextPassword">
+                        <Col className="product-text">
+                            <Form.Control as="textarea" rows="3" name="comments" required placeholder={trls("Comments")} />
+                            <label className="placeholder-label">{trls('Comments')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group style={{textAlign:"center"}}>

@@ -37,7 +37,8 @@ class Salesorderdtail extends Component {
             sendingFlag: false,
             salesTransport: [],
             transportData: [],
-            transportResult: []
+            transportResult: [],
+            salesOrderDocList: []
         }
       }
     componentDidMount() {
@@ -57,6 +58,15 @@ class Salesorderdtail extends Component {
         var headers = SessionManager.shared().getAuthorizationHeader();
             Axios.post(API.GetSalesDetail, params, headers)
             .then(result => {
+                params = {
+                    orderid: this.props.newid
+                }
+                Axios.post(API.GetSalesDocuments, params, headers)
+                .then(result => {
+                    if(result.data.Items){
+                        this.setState({salesOrderDocList: result.data.Items})
+                    }
+                })
                 this.setState({salesorder: result.data.Items[0]});
             });
     }
@@ -165,10 +175,15 @@ class Salesorderdtail extends Component {
         this.setState({salesItems: salesArray});
     }
 
+    downLoadFile = (fileId) => {
+        window.open(API.GetDownloadFile+fileId);
+    }
+
     render () {
         let detailData = this.props.salesdetaildata;
         let salesItems = this.state.salesItems;
         let transporter = this.state.salesTransport;
+        const { salesOrderDocList } = this.state;
         return (
             <div className="slide-form__controls open slide-product__detail">
                 <div style={{marginBottom:30, padding:"0 20px"}}>
@@ -192,9 +207,23 @@ class Salesorderdtail extends Component {
                                 </Form.Label>
                                 <p className="product-detail__data">{detailData.referencecustomer}</p>
                             </div>
+                            <Col style={{padding: "20px 0px", paddingTop: 0}}>
+                                <div id="react-file-drop-demo" className = "purhcase-order__doc">
+                                    {salesOrderDocList.length>0&&(
+                                        salesOrderDocList.map((data,i) =>(
+                                            <div id={i} key={i} style={{cursor: "pointer", padding: '5px 5px'}} onClick={()=>this.downLoadFile(data.FileStorageId)}>
+                                                {data.FileName}
+                                            </div>
+                                        ))
+                                    )
+                                    }
+                                </div>
+                                <label className="placeholder-label_purchase purhcase-placeholder">{trls('File')}</label>
+                            </Col>
                             <div>
                                 <Button variant="light" style={{marginRight: 10}} onClick={()=>this.setState({modalShow:true, exactFlag: false})}><img src={require('../../assets/images/edit.svg')} alt="edit" style={{marginRight: 10}}></img>{trls('Edit_project_detail')}</Button>
                             </div>
+                            
                         </Col>
                         <Col sm={4}>
                             <div>

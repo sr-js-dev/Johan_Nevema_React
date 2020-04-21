@@ -215,11 +215,22 @@ class Addpurchase extends Component {
                     Axios.post(API.PostPurchaseOrderLineTransport, params, headers)
                     .then(result => {
                         params ={ 
-                            id: product.id,
-                            postId: result.data.NewId,
+                            purchaseid: this.props.purchaseid,
+                            id: result.data.NewId,
                         }
-                        Axios.post(API.PutTransportPurchaseId , params, headers)
+                        Axios.post(API.CheckMultipleLines, params, headers)
                         .then(result => {
+
+                            if(result.data.Items[0].multiplelines==="true"){
+                                Sweetalert(trls('already_purchaseinvoice'));
+                            }
+                            // 
+                            // Axios.post(API.PutTransportPurchaseId , params, headers)
+                            // .then(result => {
+                            //     if(k===checkedProductLength){
+                            //         this.onHide();
+                            //     }
+                            // });
                             if(k===checkedProductLength){
                                 this.onHide();
                             }

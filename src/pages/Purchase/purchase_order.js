@@ -40,7 +40,8 @@ class Purchaseorder extends Component {
                 {"label": trls('Invoice'), "value": "invoicenr", "type": 'text', "show": true},
                 {"label": trls('Invoice_date'), "value": "invoicedate", "type": 'date', "show": true},
                 {"label": trls('IsTransport'), "value": "IsTransport", "type": 'text', "show": true},
-                {"label": trls('Total_amount'), "value": "total", "type": 'text', "show": true}
+                {"label": trls('Total_amount'), "value": "total", "type": 'text', "show": true},
+                {"label": trls('ExactBooking'), "value": "ExactBooking", "type": 'text', "show": true},
             ],
         };
       }
@@ -177,7 +178,7 @@ render () {
                         <thead>
                             <tr>
                                 {filterColunm.map((item, key)=>(
-                                    <th className={!item.show ? "filter-show__hide" : ''} key={key}>
+                                    <th className={!item.show ? "filter-show__hide" : ''} key={key} style={item.value==="ExactBooking" ? {width: 30} : {}}>
                                         <Contextmenu
                                             triggerTitle = {item.label}
                                             addFilterColumn = {(value)=>this.addFilterColumn(value)}
@@ -198,14 +199,23 @@ render () {
                                     </td>
                                     <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{data.invoicenr}</td>
                                     <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.invoicedate)}</td>
+                                    
                                     <td className={!this.showColumn(filterColunm[4].label) ? "filter-show__hide" : ''}>
                                         {data.istransport ? (
                                             <i className ="fas fa-check-circle active-icon"></i>
                                         ):
-                                            <i className ="fas fa-check-circle inactive-icon"></i>
+                                            <i className ="fas fa-times-circle inactive-icon"></i>
                                         }
                                     </td>
                                     <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>{Common.formatMoney(data.total)}</td>
+                                    <td className={!this.showColumn(filterColunm[6].label) ? "filter-show__hide" : ''}>
+                                        {data.exactBooking ? (
+                                            <i className="fas fa-check-circle order-booking__icon-active"></i>
+                                        ):
+                                            <i className="fas fa-times-circle order-booking__icon-inactive"></i>
+                                            // <i className="fas fa-times order-booking__icon"></i>
+                                        }
+                                    </td>
                                 </tr>
                             ))
                             }

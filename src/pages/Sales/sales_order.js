@@ -44,7 +44,8 @@ class Salesorder extends Component {
                 {"label": trls('Productcode'), "value": "ProductCode", "type": 'text', "show": true},
                 {"label": trls('Quantity'), "value": "Quantity", "type": 'text', "show": true},
                 {"label": trls('PackingSlip'), "value": "PackingSlip", "type": 'text', "show": true},
-                {"label": trls('Container'), "value": "Container", "type": 'text', "show": true}
+                {"label": trls('Container'), "value": "Container", "type": 'text', "show": true},
+                {"label": trls('ExactBooking'), "value": "Container", "type": 'text', "show": true},
             ],
         };
       }
@@ -217,6 +218,14 @@ render () {
                                     <td className={!this.showColumn(filterColunm[6].label) ? "filter-show__hide" : ''}>{data.Quantity}</td>
                                     <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>{data.PackingSlip}</td>
                                     <td className={!this.showColumn(filterColunm[8].label) ? "filter-show__hide" : ''}>{data.Container}</td>
+                                    <td className={!this.showColumn(filterColunm[9].label) ? "filter-show__hide" : ''}>
+                                        {data.exactBooking ? (
+                                            <i className="fas fa-check-circle order-booking__icon-active"></i>
+                                        ):
+                                            <i className="fas fa-times-circle order-booking__icon-inactive"></i>
+                                            // <i className="fas fa-times order-booking__icon"></i>
+                                        }
+                                    </td>
                                 </tr>
                             ))
                             }

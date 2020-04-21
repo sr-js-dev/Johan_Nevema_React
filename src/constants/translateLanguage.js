@@ -166,7 +166,10 @@ export const TRANSLATIONS = {
       Filter: 'Filter',
       Add_filter: 'Add filter',
       Filter_by_this_field: 'Filter by this field',
-      Hide_column: 'Hide column'
+      Hide_column: 'Hide column',
+      already_invoice: 'This invoice number has previously been used for this supplier',
+      ExactBooking: 'ExactBooking',
+      Comments: 'Comments'
     },
 
 
@@ -337,6 +340,9 @@ export const TRANSLATIONS = {
       Filter: 'Filter',
       Add_filter: 'Toevoegen filter',
       Filter_by_this_field: 'Filteren op dit veld',
-      Hide_column: 'Kolom verbergen'
+      Hide_column: 'Kolom verbergen',
+      already_invoice: 'Dit factuurnummer is al eerder gebruikt voor deze leverancier',
+      ExactBooking: 'Exacte boeking',
+      Comments: 'Opmerkingen'
     }
   };

@@ -87,6 +87,7 @@ class Salesupdateform extends Component {
     };
 
     handleSubmit = (event) => {
+        console.log('123', this.props)
         event.preventDefault();
         const clientFormData = new FormData(event.target);
         const data = {};
@@ -101,7 +102,8 @@ class Salesupdateform extends Component {
                 supplier: data.supplier,
                 reference: data.reference,
                 loadingdate: Common.formatDateSecond(data.orderdate),
-                arrivaldate: this.state.arrivaleFlag ? Common.formatDateSecond(data.arrivaldate): ''
+                arrivaldate: this.state.arrivaleFlag ? Common.formatDateSecond(data.arrivaldate): '',
+                comments: data.comments
             }
             Axios.post(API.PostSalesOrder, params, headers)
             .then(result => {
@@ -110,12 +112,13 @@ class Salesupdateform extends Component {
             });
         }else{
             params = {
-                id: this.props.salesOrder.Id,
+                id: this.props.salesOrder.id,
                 customer: data.customer,
                 supplier: data.supplier,
                 reference: data.reference,
                 loadingdate: Common.formatDateSecond(data.orderdate),
                 arrivaldate: Common.formatDateSecond(data.arrivaldate),
+                comments: data.comments
                 // iscompleted: true
             }
             data.id = this.props.salesOrder.id;
@@ -391,6 +394,14 @@ class Salesupdateform extends Component {
                                      <input id="inputFile" name="file" type="file" accept="*.*"  onChange={this.onChange} style={{display: "none"}} />   
                                 </FileDrop>
                             </div>
+                        </Col>
+                    </Form.Group>
+                    <Form.Group as={Row} controlId="formPlaintextPassword">
+                        <Form.Label column sm="3" >
+                            {trls('Attachments')}   
+                        </Form.Label>
+                        <Col className="product-text">
+                            <Form.Control as="textarea" rows="3" name="comments" required defaultValue = {this.props.salesOrder?this.props.salesOrder.comments:''}  placeholder={trls("Comments")} />
                         </Col>
                     </Form.Group>
                     <Form.Group style={{textAlign:"center"}}>

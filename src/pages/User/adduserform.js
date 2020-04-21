@@ -59,7 +59,7 @@ class Adduserform extends Component {
             var headers = SessionManager.shared().getAuthorizationHeader();
             Axios.post(API.PostUserData, params, headers)
             .then(result => {
-                this.props.onGetUser()
+                this.props.onGetUser();
                 this.onHide();
                 this.setState({selectflag:true})
                 this.props.removeState();
