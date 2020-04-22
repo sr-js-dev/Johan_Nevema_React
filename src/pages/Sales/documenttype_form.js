@@ -65,8 +65,6 @@ class Goaltype extends Component {
       return returnValue;
     }
 
-    
-
     render(){
         let typeData = [];
         let files = [];

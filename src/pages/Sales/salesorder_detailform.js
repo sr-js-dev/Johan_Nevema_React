@@ -36,7 +36,7 @@ class Salesorderdetailform extends Component {
             sendingFlag: false,
             salesTransport: [],
             transportData: [],
-            transportResult: [],
+            transportResult: []
         }
       }
     // componentDidMount() {
@@ -61,13 +61,13 @@ class Salesorderdetailform extends Component {
 
     getSalesOrder() {
         var params={
-            "salesorderid": this.props.orderid;
+            "salesorderid":this.props.orderid
         }
         var headers = SessionManager.shared().getAuthorizationHeader();
-        Axios.post(API.GetSalesDetail, params, headers)
-        .then(result => {
-            this.setState({salesorder: result.data.Items[0]});
-        });
+            Axios.post(API.GetSalesDetail, params, headers)
+            .then(result => {
+                this.setState({salesorder: result.data.Items[0]});
+            });
     }
 
     getSalesItem () {

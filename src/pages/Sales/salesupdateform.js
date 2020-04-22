@@ -398,7 +398,7 @@ class Salesupdateform extends Component {
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
                         <Form.Label column sm="3" >
-                            {trls('Attachments')}   
+                            {trls('Comments')}   
                         </Form.Label>
                         <Col className="product-text">
                             <Form.Control as="textarea" rows="3" name="comments" required defaultValue = {this.props.salesOrder?this.props.salesOrder.comments:''}  placeholder={trls("Comments")} />
