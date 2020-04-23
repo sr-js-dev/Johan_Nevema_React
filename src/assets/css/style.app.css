@@ -898,3 +898,10 @@ input[name="search"].form-control::-webkit-input-placeholder {
   color: #A3CBE8;
   font-size: 20px;
 }
+@media (max-width: 576px){
+  .has-search {
+    padding: 0px;
+    margin-left: auto;
+    margin-top: 10px;
+  }
+}

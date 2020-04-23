@@ -220,9 +220,7 @@ class Salesorderdtail extends Component {
                                 </div>
                                 <label className="placeholder-label_purchase purhcase-placeholder">{trls('File')}</label>
                             </Col>
-                            <div>
-                                <Button variant="light" style={{marginRight: 10}} onClick={()=>this.setState({modalShow:true, exactFlag: false})}><img src={require('../../assets/images/edit.svg')} alt="edit" style={{marginRight: 10}}></img>{trls('Edit_project_detail')}</Button>
-                            </div>
+                            
                             
                         </Col>
                         <Col sm={4}>
@@ -254,6 +252,15 @@ class Salesorderdtail extends Component {
                             </div>
                         </Col>
                     </Row>
+                    <div className="product-detail__data-div">
+                        <Col style={{paddingTop: 0}}>
+                            <Form.Control as="textarea" rows="3" name="comments" required defaultValue = {detailData.comments ?  detailData.comments : ''} placeholder={trls("Comments")} />
+                            <label className="placeholder-label">{trls('Comments')}</label>
+                        </Col>
+                        <Col style={{paddingTop: 10}}>
+                            <Button variant="light" style={{marginRight: 10}} onClick={()=>this.setState({modalShow:true, exactFlag: false})}><img src={require('../../assets/images/edit.svg')} alt="edit" style={{marginRight: 10}}></img>{trls('Edit_project_detail')}</Button>
+                        </Col>
+                    </div>
                 </div>
                 <div className="product-detail-table">
                     <div className="product-price-table">
