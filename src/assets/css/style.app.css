@@ -32,7 +32,7 @@ padding-left: 0px;
 }
 
 .order_div{
-padding:20px;
+padding:1px;
 }
 @media (max-width: 1000px){
 .orders__filters-item {
@@ -783,7 +783,7 @@ input[name="search"].form-control::-webkit-input-placeholder {
 }
 .product-detail__data-div{
   width: 100%;
-  padding: 0 30px;
+  padding: 10px 30px;
 }
 .product-detail__data--detail{
   padding: 0 45px;
@@ -904,4 +904,7 @@ input[name="search"].form-control::-webkit-input-placeholder {
     margin-left: auto;
     margin-top: 10px;
   }
+}
+.exact-booking__number{
+  margin-left: 6px;
 }

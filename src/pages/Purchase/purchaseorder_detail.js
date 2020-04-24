@@ -244,6 +244,28 @@ class Purchaseorderdtail extends Component {
         Common.hideSlideForm(); 
     }
 
+    updownInfo = (id) =>{
+        let purchaseOrderLine = this.state.purchaseOrderLine;
+        purchaseOrderLine.map((data, i)=>{
+            if(data.id===id){
+                if(!data.checked){
+
+                    data.checked = true;
+                }else{
+                    data.checked = false;
+                }
+            }
+            return data;
+        })
+        this.setState({purchaseOrderLine: purchaseOrderLine});
+    }
+
+    newOrderRegistrate = (orderHeaderId) => {
+        var re = new RegExp(/^.*\//);
+        let path = re.exec(window.location.href);
+        window.open(path+'sales-order', '_blank');
+    }
+
     render () {
         let detailData = [];
         if(this.state.purchaseOrder){
@@ -313,7 +335,7 @@ class Purchaseorderdtail extends Component {
                                 <label className="placeholder-label_purchase purhcase-placeholder">{trls('File')}</label>
                             </Col>
                             <div>
-                                <Button variant="light" style={{marginRight: 10}} onClick={()=>this.setState({modalShow:true, exactFlag: false})}><img src={require('../../assets/images/edit.svg')} alt="edit" style={{marginRight: 10}}></img>{trls('Edit_project_detail')}</Button>
+                                <Button variant="light" style={{marginRight: 10}} onClick={()=>this.setState({modalShow:true, exactFlag: false})}><img src={require('../../assets/images/edit.svg')} alt="edit" style={{marginRight: 10}}></img>{trls('Edit_Purchase_detail')}</Button>
                             </div>
                         </Col>
                     </Row>
@@ -341,22 +363,47 @@ class Purchaseorderdtail extends Component {
                                         </thead>
                                         {this.state.purchaseOrderLine && (<tbody>
                                             {
-                                                this.state.purchaseOrderLine.map((data,i) =>(
-                                                <tr id={data.id} key={i}>
-                                                    <td>{data.productcode}</td>
-                                                    <td>{data.quantity}</td>
-                                                    <td>{data.unit}</td>
-                                                    <td>{Common.formatMoney(data.price)}</td>
-                                                    <td>{Common.formatMoney(data.amount)}</td>
-                                                    <td>{data.VAT}</td>
-                                                    <td>{Common.formatDate(data.reportingdate)}</td>
-                                                    <td >
-                                                        <Row style={{justifyContent:"space-around", width: 100}}>
-                                                            <Button className="price-action__button" variant="light" onClick={()=>this.deletePurchaseOrderLine(data.id)}><i className="far fa-trash-alt add-icon" ></i>{trls('Delete')}</Button>
-                                                        </Row>
-                                                    </td>
-                                                </tr>
-                                            ))
+                                                this.state.purchaseOrderLine.map((data,i)=>(
+                                                    <React.Fragment key={i}>
+                                                        <tr>
+                                                            <td className={data.checked ? "order-product__td order-product__first-td" : ''}>{data.productcode}</td>
+                                                            <td className={data.checked ? "order-product__td" : ''}>{data.quantity}</td>
+                                                            <td className={data.checked ? "order-product__td" : ''}>{data.unit}</td>
+                                                            <td className={data.checked ? "order-product__td" : ''}>{Common.formatMoney(data.price)}</td>
+                                                            <td className={data.checked ? "order-product__td" : ''}>{Common.formatMoney(data.amount)}</td>
+                                                            <td className={data.checked ? "order-product__td" : ''}>{data.VAT}</td>
+                                                            <td className={data.checked ? "order-product__td" : ''}>{Common.formatDate(data.reportingdate)}</td>
+                                                            <td className={data.checked ? "order-product__td order-product__last-td" : ''}>
+                                                                <Row style={{justifyContent:"space-around", width: 250}}>
+                                                                    <Button className="price-action__button" variant="light" onClick={()=>this.deletePurchaseOrderLine(data.id)}><i className="far fa-trash-alt add-icon" ></i>{trls('Delete')}</Button>
+                                                                    <Button className="price-action__button" variant="light" onClick={()=>this.newOrderRegistrate(data.SalesOrderHeaderId)}><i className="fas fa-external-link-alt add-icon" ></i>{trls('NewOrder')}</Button>
+                                                                    <Button className="price-action__button" variant="light" onClick={()=>this.updownInfo(data.id)}><i className={data.checked ? "fas fa-caret-up" : "fas fa-caret-down"}></i></Button>
+                                                                </Row>
+                                                            </td>
+                                                        </tr>
+                                                        {data.checked && (
+                                                            <tr>
+                                                                <td className={data.checked ? "order-product__first-td" : ''}></td>
+                                                                <td>
+                                                                    <div>{trls("Packing_slip_number")}</div>
+                                                                    <div style={{paddingTop: 20}}>{data.PackingSlip}</div>
+                                                                </td>
+                                                                <td>
+                                                                    <div>{trls("Container_number")}</div>
+                                                                    <div style={{paddingTop: 20}}>{data.Container}</div>
+                                                                </td>
+                                                                <td>
+                                                                    <div>{trls("ShippingDocumentnumber")}</div>
+                                                                    <div style={{paddingTop: 20}}>{data.Shipping}</div>
+                                                                </td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td className={data.checked ? "order-product__last-td" : ''}></td>
+                                                            </tr>
+                                                        )}
+                                                    </React.Fragment>
+                                                ))
                                             }
                                             <tr style={{backgroundColor: '#D3EDD0', fontWeight: 'bold'}}>
                                                 <td colSpan={8} style={{textAlign: 'right'}}><span className="purchase-child-total">{trls('Total')}</span><span className="purchase-child-total amount">{Common.formatMoney(this.state.totalAmount)}</span></td>
@@ -375,18 +422,38 @@ class Purchaseorderdtail extends Component {
                                         </thead>
                                         {this.state.purchaseOrderLine && (<tbody>
                                             {
-                                                this.state.purchaseOrderLine.map((data,i) =>(
-                                                <tr id={data.id} key={i}>
-                                                    <td>{data.pricingtype}</td>
-                                                    <td>{Common.formatMoney(data.price)}</td>
-                                                    <td>{data.VAT}</td>
-                                                    <td >
-                                                        <Row style={{justifyContent:"space-around", width: 100}}>
-                                                            <Button className="price-action__button" variant="light" onClick={()=>this.deletePurchaseOrderLine(data.id)}><i className="far fa-trash-alt add-icon" ></i>{trls('Delete')}</Button>
-                                                        </Row>
-                                                    </td>
-                                                </tr>
-                                            ))
+                                                this.state.purchaseOrderLine.map((data,i)=>(
+                                                    <React.Fragment key={i}>
+                                                        <tr>
+                                                            <td className={data.checked ? "order-product__td order-product__first-td" : ''}>{data.pricingtype}</td>
+                                                            <td className={data.checked ? "order-product__td" : ''}>{Common.formatMoney(data.price)}</td>
+                                                            <td className={data.checked ? "order-product__td" : ''}>{data.VAT}</td>
+                                                            <td className={data.checked ? "order-product__td order-product__last-td" : ''}>
+                                                                <Row style={{justifyContent:"space-around", width: 150}}>
+                                                                    <Button className="price-action__button" variant="light" onClick={()=>this.deletePurchaseOrderLine(data.id)}><i className="far fa-trash-alt add-icon" ></i>{trls('Delete')}</Button>
+                                                                    <Button className="price-action__button" variant="light" onClick={()=>this.updownInfo(data.id)}><i className={data.checked ? "fas fa-caret-up" : "fas fa-caret-down"}></i></Button>
+                                                                </Row>
+                                                            </td>
+                                                        </tr>
+                                                        {data.checked && (
+                                                            <tr>
+                                                                <td>
+                                                                    <div>{trls("Packing_slip_number")}</div>
+                                                                    <div style={{paddingTop: 20}}>{data.PackingSlip}</div>
+                                                                </td>
+                                                                <td>
+                                                                    <div>{trls("Container_number")}</div>
+                                                                    <div style={{paddingTop: 20}}>{data.Container}</div>
+                                                                </td>
+                                                                <td>
+                                                                    <div>{trls("ShippingDocumentnumber")}</div>
+                                                                    <div style={{paddingTop: 20}}>{data.Shipping}</div>
+                                                                </td>
+                                                                <td className={data.checked ? "order-product__last-td" : ''}></td>
+                                                            </tr>
+                                                        )}
+                                                    </React.Fragment>
+                                                ))
                                             }
                                             <tr style={{backgroundColor: '#D3EDD0', fontWeight: 'bold'}}>
                                                 <td colSpan={3} style={{textAlign: 'right'}}><span className="purchase-child-total">{trls('Total')}</span><span className="purchase-child-total amount">{Common.formatMoney(this.state.totalAmount)}</span></td>

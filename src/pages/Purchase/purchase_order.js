@@ -35,13 +35,13 @@ class Purchaseorder extends Component {
             originpurchaseorders: [],
             filterFlag: false,
             filterColunm: [
-                {"label": trls('Id'), "value": "Id", "type": 'text', "show": true},
-                {"label": trls('Supplier'), "value": "Supplier", "type": 'text', "show": true},
-                {"label": trls('Invoice'), "value": "invoicenr", "type": 'text', "show": true},
-                {"label": trls('Invoice_date'), "value": "invoicedate", "type": 'date', "show": true},
-                {"label": trls('IsTransport'), "value": "IsTransport", "type": 'text', "show": true},
-                {"label": trls('Total_amount'), "value": "total", "type": 'text', "show": true},
-                {"label": trls('ExactBooking'), "value": "ExactBooking", "type": 'text', "show": true},
+                {"label": 'Id', "value": "Id", "type": 'text', "show": true},
+                {"label": 'Supplier', "value": "Supplier", "type": 'text', "show": true},
+                {"label": 'Invoice', "value": "invoicenr", "type": 'text', "show": true},
+                {"label": 'Invoice_date', "value": "invoicedate", "type": 'date', "show": true},
+                {"label": 'IsTransport', "value": "IsTransport", "type": 'text', "show": true},
+                {"label": 'Total_amount', "value": "total", "type": 'text', "show": true},
+                {"label": 'ExactBooking', "value": "ExactBooking", "type": 'text', "show": true},
             ],
         };
       }
@@ -101,7 +101,7 @@ setFilterData = () => {
         {"label": trls('Supplier'), "value": "Supplier", "type": 'text'},
         {"label": trls('Invoice'), "value": "invoicenr", "type": 'text'},
         {"label": trls('Invoice_date'), "value": "invoicedate", "type": 'date'},
-        {"label": trls('Total_amount'), "value": "total", "type": 'text'}
+        {"label": trls('Totalamount'), "value": "total", "type": 'text'}
     ]
     this.setState({filterData: filterData});
 }
@@ -180,7 +180,7 @@ render () {
                                 {filterColunm.map((item, key)=>(
                                     <th className={!item.show ? "filter-show__hide" : ''} key={key} style={item.value==="ExactBooking" ? {width: 30} : {}}>
                                         <Contextmenu
-                                            triggerTitle = {item.label}
+                                            triggerTitle = {trls(item.label) ? trls(item.label) : ''}
                                             addFilterColumn = {(value)=>this.addFilterColumn(value)}
                                             removeColumn = {(value)=>this.removeColumn(value)}
                                         />
@@ -210,10 +210,15 @@ render () {
                                     <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>{Common.formatMoney(data.total)}</td>
                                     <td className={!this.showColumn(filterColunm[6].label) ? "filter-show__hide" : ''}>
                                         {data.exactBooking ? (
-                                            <i className="fas fa-check-circle order-booking__icon-active"></i>
+                                            <Row>
+                                                <i className="fas fa-check-circle order-booking__icon-active"></i>
+                                                <span className="exact-booking__number">{data.exactBooking}</span>
+                                            </Row>
                                         ):
-                                            <i className="fas fa-times-circle order-booking__icon-inactive"></i>
-                                            // <i className="fas fa-times order-booking__icon"></i>
+                                            <Row>
+                                                <i className="fas fa-times-circle order-booking__icon-inactive"></i>
+                                                <span className="exact-booking__number"></span>
+                                            </Row>
                                         }
                                     </td>
                                 </tr>

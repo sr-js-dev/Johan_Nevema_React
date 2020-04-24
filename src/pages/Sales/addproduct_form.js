@@ -32,7 +32,7 @@ class Addproduct extends Component {
             viewFieldFlag: false,
             purchaseAmount: 0,
             salesAmount: 0,
-            reportingDate: new Date(),
+            // reportingDate: new Date(),
             productQuantity: 0,
             salesQuantity: 0,
             purchaseQuantity: 0,
@@ -230,15 +230,13 @@ class Addproduct extends Component {
             <Modal.Body>
                 <Form className="container product-form" onSubmit = { this.handleSubmit }>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls("Product")}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
+                        <Col className="product-text">
                             <Select
                                 name="product"
                                 options={productListOption}
                                 onChange={val => this.changeProduct(val)}
                             />
+                            <label className="placeholder-label">{trls('Product')}</label>
                            {!this.props.disabled && (
                                 <input
                                     onChange={val=>console.log()}
@@ -253,11 +251,9 @@ class Addproduct extends Component {
                     </Form.Group>
                     {!this.state.viewFieldFlag&&(
                         <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls("Sales_Quantity")}  
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
+                            <Col className="product-text">
                                 <Form.Control type="number" name="salesquantity" required min="0.00" step="0.001" placeholder={trls("Sales_Quantity")} onChange = {(val)=>this.changeSalesQauntity(val)} />
+                                <label className="placeholder-label">{trls('Sales_Quantity')}</label>
                             </Col>
                         </Form.Group>
                     )}
@@ -265,41 +261,33 @@ class Addproduct extends Component {
                         <Col sm={6} style={{padding: 0}}>
                             {this.state.viewFieldFlag&&(
                                 <Form.Group as={Row} controlId="formPlaintextPassword">
-                                    <Form.Label column sm="3">
-                                        {trls("Sales_Quantity")}  
-                                    </Form.Label>
-                                    <Col sm="9" className="product-text">
+                                    <Col className="product-text">
                                         <Form.Control type="number" name="salesquantity" required min="0.00" step="0.001" defaultValue={this.state.salesQuantity} placeholder={trls("Sales_Quantity")} onChange = {(val)=>this.changeSalesQauntity(val)} />
+                                        <label className="placeholder-label">{trls('Sales_Quantity')}</label>
                                     </Col>
                                 </Form.Group>
                             )}
                             {this.state.viewFieldFlag&&(
                                 <Form.Group as={Row} controlId="formPlaintextPassword">
-                                    <Form.Label column sm="3">
-                                        {trls("Sales_Price")}  
-                                    </Form.Label>
-                                    <Col sm="9" className="product-text">
+                                    <Col className="product-text">
                                         <Form.Control type="text" name="salesprice" defaultValue={Common.formatMoney(this.state.salesPrice)} readOnly placeholder={trls("Sales_Price")} />
+                                        <label className="placeholder-label">{trls('Sales_Price')}</label>
                                     </Col>
                                 </Form.Group>
                             )}
                             {this.state.viewFieldFlag&&(
                                 <Form.Group as={Row} controlId="formPlaintextPassword">
-                                    <Form.Label column sm="3">
-                                        {trls("Sales_Unit")}  
-                                    </Form.Label>
-                                    <Col sm="9" className="product-text">
+                                    <Col className="product-text">
                                         <Form.Control type="text" name="salesunit" defaultValue={this.state.salesUnit} readOnly placeholder={trls("Sales_Unit")} />
+                                        <label className="placeholder-label">{trls('Sales_Unit')}</label>
                                     </Col>
                                 </Form.Group>
                             )}
                             {this.state.viewFieldFlag&&(
                                 <Form.Group as={Row} controlId="formPlaintextPassword">
-                                    <Form.Label column sm="3">
-                                        {trls("Sales_Amount")}  
-                                    </Form.Label>
-                                    <Col sm="9" className="product-text">
+                                    <Col className="product-text">
                                         <Form.Control type="text" name="salesamount" value={Common.formatMoney(this.state.salesAmount)} readOnly placeholder={trls("Sales_Amount")} />
+                                        <label className="placeholder-label">{trls('Sales_Amount')}</label>
                                     </Col>
                                 </Form.Group>
                             )}
@@ -307,50 +295,41 @@ class Addproduct extends Component {
                         <Col sm={6} style={{padding: 0}}>
                             {this.state.viewFieldFlag&&(
                                 <Form.Group as={Row} controlId="formPlaintextPassword">
-                                    <Form.Label column sm="3">
-                                        {trls("Purchase_Quantity")}  
-                                    </Form.Label>
-                                    <Col sm="9" className="product-text">
+                                    <Col className="product-text">
                                         {this.state.purchaseUnit===this.state.salesUnit?(
                                             <Form.Control type="number" name="purchasequantity" required min="0.00" step="0.001" defaultValue={this.state.salesQuantity}  placeholder={trls("Purchase_Quantity")} onChange = {(val)=>this.changePurchaseQauntity(val)} />
                                         ):
                                             <Form.Control type="number" name="purchasequantity" required min="0.00" step="0.001"  placeholder={trls("Purchase_Quantity")} onChange = {(val)=>this.changePurchaseQauntity(val)} />
                                         }
+                                        <label className="placeholder-label">{trls('Purchase_Quantity')}</label>
                                     </Col>
                                 </Form.Group>
                             )}
                             {this.state.viewFieldFlag&&(
                                 <Form.Group as={Row} controlId="formPlaintextPassword">
-                                    <Form.Label column sm="3">
-                                        {trls("Purchase_Price")}  
-                                    </Form.Label>
-                                    <Col sm="9" className="product-text"> 
+                                    <Col className="product-text"> 
                                         <Form.Control type="text" name="purchaseprice" defaultValue={Common.formatMoney(this.state.purchasePrice)} readOnly placeholder={trls("Purchase_Price")} />
+                                        <label className="placeholder-label">{trls('Purchase_Price')}</label>
                                     </Col>
                                 </Form.Group>
                             )}
                             {this.state.viewFieldFlag&&(
                                 <Form.Group as={Row} controlId="formPlaintextPassword">
-                                    <Form.Label column sm="3">
-                                        {trls("Purchase_Unit")}  
-                                    </Form.Label>
-                                    <Col sm="9" className="product-text">
+                                    <Col className="product-text">
                                         <Form.Control type="text" name="purchaseunit" defaultValue={this.state.purchaseUnit} readOnly placeholder={trls("Purchase_Unit")} />
+                                        <label className="placeholder-label">{trls('Purchase_Unit')}</label>
                                     </Col>
                                 </Form.Group>
                             )}
                             {this.state.viewFieldFlag&&(
                                 <Form.Group as={Row} controlId="formPlaintextPassword">
-                                    <Form.Label column sm="3">
-                                        {trls("Purchase_Amount")}  
-                                    </Form.Label>
-                                    <Col sm="9" className="product-text">
+                                    <Col className="product-text">
                                         {this.state.purchaseUnit===this.state.salesUnit && !this.state.purhaseQuantityFlag?(
                                             <Form.Control type="text" name="purhcaseamount" value={Common.formatMoney(this.state.purchasePrice*this.state.salesQuantity)} readOnly placeholder={trls("Purchase_Amount")} />
                                         ):
                                             <Form.Control type="text" name="purhcaseamount" value={Common.formatMoney(this.state.purchaseAmount)} readOnly placeholder={trls("Purchase_Amount")} />
                                         }
-                                        
+                                        <label className="placeholder-label">{trls('Purchase_Amount')}</label>
                                     </Col>
                                 </Form.Group>
                             )}
@@ -358,45 +337,36 @@ class Addproduct extends Component {
                     </Form.Group>
                     {this.state.viewFieldFlag&&(
                         <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls("Packing_slip_number")}  
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
-                                <Form.Control type="text" name="packingslip" placeholder={trls("Packing_slip_number")} />
+                            <Col className="product-text">
+                                <Form.Control type="text" name="packingslip" placeholder={trls("Packing_slip_number")}/>
+                                <label className="placeholder-label">{trls('Packing_slip_number')}</label>
                             </Col>
                         </Form.Group>
                     )}
                     {this.state.viewFieldFlag&&(
                         <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls("Container_number")}  
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
+                            <Col className="product-text">
                                 <Form.Control type="text" name="container" placeholder={trls("Container_number")} />
+                                <label className="placeholder-label">{trls('Container_number')}</label>
                             </Col>
                         </Form.Group>
                     )}
                     {this.state.viewFieldFlag&&(
                         <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls("ShippingDocumentnumber")}  
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
+                            <Col className="product-text">
                                 <Form.Control type="text" name="shippingdocumentnumber" placeholder={trls("ShippingDocumentnumber")} />
+                                <label className="placeholder-label">{trls('ShippingDocumentnumber')}</label>
                             </Col>
                         </Form.Group>
                     )}
                     {this.state.viewFieldFlag&&(
                         <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                                {trls('ReportingDate')}   
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
+                            <Col className="product-text">
                                 {this.state.invoicedateflag || !this.props.loadingdate? (
-                                    <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.reportingDate} onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>}/>
+                                    <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy"  onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>}/>
                                 ) : <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.loadingdate)} onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>}/>
                                 } 
-                                
+                                <label className="placeholder-label">{trls('ReportingDate')}</label>
                             </Col>
                         </Form.Group>
                     )}

@@ -400,8 +400,8 @@ class Salesupdateform extends Component {
                         <Form.Label column sm="3" >
                             {trls('Comments')}   
                         </Form.Label>
-                        <Col className="product-text">
-                            <Form.Control as="textarea" rows="3" name="comments" required defaultValue = {this.props.salesOrder?this.props.salesOrder.comments:''}  placeholder={trls("Comments")} />
+                        <Col sm="9" className="product-text">
+                            <Form.Control as="textarea" rows="3" name="comments" defaultValue = {this.props.salesOrder?this.props.salesOrder.comments:''}  placeholder={trls("Comments")} />
                         </Col>
                     </Form.Group>
                     <Form.Group style={{textAlign:"center"}}>

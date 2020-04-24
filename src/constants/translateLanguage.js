@@ -169,7 +169,11 @@ export const TRANSLATIONS = {
       Hide_column: 'Hide column',
       already_invoice: 'This invoice number has previously been used for this supplier',
       ExactBooking: 'ExactBooking',
-      Comments: 'Comments'
+      Comments: 'Comments',
+      NewOrder: 'NewOrder',
+      BookingNumber: 'BookingNumber',
+      Edit_Purchase_detail: 'Edit Purchase detail',
+      Edit_Order_detail: 'Edit Order detail'
     },
 
 
@@ -332,7 +336,7 @@ export const TRANSLATIONS = {
       Copy: 'Kopiëren',
       Users: 'Gebruikers',
       Delete: 'Verwijderen',
-      Edit_project_detail: 'Inkoopfactuur bewerken',
+      Edit_project_detail: 'Productdetails bewerken',
       Add_product: 'Toevoegen Product',
       Order: 'Order',
       Add_purchase: 'Toevoegen inkoop',
@@ -342,7 +346,11 @@ export const TRANSLATIONS = {
       Filter_by_this_field: 'Filteren op dit veld',
       Hide_column: 'Kolom verbergen',
       already_invoice: 'Dit factuurnummer is al eerder gebruikt voor deze leverancier',
-      ExactBooking: 'Exacte boeking',
-      Comments: 'Opmerkingen'
+      ExactBooking: 'Exactboeking',
+      Comments: 'Opmerkingen',
+      NewOrder: 'NieuweBestelling',
+      BookingNumber: 'BoekingNummer',
+      Edit_Purchase_detail: 'Aankoopdetails bewerken',
+      Edit_Order_detail: 'Bestellingsdetails bewerken'
     }
   };

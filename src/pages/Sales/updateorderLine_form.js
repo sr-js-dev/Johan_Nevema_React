@@ -110,11 +110,9 @@ class Updateorderline extends Component {
             <Modal.Body>
                 <Form className="container product-form" onSubmit = { this.handleSubmit }>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls("Product")}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text"> 
+                        <Col className="product-text"> 
                             <Form.Control type="text" name="product" defaultValue={updateData.productcode} readOnly placeholder={trls("Purchase_Price")} />
+                            <label className="placeholder-label">{trls('Product')}</label>
                         </Col>
                     </Form.Group>
                     {/* <Form.Group as={Row} controlId="formPlaintextPassword">
@@ -126,102 +124,78 @@ class Updateorderline extends Component {
                         </Col>
                     </Form.Group> */}
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls("Sales_Quantity")}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text"> 
+                        <Col className="product-text"> 
                             <Form.Control type="text" name="salesquantity" defaultValue={updateData.salesquantity} readOnly  placeholder={trls("Purchase_Price")} />
+                            <label className="placeholder-label">{trls('Sales_Quantity')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls("Purchase_Quantity")}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text"> 
+                        <Col className="product-text"> 
                             <Form.Control type="text" name="purchasequantity" defaultValue={updateData.purchasequantity} readOnly placeholder={trls("Purchase_Price")} />
+                            <label className="placeholder-label">{trls('Purchase_Quantity')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls("Purchase_Price")}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text"> 
+                        <Col className="product-text"> 
                             <Form.Control type="text" name="purchaseprice" defaultValue={updateData.purchaseprice} readOnly placeholder={trls("Purchase_Price")} />
+                            <label className="placeholder-label">{trls('Purchase_Price')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls("Sales_Price")}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
+                        <Col className="product-text">
                             <Form.Control type="text" name="salesprice" defaultValue={updateData.SalesPrice} readOnly placeholder={trls("Sales_Price")} />
+                            <label className="placeholder-label">{trls('Sales_Price')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls("Purchase_Unit")}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text"> 
+                        <Col className="product-text"> 
                             <Form.Control type="text" name="purchaseprice" defaultValue={updateData.PurchaseUnit} readOnly placeholder={trls("Purchase_Price")} />
+                            <label className="placeholder-label">{trls('Purchase_Unit')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls("Sales_Unit")}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
+                        <Col className="product-text">
                             <Form.Control type="text" name="salesprice" defaultValue={updateData.SalesUnit} readOnly placeholder={trls("Sales_Price")} />
+                            <label className="placeholder-label">{trls('Sales_Unit')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls("Purchase_Amount")}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
+                        <Col className="product-text">
                             <Form.Control type="text" name="purhcaseamount" defaultValue={updateData.purchaseamount} readOnly placeholder={trls("Purchase_Amount")} />
+                            <label className="placeholder-label">{trls('Purchase_Amount')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls("Sales_Amount")}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
+                        <Col className="product-text">
                             <Form.Control type="text" name="salesamount" defaultValue={updateData.SalesAmount} readOnly placeholder={trls("Sales_Amount")} />
+                            <label className="placeholder-label">{trls('Sales_Amount')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls("Packing_slip_number")}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
+                        <Col className="product-text">
                             <Form.Control type="text" name="packingslip" defaultValue={updateData.PackingSlip}  placeholder={trls("Packing_slip_number")} />
+                            <label className="placeholder-label">{trls('Packing_slip_number')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls("Container_number")}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
+                        <Col className="product-text">
                             <Form.Control type="text" name="container" defaultValue={updateData.Container} placeholder={trls("Container_number")} />
+                            <label className="placeholder-label">{trls('Container_number')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls("ShippingDocumentnumber")}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
+                        <Col className="product-text">
                             <Form.Control type="text" name="shippingdocumentnumber" defaultValue={updateData.Shipping} placeholder={trls("ShippingDocumentnumber")} />
+                            <label className="placeholder-label">{trls('ShippingDocumentnumber')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                            {trls('ReportingDate')}   
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
+                        <Col className="product-text">
                             {this.state.reportingFlag || !this.props.updatedata ?( 
                                 <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.reportingDate} onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>} />
                                 ) : <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date( this.props.updatedata.ReportingDate)} onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>} />
                             } 
+                            <label className="placeholder-label">{trls('ReportingDate')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group style={{textAlign:"center"}}>

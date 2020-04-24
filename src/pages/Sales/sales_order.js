@@ -35,17 +35,19 @@ class Salesorder extends Component {
             filterFlag: false,
             filterData: [],
             filterColunm: [
-                {"label": trls('Id'), "value": "id", "type": 'text', "show": true},
-                {"label": trls('Customer'), "value": "Customer", "type": 'text', "show": true},
-                {"label": trls('Supplier'), "value": "Supplier", "type": 'text', "show": true},
-                {"label": trls('Reference_customer'), "value": "referencecustomer", "type": 'text', "show": true},
-                {"label": trls('Loading_date'), "value": "loadingdate", "type": 'date', "show": true},
-                {"label": trls('Arrival_date'), "value": "arrivaldate", "type": 'date', "show": true},
-                {"label": trls('Productcode'), "value": "ProductCode", "type": 'text', "show": true},
-                {"label": trls('Quantity'), "value": "Quantity", "type": 'text', "show": true},
-                {"label": trls('PackingSlip'), "value": "PackingSlip", "type": 'text', "show": true},
-                {"label": trls('Container'), "value": "Container", "type": 'text', "show": true},
-                {"label": trls('ExactBooking'), "value": "Container", "type": 'text', "show": true},
+                {"label": 'Id', "value": "id", "type": 'text', "show": true},
+                {"label": 'Customer', "value": "Customer", "type": 'text', "show": true},
+                {"label": 'Supplier', "value": "Supplier", "type": 'text', "show": true},
+                {"label": 'Reference_customer', "value": "referencecustomer", "type": 'text', "show": true},
+                {"label": 'Loading_date', "value": "loadingdate", "type": 'date', "show": true},
+                {"label": 'Salesunit', "value": "SalesUnit", "type": 'text', "show": true},
+                {"label": 'Sales_Quantity', "value": "SalesQuantity", "type": 'text', "show": true},
+                {"label": 'Purchase_Unit', "value": "PurchaseUnit", "type": 'text', "show": true},
+                {"label": 'Purchase_Quantity', "value": "PurchaseQuantity", "type": 'text', "show": true},
+                {"label": 'Productcode', "value": "ProductCode", "type": 'text', "show": true},
+                {"label": 'PackingSlip', "value": "PackingSlip", "type": 'text', "show": true},
+                {"label": 'Container', "value": "Container", "type": 'text', "show": true},
+                {"label": 'ExactBooking', "value": "Container", "type": 'text', "show": true},
             ],
         };
       }
@@ -191,7 +193,7 @@ render () {
                                 {filterColunm.map((item, key)=>(
                                     <th className={!item.show ? "filter-show__hide" : ''} key={key}>
                                         <Contextmenu
-                                            triggerTitle = {item.label}
+                                            triggerTitle = {trls(item.label) ? trls(item.label) : ''}
                                             addFilterColumn = {(value)=>this.addFilterColumn(value)}
                                             removeColumn = {(value)=>this.removeColumn(value)}
                                         />
@@ -207,23 +209,30 @@ render () {
                                     <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}>
                                         <div id={data.id} style={{cursor: "pointer", color:'#004388', fontSize:"14px", fontWeight:'bold'}} onClick={()=>this.loadSalesDetail(data)}>{data.id}</div>
                                     </td>
-                                    <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}>
+                                    <td className={!this.showColumn(filterColunm[1].label) ? "filter-show__hide" : ''}>
                                         <div>{data.Customer}</div>
                                     </td>
-                                    <td className={!this.showColumn(filterColunm[1].label) ? "filter-show__hide" : ''}>{data.Supplier}</td>
-                                    <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{data.referencecustomer}</td>
-                                    <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.loadingdate)}</td>
-                                    <td className={!this.showColumn(filterColunm[4].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.arrivaldate)}</td>
-                                    <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>{data.ProductCode}</td>
-                                    <td className={!this.showColumn(filterColunm[6].label) ? "filter-show__hide" : ''}>{data.Quantity}</td>
-                                    <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>{data.PackingSlip}</td>
-                                    <td className={!this.showColumn(filterColunm[8].label) ? "filter-show__hide" : ''}>{data.Container}</td>
-                                    <td className={!this.showColumn(filterColunm[9].label) ? "filter-show__hide" : ''}>
+                                    <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{data.Supplier}</td>
+                                    <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''}>{data.referencecustomer}</td>
+                                    <td className={!this.showColumn(filterColunm[4].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.loadingdate)}</td>
+                                    <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>{data.SalesUnit}</td>
+                                    <td className={!this.showColumn(filterColunm[6].label) ? "filter-show__hide" : ''}>{data.SalesQuantity}</td>
+                                    <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>{data.PurchaseUnit}</td>
+                                    <td className={!this.showColumn(filterColunm[8].label) ? "filter-show__hide" : ''}>{data.PurchaseQuantity}</td>
+                                    <td className={!this.showColumn(filterColunm[9].label) ? "filter-show__hide" : ''}>{data.ProductCode}</td>
+                                    <td className={!this.showColumn(filterColunm[10].label) ? "filter-show__hide" : ''}>{data.PackingSlip}</td>
+                                    <td className={!this.showColumn(filterColunm[11].label) ? "filter-show__hide" : ''}>{data.Container}</td>
+                                    <td className={!this.showColumn(filterColunm[12].label) ? "filter-show__hide" : ''}>
                                         {data.exactBooking ? (
-                                            <i className="fas fa-check-circle order-booking__icon-active"></i>
+                                            <Row>
+                                                <i className="fas fa-check-circle order-booking__icon-active"></i>
+                                                <span className="exact-booking__number">{data.exactBooking}</span>
+                                            </Row>
                                         ):
-                                            <i className="fas fa-times-circle order-booking__icon-inactive"></i>
-                                            // <i className="fas fa-times order-booking__icon"></i>
+                                            <Row>
+                                                <i className="fas fa-times-circle order-booking__icon-inactive"></i>
+                                                <span className="exact-booking__number"></span>
+                                            </Row>
                                         }
                                     </td>
                                 </tr>

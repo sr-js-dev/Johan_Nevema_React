@@ -311,7 +311,7 @@ class Product extends Component {
                             {filterColunm.map((item, key)=>(
                                   <th className={!item.show ? "filter-show__hide" : ''} key={key}>
                                       <Contextmenu
-                                        triggerTitle = {item.label}
+                                        triggerTitle = {trls(item.label) ? trls(item.label) : ''}
                                         addFilterColumn = {(value)=>this.addFilterColumn(value)}
                                         removeColumn = {(value)=>this.removeColumn(value)}
                                       />

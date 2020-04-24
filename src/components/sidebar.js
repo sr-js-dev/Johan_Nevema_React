@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import { trls } from './translate';
 import  { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+
 const mapStateToProps = state => ({ 
     ...state.auth,
 });

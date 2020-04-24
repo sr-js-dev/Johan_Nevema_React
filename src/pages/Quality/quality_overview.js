@@ -59,6 +59,7 @@ class Taskoverview extends Component {
                 {"label": trls('Sales_Amount'), "value": "SalesAmount", "type": 'date', "show": true},
                 {"label": trls('Loading_date'), "value": "Loadingdate", "type": 'text', "show": true},
                 {"label": trls('Loading_week'), "value": "Loadingweek", "type": 'text', "show": true},
+                {"label": trls('BookingNumber'), "value": "BookingNumber", "type": 'text', "show": true},
                 {"label": trls('Complete'), "value": "Complete", "type": 'text', "show": true},
             ],
         };
@@ -321,7 +322,7 @@ render () {
                                 {filterColunm.map((item, key)=>(
                                     <th className={!item.show ? "filter-show__hide" : ''} key={key}>
                                         <Contextmenu
-                                            triggerTitle = {item.label}
+                                            triggerTitle = {trls(item.label) ? trls(item.label) : ''}
                                             addFilterColumn = {(value)=>this.addFilterColumn(value)}
                                             removeColumn = {(value)=>this.removeColumn(value)}
                                         />
@@ -341,7 +342,8 @@ render () {
                                     <td className={!this.showColumn(filterColunm[4].label) ? "filter-show__hide" : ''}>{Common.formatMoney(data.SalesAmount)}</td>
                                     <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.Loadingdate)}</td>
                                     <td className={!this.showColumn(filterColunm[6].label) ? "filter-show__hide" : ''}>{data.Loadingweek}</td>
-                                    <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>
+                                    <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>{data.BookingNumber}</td>
+                                    <td className={!this.showColumn(filterColunm[8].label) ? "filter-show__hide" : ''}>
                                         <Row style={{justifyContent:"center"}}>
                                             {!data.isCompleted && data.referencecustomer!=="" && !data.Temporary?(
                                                 <Button type="submit" style={{width:"auto", height: 35}} onClick={()=>this.completeOrder(data.Id)}>{trls('Send_salesinvoice')}</Button>

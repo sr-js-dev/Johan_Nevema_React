@@ -8,7 +8,7 @@ import API from '../../components/api'
 import { trls } from '../../components/translate';
 import  Salesupdateform  from './salesupdateform'
 import  Addproductform  from './addproduct_form';
-import  Updateorderline  from './updateorderLine_fomr';
+import  Updateorderline  from './updateorderLine_form';
 import  Updatetransport  from './update_transport';
 import  Addtransporter  from './addtransporter';
 import * as Common from '../../components/common';
@@ -56,19 +56,19 @@ class Salesorderdtail extends Component {
             "salesorderid":this.props.newid
         }
         var headers = SessionManager.shared().getAuthorizationHeader();
-            Axios.post(API.GetSalesDetail, params, headers)
+        Axios.post(API.GetSalesDetail, params, headers)
+        .then(result => {
+            params = {
+                orderid: this.props.newid
+            }
+            Axios.post(API.GetSalesDocuments, params, headers)
             .then(result => {
-                params = {
-                    orderid: this.props.newid
+                if(result.data.Items){
+                    this.setState({salesOrderDocList: result.data.Items})
                 }
-                Axios.post(API.GetSalesDocuments, params, headers)
-                .then(result => {
-                    if(result.data.Items){
-                        this.setState({salesOrderDocList: result.data.Items})
-                    }
-                })
-                this.setState({salesorder: result.data.Items[0]});
-            });
+            })
+            this.setState({salesorder: result.data.Items[0]});
+        });
     }
 
     getSalesItem () {
@@ -181,6 +181,8 @@ class Salesorderdtail extends Component {
 
     render () {
         let detailData = this.props.salesdetaildata;
+        // let detailData = this.state.salesorder;
+        console.log('1111', detailData)
         let salesItems = this.state.salesItems;
         let transporter = this.state.salesTransport;
         const { salesOrderDocList } = this.state;
@@ -246,7 +248,7 @@ class Salesorderdtail extends Component {
                                 <Form.Label>
                                     {trls("Loading_date")}
                                 </Form.Label>
-                                {detailData.loadingdate &&(
+                                {detailData.loadingdate!=="1900-01-01T00:00:00" &&(
                                     <p>{detailData.arrivaldate!=="1900-01-01T00:00:00" ? Common.formatDate(detailData.arrivaldate) : Common.formatDate(detailData.loadingdate)}</p>
                                 )}
                             </div>
@@ -254,11 +256,11 @@ class Salesorderdtail extends Component {
                     </Row>
                     <div className="product-detail__data-div">
                         <Col style={{paddingTop: 0}}>
-                            <Form.Control as="textarea" rows="3" name="comments" required defaultValue = {detailData.comments ?  detailData.comments : ''} placeholder={trls("Comments")} />
+                            <Form.Control as="textarea" rows="3" name="comments" required readOnly defaultValue = {detailData.comments ?  detailData.comments : ''} placeholder={trls("Comments")} />
                             <label className="placeholder-label">{trls('Comments')}</label>
                         </Col>
                         <Col style={{paddingTop: 10}}>
-                            <Button variant="light" style={{marginRight: 10}} onClick={()=>this.setState({modalShow:true, exactFlag: false})}><img src={require('../../assets/images/edit.svg')} alt="edit" style={{marginRight: 10}}></img>{trls('Edit_project_detail')}</Button>
+                            <Button variant="light" style={{marginRight: 10}} onClick={()=>this.setState({modalShow:true, exactFlag: false})}><img src={require('../../assets/images/edit.svg')} alt="edit" style={{marginRight: 10}}></img>{trls('Edit_Order_detail')}</Button>
                         </Col>
                     </div>
                 </div>
