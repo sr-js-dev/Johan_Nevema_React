@@ -32,12 +32,12 @@ class Taskoverview extends Component {
             filterFlag: false,
             filterData: [],
             filterColunm: [
-                {"label": trls('Id'), "value": "Id", "type": 'text', "show": true},
-                {"label": trls('Tasktype'), "value": "Tasktype", "type": 'text', "show": true},
-                {"label": trls('Subject'), "value": "subject", "type": 'text', "show": true},
-                {"label": trls('TaskStatus'), "value": "TaskStatus", "type": 'text', "show": true},
-                {"label": trls('User'), "value": "User", "type": 'date', "show": true},
-                {"label": trls('Action'), "value": "Action", "type": 'text', "show": true},
+                {"label": 'Id', "value": "Id", "type": 'text', "show": true},
+                {"label": 'Tasktype', "value": "Tasktype", "type": 'text', "show": true},
+                {"label": 'Subject', "value": "subject", "type": 'text', "show": true},
+                {"label": 'TaskStatus', "value": "TaskStatus", "type": 'text', "show": true},
+                {"label": 'User', "value": "User", "type": 'date', "show": true},
+                {"label": 'Action', "value": "Action", "type": 'text', "show": true},
             ],
         };
       }

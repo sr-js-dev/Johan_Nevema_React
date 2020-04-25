@@ -36,10 +36,10 @@ class Userregister extends Component {
             filterFlag: false,
             filterData: [],
             filterColunm: [
-                {"label": trls('UserName'), "value": "UserName", "type": 'text', "show": true},
-                {"label": trls('Email'), "value": "Email", "type": 'text', "show": true},
-                {"label": trls('Active'), "value": "active", "type": 'text', "show": true},
-                {"label": trls('Action'), "value": "action", "type": 'text', "show": true},
+                {"label": 'UserName', "value": "UserName", "type": 'text', "show": true},
+                {"label": 'Email', "value": "Email", "type": 'text', "show": true},
+                {"label": 'Active', "value": "active", "type": 'text', "show": true},
+                {"label": 'Action', "value": "action", "type": 'text', "show": true},
             ]
         };
       }
@@ -253,7 +253,7 @@ class Userregister extends Component {
                                 {filterColunm.map((item, key)=>(
                                     <th className={!item.show ? "filter-show__hide" : ''} key={key}>
                                         <Contextmenu
-                                            triggerTitle = {item.label}
+                                            triggerTitle = {trls(item.label) ? trls(item.label) : ''}
                                             addFilterColumn = {(value)=>this.addFilterColumn(value)}
                                             removeColumn = {(value)=>this.removeColumn(value)}
                                         />
