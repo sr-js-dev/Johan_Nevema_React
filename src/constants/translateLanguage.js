@@ -338,7 +338,7 @@ export const TRANSLATIONS = {
       Delete: 'Verwijderen',
       Edit_project_detail: 'Productdetails bewerken',
       Add_product: 'Toevoegen Product',
-      Order: 'Order',
+      Order: 'Bestellen',
       Add_purchase: 'Toevoegen inkoop',
       Custom_products: 'Handmatige regel',
       Filter: 'Filter',
