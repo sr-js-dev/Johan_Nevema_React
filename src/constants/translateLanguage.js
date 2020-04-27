@@ -186,7 +186,7 @@ export const TRANSLATIONS = {
       Products:'Artikelen',
       Add_Product:'Toevoegen product',
       Dashboard:'Dashboard',
-      Sales_Order:'Order Registratie',
+      Sales_Order:'Bestellen Registratie',
       Purchase_Order:'Inkoopfactuur',
       Purchase_Order_Edit:'Bewerk Inkoopfactuur',
       Supplier:'Leverancier',

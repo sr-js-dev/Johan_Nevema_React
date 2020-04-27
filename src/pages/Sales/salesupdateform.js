@@ -48,7 +48,7 @@ class Salesupdateform extends Component {
             orderid: '',
             arrivaleFlag: false,
             arriFlag: false,
-            loading: false
+            loading: false,
         };
     }
     componentWillUnmount() {
@@ -279,6 +279,22 @@ class Salesupdateform extends Component {
         if(this.state.supplier){
             supplier = this.state.supplier.map( s => ({value:s.key,label:s.value}));
         }
+        const { salesOrder } = this.props;
+        const { val1 } = this.state;
+        let referenceCustomerFlag = true;
+        if(!val1){
+            if(!salesOrder.CustomerCode ){
+                referenceCustomerFlag = false;
+            }else{
+                referenceCustomerFlag = true;
+            }
+        }else{
+            if(val1.value==='99999998'){
+                referenceCustomerFlag = false
+            }else{
+                referenceCustomerFlag = true
+            }
+        }
         return (
             <Modal
                 dialogAs={DraggableModalDialog}
@@ -306,7 +322,7 @@ class Salesupdateform extends Component {
                                 options={customer}
                                 placeholder={trls('Customer')}
                                 onChange={val => this.selectCustomer(val)}
-                                defaultValue={{"value": this.props.salesOrder.CustomerCode, "label": this.props.salesOrder.Customer}}
+                                defaultValue={{"value": salesOrder.CustomerCode ? salesOrder.CustomerCode : '99999998', "label": salesOrder.Customer ? salesOrder.Customer : "Nog te plannen"}}
                             />
                             {!this.props.disabled && !this.props.salesOrder && (
                                 <input
@@ -330,7 +346,7 @@ class Salesupdateform extends Component {
                                 options={supplier}
                                 placeholder={trls('Supplier')}
                                 onChange={val => this.changeSupplier(val.value)}
-                                defaultValue={{"value": this.props.salesOrder.SupplierCode, "label": this.props.salesOrder.Supplier}}
+                                defaultValue={{"value": salesOrder.SupplierCode ? salesOrder.SupplierCode.replace(/ /g, "") : '', "label": salesOrder.Supplier ? salesOrder.Supplier : ''}}
                             />
                             {!this.props.disabled && !this.props.salesOrder && (
                                 <input
@@ -349,7 +365,12 @@ class Salesupdateform extends Component {
                         {trls('Reference_customer')}   
                         </Form.Label>
                         <Col sm="9" className="product-text">
-                            <Form.Control type="text" name="reference" required defaultValue = {this.props.salesOrder?this.props.salesOrder.referencecustomer:''} placeholder={trls('Reference')} />
+                            {referenceCustomerFlag ? (
+                                <Form.Control type="text" name="reference" required defaultValue = {this.props.salesOrder?this.props.salesOrder.referencecustomer:''} placeholder={trls('Reference')} />
+                            ): 
+                                <Form.Control type="text" name="reference" defaultValue = {this.props.salesOrder?this.props.salesOrder.referencecustomer:''} placeholder={trls('Reference')} />
+                            }
+                            
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
@@ -358,8 +379,8 @@ class Salesupdateform extends Component {
                         </Form.Label>
                         <Col sm="9" className="product-text">
                             { this.state.orderdateflag || !this.props.salesOrder ? (
-                                <DatePicker name="orderdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.orderdate} onChange = {(value, e)=>this.onChangeDate(value, e, 'orderdate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'orderdate')}/>}/>
-                            ) : <DatePicker name="orderdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.salesOrder.loadingdate)} onChange = {(value, e)=>this.onChangeDate(value, e, 'orderdate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'orderdate')}/>}/>
+                                <DatePicker name="orderdate" className="myDatePicker" isClearable={true} dateFormat="dd-MM-yyyy" selected={this.state.orderdate} onChange = {(value, e)=>this.onChangeDate(value, e, 'orderdate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'orderdate')}/>}/>
+                            ) : <DatePicker name="orderdate" className="myDatePicker" isClearable={true} dateFormat="dd-MM-yyyy" selected={salesOrder.loadingdate!=="1900-01-01T00:00:00" ? new Date(salesOrder.loadingdate) : ''} onChange = {(value, e)=>this.onChangeDate(value, e, 'orderdate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'orderdate')}/>}/>
                             } 
                         </Col>
                     </Form.Group>

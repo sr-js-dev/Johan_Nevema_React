@@ -130,7 +130,6 @@ class Salesform extends Component {
     }
 
     selectCustomer = (val) =>{
-        console.log('112233', val)
         if(val.label==="Nog te plannen"){
             this.setState({referCustomerFlag: false})
         }

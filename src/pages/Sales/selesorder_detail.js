@@ -205,7 +205,7 @@ class Salesorderdtail extends Component {
                                 <Form.Label>
                                     {trls("Customer")}
                                 </Form.Label>
-                                <p className="product-detail__data">{detailData.Customer}</p>
+                                <p className="product-detail__data">{detailData.Customer ? detailData.Customer : 'Nog te plannen'}</p>
                             </div>
                             <div style={{paddingTop: 30}}>
                                 <Form.Label>
