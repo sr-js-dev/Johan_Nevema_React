@@ -23,6 +23,8 @@ const mapDispatchToProps = dispatch => ({
 
 class Salesorderdtail extends Component {
     constructor(props) {
+        let pathname = window.location.pathname;
+        let pathArray = pathname.split('/');
         super(props);
         this.state ={
             orderdate: '', 
@@ -36,7 +38,8 @@ class Salesorderdtail extends Component {
             transportResult: [],
             salesOrderDocList: [],
             lodingFlag: false,
-            detailData: []
+            detailData: [],
+            purchaseFlag: pathArray[2] ? true : false
         }
       }
     componentDidMount() {
@@ -183,12 +186,11 @@ class Salesorderdtail extends Component {
         let detailData = this.state.salesorder;
         let salesItems = this.state.salesItems;
         let transporter = this.state.salesTransport;
-        const { salesOrderDocList, lodingFlag } = this.state;
-        const { purchaseOrderFlag } = this.props;
+        const { salesOrderDocList, lodingFlag, purchaseFlag } = this.state;
         return (
             <div className="slide-form__controls open slide-product__detail">
                 <div style={{marginBottom:30, padding:"0 20px"}}>
-                    {purchaseOrderFlag ? (
+                    { !purchaseFlag ? (
                         <i className="fas fa-times slide-close" style={{ fontSize: 20, cursor: 'pointer'}} onClick={()=>this.onHide()}></i>
                     ): null}
                     

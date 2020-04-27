@@ -48,7 +48,8 @@ class Salesform extends Component {
             orderid: '',
             arrivaleFlag: false,
             arriFlag: false,
-            loadingFlag: false
+            loadingFlag: false,
+            referCustomerFlag: true
         };
     }
     componentWillUnmount() {
@@ -129,6 +130,10 @@ class Salesform extends Component {
     }
 
     selectCustomer = (val) =>{
+        console.log('112233', val)
+        if(val.label==="Nog te plannen"){
+            this.setState({referCustomerFlag: false})
+        }
         this.setState({val1: val.value});
         let tempArray = [];
         tempArray = this.props.customerData;
@@ -268,7 +273,6 @@ class Salesform extends Component {
     onHide = () => {
         this.props.salesFileBlank();
         this.setState({files: []})
-        // this.props.onLoadingFlag(false);
         this.props.onHide();
     }
 
@@ -322,7 +326,7 @@ class Salesform extends Component {
     }
 
     render(){
-        const { files, loadingFlag } = this.state;
+        const { files, loadingFlag, referCustomerFlag } = this.state;
         let customer = [];
         let supplier = [];
         if(this.props.customerData){
@@ -384,7 +388,12 @@ class Salesform extends Component {
                     </Form.Group>
                     <Form.Group as={Row} className="product-text" controlId="formPlaintextPassword">
                         <Col>
-                            <Form.Control type="text" name="reference" required defaultValue = {this.props.salesOrder?this.props.salesOrder.referencecustomer:''} placeholder={trls('Reference')} />
+                             {referCustomerFlag ? (
+                                <Form.Control type="text" name="reference" required defaultValue = {this.props.salesOrder?this.props.salesOrder.referencecustomer:''} placeholder={trls('Reference')} />
+                             ): 
+                                <Form.Control type="text" name="reference" defaultValue = {this.props.salesOrder?this.props.salesOrder.referencecustomer:''} placeholder={trls('Reference')} />
+                             }
+                            
                             <label className="placeholder-label">{trls('Reference_customer')}</label>
                         </Col>
                     </Form.Group>

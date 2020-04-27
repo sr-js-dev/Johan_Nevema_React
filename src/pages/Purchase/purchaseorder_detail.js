@@ -265,7 +265,6 @@ class Purchaseorderdtail extends Component {
         var re = new RegExp(/^.*\//);
         let path = re.exec(window.location.href);
         window.open(path+'sales-order/'+orderHeaderId, '_blank');
-        Common.showSlideForm();
     }
 
     render () {

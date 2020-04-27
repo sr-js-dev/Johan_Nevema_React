@@ -54,7 +54,6 @@ class Salesorder extends Component {
             ],
             loadingFlag: false,
             newId: pathArray[2] ? pathArray[2] : '',
-            purchaseOrderFlag: pathArray[2] ? true : false
         };
       }
 componentDidMount() {
@@ -263,7 +262,6 @@ render () {
                     onHide={() => this.setState({slideFormFlag: false})}
                     onloadSalesDetail={(data) => this.loadSalesDetail(data)}
                     onLoadingFlag={(value) => this.setState({loadingFlag: value})}
-                    purchaseOrderFlag={this.state.purchaseOrderFlag}
                 />
             ): null}
             {this.state.newId ? (
