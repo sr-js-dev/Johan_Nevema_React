@@ -23,7 +23,10 @@ const mapDispatchToProps = dispatch => ({
 }); 
 class Salesorder extends Component {
     _isMounted = false
+    
     constructor(props) {
+        let pathname = window.location.pathname;
+        let pathArray = pathname.split('/');
         super(props);
         this.state = {  
             loading:true,
@@ -49,7 +52,9 @@ class Salesorder extends Component {
                 {"label": 'Container', "value": "Container", "type": 'text', "show": true},
                 {"label": 'ExactBooking', "value": "Container", "type": 'text', "show": true},
             ],
-            loadingFlag: false
+            loadingFlag: false,
+            newId: pathArray[2] ? pathArray[2] : '',
+            purchaseOrderFlag: pathArray[2] ? true : false
         };
       }
 componentDidMount() {
@@ -58,7 +63,6 @@ componentDidMount() {
 }
 
 getsalesData = (data) => {
-    console.log('2222');
     this.setState({loading: true})
     var header = SessionManager.shared().getAuthorizationHeader();
     Axios.get(API.GetSalesData, header)
@@ -127,11 +131,10 @@ changeFilter = () => {
         this.setState({filterFlag: true})
     }
 }
-  // filter module
-
+// filter module
 loadSalesDetail = (data)=>{
-    Common.showSlideForm();
-    this.setState({newId: data.id, salesDetailData: data, customercode:data.CustomerCode, suppliercode: data.SupplierCode, slideDetailFlag: true})
+    // Common.showSlideForm();
+    this.setState({newId: data.id, slideDetailFlag: true})
 }
 
 addSales = () => {
@@ -150,11 +153,11 @@ removeColumn = (value) => {
     this.setState({filterColunm: filterColunm})
   }
 
-  showColumn = (value) => {
+showColumn = (value) => {
     let filterColum = this.state.filterColunm;
     filterColum = filterColum.filter((item, key)=>item.label===value);
     return filterColum[0].show;
-  }
+}
 
 render () {
     let salesData = this.state.salesData;
@@ -260,15 +263,15 @@ render () {
                     onHide={() => this.setState({slideFormFlag: false})}
                     onloadSalesDetail={(data) => this.loadSalesDetail(data)}
                     onLoadingFlag={(value) => this.setState({loadingFlag: value})}
+                    purchaseOrderFlag={this.state.purchaseOrderFlag}
                 />
             ): null}
-            {this.state.slideDetailFlag ? (
+            {this.state.newId ? (
                 <Salesorderdetail
                     newid={this.state.newId}
-                    onHide={() => this.setState({slideDetailFlag: false})}
+                    onHide={() => this.setState({slideDetailFlag: false, newId: ''})}
                     customercode={this.state.customercode}
                     suppliercode={this.state.suppliercode}
-                    salesdetaildata={this.state.salesDetailData}
                     onGetSalesData={()=>this.getsalesData()}
                 />
             ): null}

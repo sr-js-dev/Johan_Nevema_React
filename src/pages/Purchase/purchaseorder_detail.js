@@ -264,7 +264,8 @@ class Purchaseorderdtail extends Component {
     newOrderRegistrate = (orderHeaderId) => {
         var re = new RegExp(/^.*\//);
         let path = re.exec(window.location.href);
-        window.open(path+'sales-order', '_blank');
+        window.open(path+'sales-order/'+orderHeaderId, '_blank');
+        Common.showSlideForm();
     }
 
     render () {
@@ -377,7 +378,7 @@ class Purchaseorderdtail extends Component {
                                                             <td className={data.checked ? "order-product__td order-product__last-td" : ''}>
                                                                 <Row style={{justifyContent:"space-around", width: 250}}>
                                                                     <Button className="price-action__button" variant="light" onClick={()=>this.deletePurchaseOrderLine(data.id)}><i className="far fa-trash-alt add-icon" ></i>{trls('Delete')}</Button>
-                                                                    <Button className="price-action__button" variant="light" onClick={()=>this.newOrderRegistrate(data.SalesOrderHeaderId)}><i className="fas fa-external-link-alt add-icon" ></i>{trls('NewOrder')}</Button>
+                                                                    <Button className="price-action__button" variant="light" onClick={()=>this.newOrderRegistrate(data.SalesOrderHeaderId)}><i className="fas fa-external-link-alt add-icon" ></i>{trls('Order')}</Button>
                                                                     <Button className="price-action__button" variant="light" onClick={()=>this.updownInfo(data.id)}><i className={data.checked ? "fas fa-caret-up" : "fas fa-caret-down"}></i></Button>
                                                                 </Row>
                                                             </td>

@@ -35,10 +35,12 @@ class Salesorderdtail extends Component {
             transportData: [],
             transportResult: [],
             salesOrderDocList: [],
-            lodingFlag: false
+            lodingFlag: false,
+            detailData: []
         }
       }
     componentDidMount() {
+        Common.showSlideForm();
         this.getSalesOrder();
         this.getSalesItem();
         this.getSalesOrderTransports();
@@ -182,10 +184,14 @@ class Salesorderdtail extends Component {
         let salesItems = this.state.salesItems;
         let transporter = this.state.salesTransport;
         const { salesOrderDocList, lodingFlag } = this.state;
+        const { purchaseOrderFlag } = this.props;
         return (
             <div className="slide-form__controls open slide-product__detail">
                 <div style={{marginBottom:30, padding:"0 20px"}}>
-                    <i className="fas fa-times slide-close" style={{ fontSize: 20, cursor: 'pointer'}} onClick={()=>this.onHide()}></i>
+                    {purchaseOrderFlag ? (
+                        <i className="fas fa-times slide-close" style={{ fontSize: 20, cursor: 'pointer'}} onClick={()=>this.onHide()}></i>
+                    ): null}
+                    
                 </div>
                 <div className="content__header content__header--with-line product-detail__data--detail">
                     <h2 className="title">{trls("Order")} #{this.props.newid}</h2>
@@ -385,8 +391,8 @@ class Salesorderdtail extends Component {
                 <Addproductform
                     show={this.state.showModalProduct}
                     onHide={() => this.setState({showModalProduct: false})}
-                    customercode={this.props.customercode}
-                    suppliercode={this.props.suppliercode}
+                    customercode={detailData.CustomerCode}
+                    suppliercode={detailData.SupplierCode}
                     loadingdate={detailData.loadingdate}
                     orderid={this.props.newid}
                     getSalesOrderLine={()=>this.getSalesItem()}

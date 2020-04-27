@@ -351,6 +351,6 @@ export const TRANSLATIONS = {
       NewOrder: 'NieuweBestelling',
       BookingNumber: 'BoekingNummer',
       Edit_Purchase_detail: 'Aankoopdetails bewerken',
-      Edit_Order_detail: 'Bestellingsdetails bewerken'
+      Edit_Order_detail: 'Bestellingsdetails bewerken',
     }
   };
