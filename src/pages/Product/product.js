@@ -44,17 +44,17 @@ class Product extends Component {
             originFilterData: [],
             filterFlag: false,
             filterColunm: [
-              {"label": trls('Productcode'), "value": "Productcode", "type": 'text', "show": true},
-              {"label": trls('Supplier'), "value": "Supplier", "type": 'text', "show": true},
-              {"label": trls('Product'), "value": "Product", "type": 'text', "show": true},
-              {"label": trls('Customer'), "value": "Customer", "type": 'text', "show": true},
-              {"label": trls('Product_Name'), "value": "Product", "type": 'text', "show": true},
-              {"label": trls('Sales_Price'), "value": "SalesPrice", "type": 'text', "show": true},
-              {"label": trls('Purchase_Price'), "value": "PurchasePrice", "type": 'text', "show": true},
-              {"label": trls('Sales_Unit'), "value": "SalesUnit", "type": 'text', "show": true},
-              {"label": trls('Purchase_Unit'), "value": "PurchaseUnit", "type": 'text', "show": true},
-              {"label": trls('Kilogram'), "value": "Kilogram", "type": 'text', "show": true},
-              {"label": trls('Copy_Product'), "value": "copyproduct", "type": 'text', "show": true}
+              {"label": 'Productcode', "value": "Productcode", "type": 'text', "show": true},
+              {"label": 'Supplier', "value": "Supplier", "type": 'text', "show": true},
+              {"label": 'Product', "value": "Product", "type": 'text', "show": true},
+              {"label": 'Customer', "value": "Customer", "type": 'text', "show": true},
+              {"label": 'Product_Name', "value": "Product", "type": 'text', "show": true},
+              {"label": 'Sales_Price', "value": "SalesPrice", "type": 'text', "show": true},
+              {"label": 'Purchase_Price', "value": "PurchasePrice", "type": 'text', "show": true},
+              {"label": 'Sales_Unit', "value": "SalesUnit", "type": 'text', "show": true},
+              {"label": 'Purchase_Unit', "value": "PurchaseUnit", "type": 'text', "show": true},
+              {"label": 'Kilogram', "value": "Kilogram", "type": 'text', "show": true},
+              {"label": 'Copy_Product', "value": "copyproduct", "type": 'text', "show": true}
           ],
           filterData: []
         };

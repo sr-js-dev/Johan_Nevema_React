@@ -287,6 +287,7 @@ class Productdtail extends Component {
 
     onHide = () => {
         this.props.onHide();
+        this.props.onGetProductList();
     }
 
     render () {

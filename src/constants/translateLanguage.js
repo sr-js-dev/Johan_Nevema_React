@@ -173,7 +173,7 @@ export const TRANSLATIONS = {
       NewOrder: 'NewOrder',
       BookingNumber: 'BookingNumber',
       Edit_Purchase_detail: 'Edit Purchase detail',
-      Edit_Order_detail: 'Edit Order detail'
+      Edit_Order_detail: 'Edit Order detail',
     },
 
 

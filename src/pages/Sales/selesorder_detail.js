@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import { Row, Col, Form, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import * as salesAction  from '../../actions/salesAction';
 import SessionManager from '../../components/session_manage';
 import Axios from 'axios';
 import API from '../../components/api'
@@ -12,17 +11,14 @@ import  Updateorderline  from './updateorderLine_form';
 import  Updatetransport  from './update_transport';
 import  Addtransporter  from './addtransporter';
 import * as Common from '../../components/common';
-
+import Pageloadspiiner from '../../components/page_load_spinner';
 
 const mapStateToProps = state => ({ 
     ...state,
 });
 
 const mapDispatchToProps = dispatch => ({
-    getSalesOrder: (value) =>
-        dispatch(salesAction.getSalesOrder(value)),
-    getSalesItem: (value) =>
-        dispatch(salesAction.getSalesItem(value)),
+    
 });
 
 class Salesorderdtail extends Component {
@@ -38,7 +34,8 @@ class Salesorderdtail extends Component {
             salesTransport: [],
             transportData: [],
             transportResult: [],
-            salesOrderDocList: []
+            salesOrderDocList: [],
+            lodingFlag: false
         }
       }
     componentDidMount() {
@@ -155,6 +152,7 @@ class Salesorderdtail extends Component {
     }
 
     onHide = () => {
+        this.props.onGetSalesData();
         this.props.onHide();
         Common.hideSlideForm();
     }
@@ -180,12 +178,10 @@ class Salesorderdtail extends Component {
     }
 
     render () {
-        let detailData = this.props.salesdetaildata;
-        // let detailData = this.state.salesorder;
-        console.log('1111', detailData)
+        let detailData = this.state.salesorder;
         let salesItems = this.state.salesItems;
         let transporter = this.state.salesTransport;
-        const { salesOrderDocList } = this.state;
+        const { salesOrderDocList, lodingFlag } = this.state;
         return (
             <div className="slide-form__controls open slide-product__detail">
                 <div style={{marginBottom:30, padding:"0 20px"}}>
@@ -222,8 +218,6 @@ class Salesorderdtail extends Component {
                                 </div>
                                 <label className="placeholder-label_purchase purhcase-placeholder">{trls('File')}</label>
                             </Col>
-                            
-                            
                         </Col>
                         <Col sm={4}>
                             <div>
@@ -256,7 +250,7 @@ class Salesorderdtail extends Component {
                     </Row>
                     <div className="product-detail__data-div">
                         <Col style={{paddingTop: 0}}>
-                            <Form.Control as="textarea" rows="3" name="comments" required readOnly defaultValue = {detailData.comments ?  detailData.comments : ''} placeholder={trls("Comments")} />
+                            <Form.Control as="textarea" rows="3" name="comments" required readOnly defaultValue = {detailData.Comments ?  detailData.Comments : ''} placeholder={trls("Comments")} />
                             <label className="placeholder-label">{trls('Comments')}</label>
                         </Col>
                         <Col style={{paddingTop: 10}}>
@@ -379,47 +373,49 @@ class Salesorderdtail extends Component {
                     </div>
                 </div>
             </div>
-                <Salesupdateform
-                    show={this.state.modalShow}
-                    onHide={() => this.setState({modalShow: false})}
-                    salesOrder={this.props.salesdetaildata}
-                    arrivaldate={this.props.salesdetaildata.arrivaldate!=="1900-01-01T00:00:00" ? true : false}
-                    getSalesOrderData={()=>this.getSalesOrder()}
-                />
-                {detailData.loadingdate&&(
-                    <Addproductform
-                        show={this.state.showModalProduct}
-                        onHide={() => this.setState({showModalProduct: false})}
-                        customercode={this.props.customercode}
-                        suppliercode={this.props.suppliercode}
-                        loadingdate={detailData.loadingdate}
-                        orderid={this.props.newid}
-                        getSalesOrderLine={()=>this.getSalesItem()}
-                        getTransport={()=>this.getSalesOrderTransports()}
-                        showTransportModal={(transportData) => this.addTransport(transportData)}
-                    />
-                )}
-                <Updateorderline
-                    show={this.state.showModalUpdate}
-                    onHide={() => this.setState({showModalUpdate: false})}
-                    updatedata={this.state.upadateDate}
-                    getSalesOrderLine={()=>this.getSalesItem()}
-                />
-                <Updatetransport
-                    show={this.state.transportShowModal}
-                    onHide={() => this.setState({transportShowModal: false})}
-                    updatedata={this.state.transportUpadateDate}
-                    getSalesOrderLine={()=>this.getSalesOrderTransports()}
-                />
-                <Addtransporter
-                    show={this.state.addTransporterModal}
-                    onHide={() => this.setState({addTransporterModal: false})}
-                    loadingdate={this.state.salesorder.loadingdate}
-                    transportResult={this.state.transportResult}
-                    transportdata={this.state.transportData}
+            <Salesupdateform
+                show={this.state.modalShow}
+                onHide={() => this.setState({modalShow: false})}
+                salesOrder={this.state.salesorder}
+                arrivaldate={this.state.salesorder.arrivaldate!=="1900-01-01T00:00:00" ? true : false}
+                getSalesOrderData={()=>this.getSalesOrder()}
+                onLoadingFlag={(value) => this.setState({lodingFlag: value})}
+            />
+            {detailData.loadingdate&&(
+                <Addproductform
+                    show={this.state.showModalProduct}
+                    onHide={() => this.setState({showModalProduct: false})}
+                    customercode={this.props.customercode}
+                    suppliercode={this.props.suppliercode}
+                    loadingdate={detailData.loadingdate}
                     orderid={this.props.newid}
-                    getSalesOrderLine={()=>this.getSalesOrderTransports()}
+                    getSalesOrderLine={()=>this.getSalesItem()}
+                    getTransport={()=>this.getSalesOrderTransports()}
+                    showTransportModal={(transportData) => this.addTransport(transportData)}
                 />
+            )}
+            <Updateorderline
+                show={this.state.showModalUpdate}
+                onHide={() => this.setState({showModalUpdate: false})}
+                updatedata={this.state.upadateDate}
+                getSalesOrderLine={()=>this.getSalesItem()}
+            />
+            <Updatetransport
+                show={this.state.transportShowModal}
+                onHide={() => this.setState({transportShowModal: false})}
+                updatedata={this.state.transportUpadateDate}
+                getSalesOrderLine={()=>this.getSalesOrderTransports()}
+            />
+            <Addtransporter
+                show={this.state.addTransporterModal}
+                onHide={() => this.setState({addTransporterModal: false})}
+                loadingdate={this.state.salesorder.loadingdate}
+                transportResult={this.state.transportResult}
+                transportdata={this.state.transportData}
+                orderid={this.props.newid}
+                getSalesOrderLine={()=>this.getSalesOrderTransports()}
+            />
+            <Pageloadspiiner loading = {lodingFlag}/>
         </div>
         )
     };

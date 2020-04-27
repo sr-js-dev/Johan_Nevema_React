@@ -49,6 +49,7 @@ class Salesorder extends Component {
                 {"label": 'Container', "value": "Container", "type": 'text', "show": true},
                 {"label": 'ExactBooking', "value": "Container", "type": 'text', "show": true},
             ],
+            loadingFlag: false
         };
       }
 componentDidMount() {
@@ -57,6 +58,8 @@ componentDidMount() {
 }
 
 getsalesData = (data) => {
+    console.log('2222');
+    this.setState({loading: true})
     var header = SessionManager.shared().getAuthorizationHeader();
     Axios.get(API.GetSalesData, header)
     .then(result => {
@@ -65,7 +68,7 @@ getsalesData = (data) => {
         }else{
             this.setState({salesData: data});
         }
-        this.setState({loading:false})
+        this.setState({loading: false})
         $('.fitler').on( 'keyup', function () {
             table.search( this.value ).draw();
         } );
@@ -84,7 +87,8 @@ getsalesData = (data) => {
                       "next": trls('Next')
                     }
                 },
-                  "dom": 't<"bottom-datatable" lip>'
+                  "dom": 't<"bottom-datatable" lip>',
+                  "order": [[ 0, "desc" ]]
               }
           );
     });
@@ -154,7 +158,7 @@ removeColumn = (value) => {
 
 render () {
     let salesData = this.state.salesData;
-    const {filterColunm} = this.state;
+    const { filterColunm } = this.state;
     salesData.sort(function(a, b) {
         return a.id - b.id;
     });
@@ -255,6 +259,7 @@ render () {
                     show={this.state.modalShow}
                     onHide={() => this.setState({slideFormFlag: false})}
                     onloadSalesDetail={(data) => this.loadSalesDetail(data)}
+                    onLoadingFlag={(value) => this.setState({loadingFlag: value})}
                 />
             ): null}
             {this.state.slideDetailFlag ? (
@@ -264,9 +269,9 @@ render () {
                     customercode={this.state.customercode}
                     suppliercode={this.state.suppliercode}
                     salesdetaildata={this.state.salesDetailData}
+                    onGetSalesData={()=>this.getsalesData()}
                 />
             ): null}
-            
         </div>
     )
 };

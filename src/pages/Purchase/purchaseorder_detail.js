@@ -240,6 +240,7 @@ class Purchaseorderdtail extends Component {
     }
 
     onHide = () => {
+        this.props.onGetgetPurchaseOrders();
         this.props.onHide();
         Common.hideSlideForm(); 
     }

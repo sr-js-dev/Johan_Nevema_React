@@ -16,8 +16,16 @@ import Demurrage from '../pages/Demurrage/demurrage_manage';
 import Dashboard from '../pages/Dashboard/dashboard_manage';
 import { Switch,Router, Route } from 'react-router-dom';
 import history from '../history';
-
+import { connect } from 'react-redux';
 window.localStorage.setItem('AWT', true);
+
+const mapStateToProps = state => ({ 
+  ...state.auth,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  
+});
 class Layout extends Component {
   
     render () {
@@ -47,4 +55,4 @@ class Layout extends Component {
       )
     };
   }
-  export default Layout;
+  export default connect(mapStateToProps, mapDispatchToProps)(Layout);

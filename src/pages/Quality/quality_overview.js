@@ -135,7 +135,8 @@ getQualityData = (data) => {
                     "next": trls('Next')
                 }
             },
-                "dom": 't<"bottom-datatable" lip>'
+                "dom": 't<"bottom-datatable" lip>',
+                "order": [[ 0, "desc" ]]
             }
         );
     });

@@ -261,8 +261,10 @@ class Purchaseform extends Component {
         }
         Axios.post(API.GetSupplierDescription, params, headers)
         .then(result => {
-            if(result.data.Items){
+            if(result.data.Items.length){
                 this.setState({setDescription: result.data.Items[0].Description})
+            }else{
+                this.setState({setDescription: ''})
             }
         });
         this.setState({val1:val, setSupplierCode: val.value})

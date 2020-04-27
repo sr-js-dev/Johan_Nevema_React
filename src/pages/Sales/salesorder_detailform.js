@@ -38,12 +38,7 @@ class Salesorderdetailform extends Component {
             transportData: [],
             transportResult: []
         }
-      }
-    // componentDidMount() {
-    //     this.getSalesOrder();
-    //     this.getSalesItem();
-    //     this.getSalesOrderTransports();
-    // }
+    }
 
     componentWillUnmount() {
         this._isMounted = false

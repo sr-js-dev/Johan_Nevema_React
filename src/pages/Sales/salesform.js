@@ -14,6 +14,7 @@ import FileDrop from 'react-file-drop';
 import $ from 'jquery';
 import * as Auth   from '../../components/auth';
 import Typeform from './documenttype_form';
+import Pageloadspiiner from '../../components/page_load_spinner';
 
 const mapStateToProps = state => ({ 
     ...state,
@@ -46,7 +47,8 @@ class Salesform extends Component {
             supplier: [],
             orderid: '',
             arrivaleFlag: false,
-            arriFlag: false
+            arriFlag: false,
+            loadingFlag: false
         };
     }
     componentWillUnmount() {
@@ -172,7 +174,7 @@ class Salesform extends Component {
     onChange = (e) => {
         let fileData = this.state.files;
         if(e.target.files[0]){
-            e.target.files[0]['doctype'] = this.state.typeData[0].key;
+            e.target.files[0]['doctype'] = this.state.typeData[2].key;
             fileData.push(e.target.files[0]);
             this.setState({files: fileData, modalShow: true});
         }
@@ -181,7 +183,7 @@ class Salesform extends Component {
     handleDrop = (files, event) => {
         let fileData = this.state.files;
         for(var i=0; i<files.length; i++){
-            files[i]['doctype']=this.state.typeData[0].key
+            files[i]['doctype']=this.state.typeData[2].key
             fileData.push(files[i]);
         }
         this.setState({files: fileData, modalShow: true});
@@ -201,49 +203,72 @@ class Salesform extends Component {
             fileArray = this.props.salesUploadFile
         }
         let documentParam = [];
-        fileArray.map((file, index)=>{
-            var formData = new FormData();
-            formData.append('file', file);// file from input
-            var headers = {
-                "headers": {
-                    "Authorization": "bearer "+Auth.getUserToken(),
+        let k = 1;
+        let fileLength = fileArray.length;
+        if(fileLength!==0){
+            fileArray.map((file, index)=>{
+                var formData = new FormData();
+                formData.append('file', file);// file from input
+                var headers = {
+                    "headers": {
+                        "Authorization": "bearer "+Auth.getUserToken(),
+                    }
                 }
-            }
-            Axios.post(API.FileUpload, formData, headers)
-            .then(result => {
-                documentParam = {
-                    orderid: orderid,
-                    fileid: result.data.Id,
-                    typeid: file.doctype
-                }
-                Axios.post(API.PostOrderDocument, documentParam, headers)
+                Axios.post(API.FileUpload, formData, headers)
+                .then(result => {
+                    documentParam = {
+                        orderid: orderid,
+                        fileid: result.data.Id,
+                        typeid: file.doctype
+                    }
+                    Axios.post(API.PostOrderDocument, documentParam, headers)
+                    .then(result=>{
+                        if(this._isMounted){
+                            this.setState({files: []})
+                            this.props.salesFileBlank();
+                            if(k===fileLength){
+                                this.onHide();
+                                if(!this.props.salesOrder){
+                                    let salesOrderDetail = [];
+                                    var header = SessionManager.shared().getAuthorizationHeader();
+                                    Axios.get(API.GetSalesData, header)
+                                    .then(result=>{
+                                        if(result.data.Success){
+                                            salesOrderDetail = result.data.Items.filter(item => item.id===Number(orderid));
+                                            this.props.onloadSalesDetail(salesOrderDetail[0])
+                                        }
+                                    })
+                                }else{
+                                    this.props.getSalesOrderData();
+                                }
+                            }
+                            k++;
+                        }
+                    })
+                })
+                return fileArray;
+            });
+        }else{
+            this.onHide();
+            if(!this.props.salesOrder){
+                let salesOrderDetail = [];
+                var header = SessionManager.shared().getAuthorizationHeader();
+                Axios.get(API.GetSalesData, header)
                 .then(result=>{
-                    if(this._isMounted){
-                        this.setState({files: []})
-                        this.props.salesFileBlank();
+                    if(result.data.Success){
+                        salesOrderDetail = result.data.Items.filter(item => item.id===Number(orderid));
+                        this.props.onloadSalesDetail(salesOrderDetail[0])
                     }
                 })
-            })
-            return fileArray;
-        });
-        this.onHide();
-        if(!this.props.salesOrder){
-            let salesOrderDetail = [];
-            var header = SessionManager.shared().getAuthorizationHeader();
-            Axios.get(API.GetSalesData, header)
-            .then(result=>{
-                if(result.data.Success){
-                    salesOrderDetail = result.data.Items.filter(item => item.id===Number(orderid));
-                    this.props.onloadSalesDetail(salesOrderDetail[0])
-                }
-            })
-        }else{
-            this.props.getSalesOrderData();
+            }else{
+                this.props.getSalesOrderData();
+            }
         }
     }
     onHide = () => {
         this.props.salesFileBlank();
         this.setState({files: []})
+        // this.props.onLoadingFlag(false);
         this.props.onHide();
     }
 
@@ -297,7 +322,7 @@ class Salesform extends Component {
     }
 
     render(){
-        let fileData = this.state.files;
+        const { files, loadingFlag } = this.state;
         let customer = [];
         let supplier = [];
         if(this.props.customerData){
@@ -398,8 +423,8 @@ class Salesform extends Component {
                         <Col className="product-text input-div" style={{height: "auto"}}>
                             <div id="react-file-drop-demo" style={{border: '1px solid #ced4da', color: 'black', padding: 7, borderRadius: 3, minHeight: 40}}>
                                 <FileDrop onDrop={this.handleDrop}>
-                                    {fileData.length>0?(
-                                        fileData.map((data,i) =>(
+                                    {files.length>0?(
+                                        files.map((data,i) =>(
                                             <div id={i} key={i} style={{cursor: "pointer"}} onClick={()=>this.openUploadFile()}>
                                                 {data.name}
                                             </div>
@@ -435,6 +460,7 @@ class Salesform extends Component {
                     orderid={this.state.orderid}
                     typedata={this.state.typeData}
                 />
+                <Pageloadspiiner loading = {loadingFlag}/>     
             </div>
         );
     }

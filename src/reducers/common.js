@@ -20,7 +20,6 @@ export default function (state = initialState, action) {
     case types.FETCH_SALES_BLANKFILE:
         return { ...state, salesFile: action.salesFile, error: null }
     default:
-
         return state
     }
 }

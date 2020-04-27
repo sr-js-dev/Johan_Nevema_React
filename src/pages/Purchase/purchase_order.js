@@ -53,6 +53,7 @@ componentDidMount() {
 componentWillUnmount() {
 }
 getPurchaseOrders(data) {
+    this.setState({loading: true})
     var headers = SessionManager.shared().getAuthorizationHeader();
     Axios.get(API.GetPurchaseOrders, headers)
     .then(result => {
@@ -61,7 +62,7 @@ getPurchaseOrders(data) {
         }else{
             this.setState({purhaseorders: data});
         }
-        this.setState({loading:false})
+        this.setState({loading: false})
         $('.fitler').on( 'keyup', function () {
             table.search( this.value ).draw();
         } );
@@ -80,7 +81,8 @@ getPurchaseOrders(data) {
                     "next": trls('Next')
                     }
                 },
-                "dom": 't<"bottom-datatable" lip>'
+                "dom": 't<"bottom-datatable" lip>',
+                "order": [[ 0, "desc" ]]
             }
         );
     });
@@ -248,6 +250,7 @@ render () {
                     onHide={()=>this.setState({slideDetailFlag: false})}
                     newId={this.state.newId}
                     supplierCode={this.state.supplierCode}
+                    onGetgetPurchaseOrders={()=>this.getPurchaseOrders()}
                 />
             ): null}
         </div>

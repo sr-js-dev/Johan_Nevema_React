@@ -33,13 +33,11 @@ export const fetchLoginData = (params) => {
 }
 
 export const fetchPageLoading = (data) => {
-    
     return {
         type: types.FETCH_PAGE_LOADING,
         loading:data
     }
 }
-
 //login fail
 export const fetchLoginDataFail = (param) => {
     return {
@@ -98,4 +96,7 @@ export const fetchDataServerFail = (params) => {
         error:params
     }
 }
+
+
+//error
 

@@ -27,10 +27,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = (dispatch) => ({
     getCustomer: () =>
         dispatch(salesAction.getCustomerData()),
-    saveSalesOder: (params) =>
-        dispatch(salesAction.saveSalesOrder(params)),
     salesFileBlank: () =>
-        dispatch(salesAction.salesFileBlank())
+        dispatch(salesAction.salesFileBlank()),
 });
 
 class Salesupdateform extends Component {
@@ -49,7 +47,8 @@ class Salesupdateform extends Component {
             supplier: [],
             orderid: '',
             arrivaleFlag: false,
-            arriFlag: false
+            arriFlag: false,
+            loading: false
         };
     }
     componentWillUnmount() {
@@ -87,8 +86,9 @@ class Salesupdateform extends Component {
     };
 
     handleSubmit = (event) => {
-        console.log('123', this.props)
         event.preventDefault();
+        this.props.onHide();
+        this.props.onLoadingFlag(true);
         const clientFormData = new FormData(event.target);
         const data = {};
         for (let key of clientFormData.keys()) {
@@ -177,42 +177,56 @@ class Salesupdateform extends Component {
             fileArray = this.props.salesUploadFile
         }
         let documentParam = [];
-        fileArray.map((file, index)=>{
-            var formData = new FormData();
-            formData.append('file', file);// file from input
-            var headers = {
-                "headers": {
-                    "Authorization": "bearer "+Auth.getUserToken(),
-                }
-            }
-            Axios.post(API.FileUpload, formData, headers)
-            .then(result => {
-                documentParam = {
-                    orderid: orderid,
-                    fileid: result.data.Id,
-                    typeid: file.doctype
-                }
-                Axios.post(API.PostOrderDocument, documentParam, headers)
-                .then(result=>{
-                    if(this._isMounted){
-                        this.setState({files: []})
-                        this.props.salesFileBlank();
+        let k = 1;
+        let fileLength = fileArray.length;
+        if(fileLength!==0){
+            fileArray.map((file, index)=>{
+                var formData = new FormData();
+                formData.append('file', file);// file from input
+                var headers = {
+                    "headers": {
+                        "Authorization": "bearer "+Auth.getUserToken(),
                     }
+                }
+                Axios.post(API.FileUpload, formData, headers)
+                .then(result => {
+                    documentParam = {
+                        orderid: orderid,
+                        fileid: result.data.Id,
+                        typeid: file.doctype
+                    }
+                    Axios.post(API.PostOrderDocument, documentParam, headers)
+                    .then(result=>{
+                        if(this._isMounted){
+                            if(fileLength === k){
+                                this.onHide();
+                                if(!this.props.salesOrder){
+                                    history.push('/sales-order-detail',{ newId: orderid, customercode:this.state.val1, suppliercode: this.state.val2, newSubmit:false, quality: false});
+                                }else{
+                                    this.props.getSalesOrderData();
+                                }
+                            }
+                            k++;
+                        }
+                    })
                 })
-            })
-            return fileArray;
-        });
-        this.onHide();
-        if(!this.props.salesOrder){
-            history.push('/sales-order-detail',{ newId: orderid, customercode:this.state.val1, suppliercode: this.state.val2, newSubmit:false, quality: false});
+                return fileArray;
+            });
         }else{
-            this.props.getSalesOrderData();
+            if(!this.props.salesOrder){
+                history.push('/sales-order-detail',{ newId: orderid, customercode:this.state.val1, suppliercode: this.state.val2, newSubmit:false, quality: false});
+                this.onHide();
+            }else{
+                this.props.getSalesOrderData();
+                this.onHide();
+            }
         }
     }
     onHide = () => {
+        this.props.onHide();
         this.props.salesFileBlank();
         this.setState({files: []})
-        this.props.onHide();
+        this.props.onLoadingFlag(false);
     }
 
     changeSupplier = (value) => {
@@ -401,7 +415,7 @@ class Salesupdateform extends Component {
                             {trls('Comments')}   
                         </Form.Label>
                         <Col sm="9" className="product-text">
-                            <Form.Control as="textarea" rows="3" name="comments" defaultValue = {this.props.salesOrder?this.props.salesOrder.comments:''}  placeholder={trls("Comments")} />
+                            <Form.Control as="textarea" rows="3" name="comments" defaultValue = {this.props.salesOrder?this.props.salesOrder.Comments:''}  placeholder={trls("Comments")} />
                         </Col>
                     </Form.Group>
                     <Form.Group style={{textAlign:"center"}}>
@@ -421,7 +435,7 @@ class Salesupdateform extends Component {
                 orderid={this.state.orderid}
                 typedata={this.state.typeData}
             />
-            </Modal>
+        </Modal>
         );
     }
 }
