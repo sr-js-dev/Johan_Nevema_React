@@ -228,7 +228,7 @@ render () {
                                     <td className={!this.showColumn(filterColunm[9].label) ? "filter-show__hide" : ''}>{data.ProductCode}</td>
                                     <td className={!this.showColumn(filterColunm[10].label) ? "filter-show__hide" : ''}>{data.PackingSlip}</td>
                                     <td className={!this.showColumn(filterColunm[11].label) ? "filter-show__hide" : ''}>{data.Container}</td>
-                                    <td className={!this.showColumn(filterColunm[12].label) ? "filter-show__hide" : ''}>
+                                    <td className={!this.showColumn(filterColunm[12].label) ? "filter-show__hide" : ''} style={{width: 100}}>
                                         {data.exactBooking ? (
                                             <Row>
                                                 <i className="fas fa-check-circle order-booking__icon-active"></i>

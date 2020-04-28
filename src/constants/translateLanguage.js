@@ -298,7 +298,7 @@ export const TRANSLATIONS = {
       Container_number: 'Container nummer',
       ShippingDocumentnumber: 'Vrachtbrief nummer',
       Add: 'Toevoegen',
-      ReportingDate: 'Rapportage Datum',
+      ReportingDate: 'laaddatum',
       Number: 'Nummer',
       Quality: 'Controle',
       Complete: 'Compleet',
@@ -351,6 +351,6 @@ export const TRANSLATIONS = {
       NewOrder: 'NieuweBestelling',
       BookingNumber: 'BoekingNummer',
       Edit_Purchase_detail: 'Aankoopdetails bewerken',
-      Edit_Order_detail: 'Bestellingsdetails bewerken',
+      Edit_Order_detail: 'Order bewerken',
     }
   };

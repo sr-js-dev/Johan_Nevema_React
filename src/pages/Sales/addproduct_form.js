@@ -129,13 +129,25 @@ class Addproduct extends Component {
             suppliercode: this.props.suppliercode,
             loadingdate: this.props.loadingdate
         }
-        Axios.post(API.GetSalesItems, params, headers)
-        .then(result => {
-            if(this._isMounted){
-                let product = result.data.Items.map( s => ({value:s.key,label: s.priceAvailable!=="True" ? <div>{s.value} <i className="fas fa-pen statu-item" style={{color: "#000", float: "right"}} onClick={()=>this.setState({showModalAddPrice: true, productId: s.key, loadProductFlag: true})}></i></div>:s.value, isDisabled: s.priceAvailable!=="True" ? true : false}));
-                this.setState({productListData: product});
-            }
-        });
+        if(this.props.customercode){
+            Axios.post(API.GetSalesItems, params, headers)
+            .then(result => {
+                if(this._isMounted){
+                    let product = result.data.Items.map( s => ({value:s.key,label: s.priceAvailable!=="True" ? <div>{s.value} <i className="fas fa-pen statu-item" style={{color: "#000", float: "right"}} onClick={()=>this.setState({showModalAddPrice: true, productId: s.key, loadProductFlag: true})}></i></div>:s.value, isDisabled: s.priceAvailable!=="True" ? true : false}));
+                    this.setState({productListData: product});
+                }
+            });
+        }else{
+            Axios.get(API.GetProductsDropdown, headers)
+            .then(result => {
+                if(result.data.Success){
+                    let productList = result.data.Items.filter((item, key)=>item.temporary);
+                    let product = productList.map( s => ({value:s.key,label:s.value}));
+                    this.setState({productListData: product});
+                }
+            });
+        }
+        
     }
 
     changeProduct = (val) => {

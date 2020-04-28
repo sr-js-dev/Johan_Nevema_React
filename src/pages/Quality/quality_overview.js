@@ -216,6 +216,8 @@ loadSalesDetail = (data)=>{
 
 completeOrder = (id) => {
     this.setState({sendingFlag: true, exactFlag: false})
+    let filterData = this.state.filteredData;
+    console.log('2222', filterData)
     let params = []
     var headers = SessionManager.shared().getAuthorizationHeader();
     params = {
@@ -227,9 +229,14 @@ completeOrder = (id) => {
         Axios.post(API.CompleteOrder , params, headers)
         .then(result => {
             this.setState({exactFlag: true, sendingFlag: false}, ()=>{
-                this.getQualityData();
+                filterData.map((data, key)=>{
+                    if(data.Id===id){
+                        data.isCompleted = true;
+                    }
+                    return data
+                })
+                this.getQualityData(filterData);
             });
-            
         });
     });
     
@@ -346,7 +353,7 @@ render () {
                                     <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>{data.BookingNumber}</td>
                                     <td className={!this.showColumn(filterColunm[8].label) ? "filter-show__hide" : ''}>
                                         <Row style={{justifyContent:"center"}}>
-                                            {!data.isCompleted && data.referencecustomer!=="" && !data.Temporary?(
+                                            {!data.isCompleted && data.referencecustomer!=="Nog te plannen" && data.customer!=="" && !data.Temporary?(
                                                 <Button type="submit" style={{width:"auto", height: 35}} onClick={()=>this.completeOrder(data.Id)}>{trls('Send_salesinvoice')}</Button>
                                             ):
                                                 <Button type="submit" disabled style={{width:"auto", height: 35}}>{trls('Send_salesinvoice')}</Button>

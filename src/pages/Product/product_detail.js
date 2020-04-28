@@ -402,7 +402,7 @@ class Productdtail extends Component {
                                             <th>{trls("Start_date")}</th>
                                             <th>{trls("End_date")}</th>
                                             <th style={{width:"10%"}}>{trls("Approve")}</th>
-                                            <th style={{width: 200}}>{trls("Action")}</th>
+                                            <th style={{width: 250}}>{trls("Action")}</th>
                                         </tr>
                                     </thead>
                                         {purpriceData &&(<tbody>

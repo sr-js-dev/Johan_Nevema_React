@@ -83,7 +83,6 @@ class Addmanuallytransport extends Component {
             }
             URL = API.PutPurchaseTransportManual;
         }
-        console.log('4444', params)
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.post(URL, params, headers)
         .then(result => {
