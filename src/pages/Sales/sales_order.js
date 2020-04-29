@@ -144,7 +144,7 @@ addSales = () => {
 removeColumn = (value) => {
     let filterColunm = this.state.filterColunm;
     filterColunm = filterColunm.filter(function(item, key) {
-      if(item.label===value){
+      if(trls(item.label)===value){
         item.show = false;
       }
       return item;

@@ -217,7 +217,6 @@ loadSalesDetail = (data)=>{
 completeOrder = (id) => {
     this.setState({sendingFlag: true, exactFlag: false})
     let filterData = this.state.filteredData;
-    console.log('2222', filterData)
     let params = []
     var headers = SessionManager.shared().getAuthorizationHeader();
     params = {
@@ -256,7 +255,7 @@ changeShowMode = (value) =>{
 removeColumn = (value) => {
     let filterColunm = this.state.filterColunm;
     filterColunm = filterColunm.filter(function(item, key) {
-        if(item.label===value){
+        if(trls(item.label)===value){
         item.show = false;
         }
         return item;

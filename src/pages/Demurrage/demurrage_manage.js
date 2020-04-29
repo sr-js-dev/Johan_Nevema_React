@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
-// import { Form,Row } from 'react-bootstrap';
-// import { Button } from 'react-bootstrap';
+import { Form, Row, Button, Col } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import $ from 'jquery';
 import SessionManager from '../../components/session_manage';
@@ -10,6 +9,9 @@ import { BallBeat } from 'react-pure-loaders';
 // import { getUserToken } from '../../components/auth';
 import { trls } from '../../components/translate';
 import 'datatables.net';
+import Filtercomponent from '../../components/filtercomponent';
+import Contextmenu from '../../components/contextmenu';
+import * as Common  from '../../components/common';
 
 const mapStateToProps = state => ({ ...state.auth });
 
@@ -21,89 +23,202 @@ class Demurragemanage extends Component {
     constructor(props) {
         super(props);
         this.state = {  
-            demurrageData: []
+            demurrageData: [],
+            filterColunm: [
+                {"label": 'Supplier', "value": "Supplier", "type": 'text', "show": true},
+                {"label": 'Productcode', "value": "ProductCode", "type": 'text', "show": true},
+                {"label": 'Arrival_date', "value": "Arrivaldate", "type": 'date', "show": true},
+                {"label": 'Packing_date', "value": "pickingdate", "date": 'text', "show": true},
+            ],
+            filterData: [],
+            originFilterData: [],
         };
       }
     componentDidMount() {
         this._isMounted=true
-        this.getUserData()
+        this.getDemurrageData();
+        this.setFilterData();
     }
     componentWillUnmount() {
         this._isMounted = false
     }
-    getUserData () {
+    getDemurrageData (data) {
         this._isMounted = true;
         this.setState({loading:true})
         var headers = SessionManager.shared().getAuthorizationHeader();
         Axios.get(API.GetDemurrage, headers)
         .then(result => {
             if(this._isMounted){
-                this.setState({demurrageData: result.data.Items})
+                if(!data){
+                    this.setState({demurrageData: result.data.Items, originFilterData: result.data.Items});
+                }else{
+                    this.setState({demurrageData: data});
+                }
                 this.setState({loading:false})
-                $('#example').dataTable().fnDestroy();
-                $('#example').DataTable(
+                $('.fitler').on( 'keyup', function () {
+                    table.search( this.value ).draw();
+                } );
+                $('#demurrage_table').dataTable().fnDestroy();
+                var table = $('#demurrage_table').DataTable(
                     {
-                      "language": {
-                          "lengthMenu": trls("Show")+" _MENU_ "+trls("Entries"),
-                          "zeroRecords": "Nothing found - sorry",
-                          "info": trls("Show_page")+" _PAGE_ of _PAGES_",
-                          "infoEmpty": "No records available",
-                          "infoFiltered": "(filtered from _MAX_ total records)",
-                          "search": trls('Search'),
-                          "paginate": {
-                            "previous": trls('Previous'),
-                            "next": trls('Next')
-                          }
-                      }
+                        "language": { 
+                            "lengthMenu": trls("Show")+" _MENU_ "+trls("Entries"),
+                            "zeroRecords": "Nothing found - sorry",
+                            "info": trls("Show_page")+" _PAGE_ of _PAGES_",
+                            "infoEmpty": "No records available",
+                            "infoFiltered": "(filtered from _MAX_ total records)",
+                            "search": trls('Search'),
+                            "paginate": {
+                                "previous": trls('Previous'),
+                                "next": trls('Next')
+                        }
+                      },
+                        "dom": 't<"bottom-datatable" lip>',
+                        "order": [[ 0, "desc" ]]
                     }
                   );
             }
         });
     }
 
+    // filter module
+    setFilterData = () => {
+        let filterData = [
+            {"label": trls('Supplier'), "value": "Supplier", "type": 'text', "show": true},
+            {"label": trls('Productcode'), "value": "ProductCode", "type": 'text'},
+            {"label": trls('Arrival_date'), "value": "Arrivaldate", "type": 'date'},
+            {"label": trls('Packing_date'), "value": "pickingdate", "date": 'text'},
+        ]
+        this.setState({filterData: filterData});
+    }
+
+    filterOptionData = (filterOption) =>{
+        let dataA = []
+        dataA = Common.filterData(filterOption, this.state.originFilterData);
+        console.log('2222', dataA);
+        if(!filterOption.length){
+            dataA=null;
+        }
+        $('#demurrage_table').dataTable().fnDestroy();
+        this.getDemurrageData(dataA);
+    }
+
+    changeFilter = () => {
+        if(this.state.filterFlag){
+            this.setState({filterFlag: false})
+        }else{
+            this.setState({filterFlag: true})
+        }
+    }
+    // filter module
+    loadSalesDetail = (data)=>{
+        // Common.showSlideForm();
+        this.setState({newId: data.id, slideDetailFlag: true})
+    }
+
+    addSales = () => {
+        this.setState({copyProduct: '', copyFlag: 1, slideFormFlag: true});
+        Common.showSlideForm();
+    }
+
+    removeColumn = (value) => {
+        let filterColunm = this.state.filterColunm;
+        filterColunm = filterColunm.filter(function(item, key) {
+        if(trls(item.label)===value){
+            item.show = false;
+        }
+        return item;
+        })
+        this.setState({filterColunm: filterColunm})
+    }
+
+    showColumn = (value) => {
+        let filterColum = this.state.filterColunm;
+        filterColum = filterColum.filter((item, key)=>item.label===value);
+        return filterColum[0].show;
+    }
+
+    addFilterColumn = (value) => {
+        // let filterColum = this.state.filterColunm;
+        // let filterData = this.state.filterData;
+        // let filterItem = [];
+        // filterColum = filterColum.filter(function(item, key) {
+        //   return item.label === value
+        // })
+        // filterItem = filterData.filter((item, key)=>item.label===value);
+        // if(!filterItem[0]){
+        //   filterData.push(filterColum[0]);
+        // }
+        // this.setState({filterData: filterData})
+      }
+
     render () {
+        const {filterColunm, demurrageData} = this.state;
         return (
             <div className="order_div">
                 <div className="content__header content__header--with-line">
-                    <h2 className="title">{trls('Demurrage')}</h2>
+                    <div id="google_translate_element"></div>
+                    <h2 className="title">{trls("Demurrage")}</h2>
                 </div>
-                <div className="orders demurrage-manage">
-                    <div className="table-responsive credit-history">
-                        <table id="example" className="place-and-orders__table table table--striped prurprice-dataTable" width="100%">
-                        <thead>
-                            <tr>
-                                <th>{trls('Supplier')}</th>
-                                <th>{trls('Productcode')}</th>
-                                <th>{trls('Arrival_date')}</th>
-                                <th>{trls('Packing_date')}</th>
-                            </tr>
-                        </thead>
-                        {/* {optionarray && !this.state.loading &&(<tbody >
-                            {
-                                optionarray.map((data,i) =>(
-                                    <tr id={i} key={i}>
-                                        <td>{data.UserName}</td>
-                                        <td>{data.Email}</td>
-                                        <td><Form.Check inline name="Intrastat" type="checkbox" disabled defaultChecked={data.IsActive} id="Intrastat" /></td>
-                                        <td >
-                                            <Row style={{justifyContent:"center"}}>
-                                                <i id={data.Id} className="far fa-trash-alt statu-item" onClick={this.userDeleteConfirm}></i>
-                                                <i id={data.Id} className="fas fa-pen statu-item" onClick={this.userUpdate} ></i>
-                                                <i id={data.Id} className="far fa-eye statu-item" onClick={this.viewUserData} ></i>
-                                            </Row>
-                                        </td>
-                                    </tr>
-                            ))
-                            }
-                        </tbody>)} */}
-                    </table>
-                        { this.state.loading&& (
-                            <div className="col-md-4 offset-md-4 col-xs-12 loading" style={{textAlign:"center"}}>
-                                <BallBeat
-                                    color={'#222A42'}
-                                    loading={this.state.loading}
-                                />
+                <div className="orders">
+                    <Row>
+                        <Col sm={6}>
+                            {/* <Button variant="primary" onClick={()=>this.addProduct()}><i className="fas fa-plus add-icon"></i>{trls("Add_Product")}</Button>    */}
+                        </Col>
+                        <Col sm={6} className="has-search">
+                            <div style={{display: 'flex', float: 'right'}}>
+                                <Button variant="light" onClick={()=>this.changeFilter()}><i className="fas fa-filter add-icon"></i>{trls('Filter')}</Button>   
+                                <div style={{marginLeft: 20}}>
+                                    <span className="fa fa-search form-control-feedback"></span>
+                                    <Form.Control className="form-control fitler" type="text" name="number"placeholder={trls("Quick_search")}/>
+                                </div>
                             </div>
+                        </Col>
+                        {this.state.filterData.length>0&&(
+                            <Filtercomponent
+                                onHide={()=>this.setState({filterFlag: false})}
+                                filterData={this.state.filterData}
+                                onFilterData={(filterOption)=>this.filterOptionData(filterOption)}
+                                showFlag={this.state.filterFlag}
+                            />
+                        )}
+                    </Row>
+                    <div className="table-responsive">
+                        <table id="demurrage_table" className="place-and-orders__table table" width="100%">
+                            <thead>
+                            <tr>
+                                {filterColunm.map((item, key)=>(
+                                    <th className={!item.show ? "filter-show__hide" : ''} key={key}>
+                                        <Contextmenu
+                                            triggerTitle = {trls(item.label) ? trls(item.label) : ''}
+                                            addFilterColumn = {(value)=>this.addFilterColumn(value)}
+                                            removeColumn = {(value)=>this.removeColumn(value)}
+                                        />
+                                    </th>
+                                    )
+                                )}
+                            </tr>
+                            </thead>
+                            {demurrageData && !this.state.loading&&(<tbody>
+                                {
+                                demurrageData.map((data,i) =>(
+                                    <tr id={data.id} key={i}>
+                                        <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}>{data.Supplier}</td>
+                                        <td className={!this.showColumn(filterColunm[1].label) ? "filter-show__hide" : ''}>{data.ProductCode}</td>
+                                        <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.pickingdate)}</td>
+                                        <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.Arrivaldate)}</td>
+                                    </tr>
+                                ))
+                                }
+                            </tbody>)}
+                        </table>
+                        { this.state.loading&& (
+                        <div className="col-md-4 offset-md-4 col-xs-12 loading" style={{textAlign:"center"}}>
+                            <BallBeat
+                                color={'#222A42'}
+                                loading={this.state.loading}
+                            />
+                        </div>
                         )}
                     </div>
                 </div>
