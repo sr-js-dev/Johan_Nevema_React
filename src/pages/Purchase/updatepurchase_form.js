@@ -15,6 +15,7 @@ import FileDrop from 'react-file-drop';
 import * as Common from '../../components/common';
 import DraggableModalDialog from '../../components/draggablemodal';
 import Sweetalert from 'sweetalert';
+import Pageloadspiiner from '../../components/page_load_spinner';
 
 const mapStateToProps = state => ({ 
     ...state.auth,
@@ -45,7 +46,8 @@ class Purchaseupdateform extends Component {
             val2: '',
             files: [],
             checkFlag: false,
-            setSupplierCode: ''
+            setSupplierCode: '',
+            pageLodingFlag: false
         };
     }
 
@@ -80,6 +82,7 @@ class Purchaseupdateform extends Component {
 
 
     handleSubmit = (event) => {
+        this.setState({pageLodingFlag: true});
         event.preventDefault();
         const clientFormData = new FormData(event.target);
         const data = {};
@@ -147,35 +150,50 @@ class Purchaseupdateform extends Component {
         this._isMounted = true;
         let fileArray = this.state.files
         let documentParam = [];
-        fileArray.map((file, index)=>{
-            var formData = new FormData();
-            formData.append('file', file);// file from input
-            var headers = {
-                "headers": {
-                    "Authorization": "bearer "+Auth.getUserToken(),
-                }
-            }
-            Axios.post(API.FileUpload, formData, headers)
-            .then(result => {
-                documentParam = {
-                    purchaseid: purchaseid,
-                    fileid: result.data.Id
-                }
-                Axios.post(API.PostPurchaseDocument, documentParam, headers)
-                .then(result=>{
-                    if(this._isMounted){
+        let fileLength = fileArray.length;
+        let k = 1;
+        if(fileLength>0){
+            fileArray.map((file, index)=>{
+                var formData = new FormData();
+                formData.append('file', file);// file from input
+                var headers = {
+                    "headers": {
+                        "Authorization": "bearer "+Auth.getUserToken(),
                     }
+                }
+                Axios.post(API.FileUpload, formData, headers)
+                .then(result => {
+                    documentParam = {
+                        purchaseid: purchaseid,
+                        fileid: result.data.Id
+                    }
+                    Axios.post(API.PostPurchaseDocument, documentParam, headers)
+                    .then(result=>{
+                        if(this._isMounted){
+                            if(fileLength === k){
+                                this.props.onHide();
+                                this.setState({pageLodingFlag: false});
+                                if(!this.props.purchaseData){
+                                    history.push('/purchase-order-detail',{ newId: purchaseid, supplierCode:this.state.val1.value, newSubmit:false});
+                                }else{
+                                    this.props.getPurchaseOrder();
+                                }
+                            }
+                            k++;
+                        }
+                    })
                 })
-            })
-            return fileArray;
-        });
-        this.props.onHide();
-        if(!this.props.purchaseData){
-            history.push('/purchase-order-detail',{ newId: purchaseid, supplierCode:this.state.val1.value, newSubmit:false});
+                return fileArray;
+            });
         }else{
-            this.props.getPurchaseOrder();
+            this.props.onHide();
+            this.setState({pageLodingFlag: false});
+            if(!this.props.purchaseData){
+                history.push('/purchase-order-detail',{ newId: purchaseid, supplierCode:this.state.val1.value, newSubmit:false});
+            }else{
+                this.props.getPurchaseOrder();
+            }
         }
-        
     }
 
     handleDrop = (files, event) => {
@@ -265,16 +283,17 @@ class Purchaseupdateform extends Component {
         if(this.props.purchaseData){
             purchaseData = this.props.purchaseData;
         }
+        const { pageLodingFlag } = this.state;
         return (
             <Modal
-            // id={"myModal"}
-            dialogAs={DraggableModalDialog}
-            show={this.props.show}
-            onHide={this.props.onHide}
-            size="xl"
-            aria-labelledby="contained-modal-title-vcenter"
-            backdrop= "static"
-            centered
+                // id={"myModal"}
+                dialogAs={DraggableModalDialog}
+                show={this.props.show}
+                onHide={this.props.onHide}
+                size="xl"
+                aria-labelledby="contained-modal-title-vcenter"
+                backdrop= "static"
+                centered
             >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
@@ -428,7 +447,7 @@ class Purchaseupdateform extends Component {
                                     {fileData.length>0?(
                                         fileData.map((data,i) =>(
                                             <div id={i} key={i} style={{cursor: "pointer"}} onClick={()=>this.openUploadFile()}>
-                                                {data.name}
+                                                {data.name ? data.name : ''}
                                             </div>
                                         ))
                                     ):
@@ -444,7 +463,8 @@ class Purchaseupdateform extends Component {
                     </Form.Group>
                 </Form>
             </Modal.Body>
-            </Modal>
+            <Pageloadspiiner loading = {pageLodingFlag}/>
+        </Modal>
         );
     }
 }

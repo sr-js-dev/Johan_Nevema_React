@@ -60,12 +60,8 @@ class Goaltype extends Component {
     } 
 
     setTypeOption = (value) => {
-        console.log('1111', value);
-        
       var item = this.props.typedata.filter(item => item.key===value);
-      console.log('22222', item);
       var returnValue = {value: item[0].key, label: item[0].value}
-      
       return returnValue;
     }
 

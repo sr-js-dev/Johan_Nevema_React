@@ -111,6 +111,7 @@ export default {
     DeletePurchasePrice   : `${BASEURL}/api/factory/execute/Appmakerz-Test/deletePurchasePrice`,
     GetDemurrage   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getDemurrage`,
     CheckMultipleLines   : `${BASEURL}/api/factory/execute/Appmakerz-Test/checkMultipleLines`,
+    CheckMultipleLinesTransport   : `${BASEURL}/api/factory/execute/Appmakerz-Test/checkMultipleLinesTransport`,
     GetSalesOrdersExact   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getSalesOrdersExact`,
     GetPurchaseOrdersExact   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getPurchaseOrdersExact`,
     DeletePurchaseOrderLine   : `${BASEURL}/api/factory/execute/Appmakerz-Test/deletePurchaseOrderLine`,
@@ -119,5 +120,6 @@ export default {
     GetSalesDocuments   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getSalesDocuments`,
     GetPurchaseDocuments   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getPurchaseDocuments`,
     GetDownloadFile   : `${BASEURL}/api/factory/download-file/`,
+    GetRederijDropdown: `${BASEURL}/api/factory/execute/Exact-Test/getRederijDropdown`,
   }; 
   

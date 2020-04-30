@@ -41,6 +41,7 @@ class Salesform extends Component {
             arrivalDateFlag: false,
             val1: '',
             val2: '',
+            val3: '',
             customerNote: '',
             purchaseData: [],
             files: [],
@@ -49,7 +50,8 @@ class Salesform extends Component {
             arrivaleFlag: false,
             arriFlag: false,
             loadingFlag: false,
-            referCustomerFlag: true
+            referCustomerFlag: true,
+            rederijList: []
         };
     }
     componentWillUnmount() {
@@ -59,6 +61,7 @@ class Salesform extends Component {
         this.props.getCustomer();
         this.getPurchaseData();
         this.getSupplierList();
+        this.getRederijList();
         this.getDocumentType();
     }
 
@@ -86,6 +89,14 @@ class Salesform extends Component {
         });
     };
 
+    getRederijList = () => {
+        var headers = SessionManager.shared().getAuthorizationHeader();
+        Axios.get(API.GetRederijDropdown, headers)
+        .then(result => {
+            this.setState({rederijList: result.data.Items});
+        });
+    };
+
     handleSubmit = (event) => {
         event.preventDefault();
         const clientFormData = new FormData(event.target);
@@ -102,7 +113,9 @@ class Salesform extends Component {
                 reference: data.reference,
                 loadingdate: Common.formatDateSecond(data.orderdate),
                 arrivaldate: this.state.arrivaleFlag ? Common.formatDateSecond(data.arrivaldate): '',
-                comments: data.comments
+                comments: data.comments,
+                rederij: data.rederij ? data.rederij : '',
+                uithaalreferentie: data.uithaalreferentie ? data.uithaalreferentie : ''
             }
             Axios.post(API.PostSalesOrder, params, headers)
             .then(result => {
@@ -328,11 +341,15 @@ class Salesform extends Component {
         const { files, loadingFlag, referCustomerFlag } = this.state;
         let customer = [];
         let supplier = [];
+        let rederijList = [];
         if(this.props.customerData){
             customer = this.props.customerData.map( s => ({value:s.key,label:s.value}));
         }
         if(this.state.supplier){
             supplier = this.state.supplier.map( s => ({value:s.key,label:s.value}));
+        }
+        if(this.state.rederijList){
+            rederijList = this.state.rederijList.map( s => ({value:s.key,label:s.value}));
         }
         return (
             <div className = "slide-form__controls open" style={{height: "100%"}}>
@@ -396,6 +413,37 @@ class Salesform extends Component {
                             <label className="placeholder-label">{trls('Reference_customer')}</label>
                         </Col>
                     </Form.Group>
+                    {!referCustomerFlag && (
+                        <Form.Group as={Row} className="product-text" controlId="formPlaintextPassword">
+                            <Col>
+                            <Select
+                                name="rederij"
+                                options={rederijList}
+                                placeholder={trls('Shipping_company')}
+                                onChange={val => this.setState({val3: val.value})}
+                            />
+                            <label className="placeholder-label">{trls('Shipping_company')}</label>
+                            {!this.props.disabled && !this.props.salesOrder && (
+                                <input
+                                    onChange={val=>console.log()}
+                                    tabIndex={-1}
+                                    autoComplete="off"
+                                    style={{ opacity: 0, height: 0, width: "100%" }}
+                                    value={this.state.val3}
+                                    required
+                                />
+                            )}
+                            </Col>
+                        </Form.Group>
+                    )}
+                    {!referCustomerFlag && (
+                        <Form.Group as={Row} className="product-text" controlId="formPlaintextPassword">
+                            <Col>
+                                <Form.Control type="text" name="uithaalreferentie" required placeholder={trls('Reference')} />
+                                <label className="placeholder-label">{trls('Picking_reference')}</label>
+                            </Col>
+                        </Form.Group>
+                    )}
                     <Form.Group as={Row} className="product-text" controlId="formPlaintextPassword">
                         <Col>
                             { this.state.orderdateflag || !this.props.salesOrder ? (

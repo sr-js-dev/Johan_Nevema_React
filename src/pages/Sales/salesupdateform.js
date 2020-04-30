@@ -16,6 +16,7 @@ import $ from 'jquery';
 import * as Auth   from '../../components/auth';
 import Typeform from './documenttype_form';
 import DraggableModalDialog from '../../components/draggablemodal';
+import Pageloadspiiner from '../../components/page_load_spinner';
 
 const mapStateToProps = state => ({ 
     ...state,
@@ -49,6 +50,8 @@ class Salesupdateform extends Component {
             arrivaleFlag: false,
             arriFlag: false,
             loading: false,
+            pageLodingFlag: false,
+            rederijList: []
         };
     }
     componentWillUnmount() {
@@ -58,6 +61,7 @@ class Salesupdateform extends Component {
         this.props.getCustomer();
         this.getPurchaseData();
         this.getSupplierList();
+        this.getRederijList();
         this.getDocumentType();
     }
 
@@ -85,10 +89,17 @@ class Salesupdateform extends Component {
         });
     };
 
+    getRederijList = () => {
+        var headers = SessionManager.shared().getAuthorizationHeader();
+        Axios.get(API.GetRederijDropdown, headers)
+        .then(result => {
+            this.setState({rederijList: result.data.Items});
+        });
+    };
+
     handleSubmit = (event) => {
+        this.setState({pageLodingFlag: true});
         event.preventDefault();
-        this.props.onHide();
-        this.props.onLoadingFlag(true);
         const clientFormData = new FormData(event.target);
         const data = {};
         for (let key of clientFormData.keys()) {
@@ -118,7 +129,9 @@ class Salesupdateform extends Component {
                 reference: data.reference,
                 loadingdate: Common.formatDateSecond(data.orderdate),
                 arrivaldate: Common.formatDateSecond(data.arrivaldate),
-                comments: data.comments
+                comments: data.comments,
+                rederij: data.rederij ? data.rederij : '',
+                uithaalreferentie: data.uithaalreferentie ? data.uithaalreferentie : ''
                 // iscompleted: true
             }
             data.id = this.props.salesOrder.id;
@@ -148,7 +161,7 @@ class Salesupdateform extends Component {
     onChange = (e) => {
         let fileData = this.state.files;
         if(e.target.files[0]){
-            e.target.files[0]['doctype'] = this.state.typeData[0].key;
+            e.target.files[0]['doctype'] = this.state.typeData[2].key;
             fileData.push(e.target.files[0]);
             this.setState({files: fileData, modalShow: true});
         }
@@ -157,7 +170,7 @@ class Salesupdateform extends Component {
     handleDrop = (files, event) => {
         let fileData = this.state.files;
         for(var i=0; i<files.length; i++){
-            files[i]['doctype']=this.state.typeData[0].key
+            files[i]['doctype']=this.state.typeData[2].key
             fileData.push(files[i]);
         }
         this.setState({files: fileData, modalShow: true});
@@ -226,7 +239,7 @@ class Salesupdateform extends Component {
         this.props.onHide();
         this.props.salesFileBlank();
         this.setState({files: []})
-        this.props.onLoadingFlag(false);
+        this.setState({pageLodingFlag: false});
     }
 
     changeSupplier = (value) => {
@@ -273,14 +286,18 @@ class Salesupdateform extends Component {
         let fileData = this.state.files;
         let customer = [];
         let supplier = [];
+        let rederijList = [];
         if(this.props.customerData){
             customer = this.props.customerData.map( s => ({value:s.key,label:s.value}));
         }
         if(this.state.supplier){
             supplier = this.state.supplier.map( s => ({value:s.key,label:s.value}));
         }
+        if(this.state.rederijList){
+            rederijList = this.state.rederijList.map( s => ({value:s.key,label:s.value}));
+        }
         const { salesOrder } = this.props;
-        const { val1 } = this.state;
+        const { val1, pageLodingFlag } = this.state;
         let referenceCustomerFlag = true;
         if(!val1){
             if(!salesOrder.CustomerCode ){
@@ -313,10 +330,7 @@ class Salesupdateform extends Component {
             <Modal.Body>
                 <Form className="container product-form" onSubmit = { this.handleSubmit }>
                     <Form.Group as={Row} controlId="formPlaintextSupplier">
-                        <Form.Label column sm="3">
-                            {trls('Customer')}
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
+                        <Col className="product-text">
                             <Select
                                 name="customer"
                                 options={customer}
@@ -332,15 +346,13 @@ class Salesupdateform extends Component {
                                     style={{ opacity: 0, height: 0, width: "100%" }}
                                     value={this.state.val1}
                                     required
-                                    />
-                                )}
+                                />
+                            )}
+                            <label className="placeholder-label">{trls('Customer')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextSupplier">
-                        <Form.Label column sm="3">
-                            {trls('Supplier')}
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
+                        <Col className="product-text">
                             <Select
                                 name="supplier"
                                 options={supplier}
@@ -356,65 +368,86 @@ class Salesupdateform extends Component {
                                     style={{ opacity: 0, height: 0, width: "100%" }}
                                     value={this.state.val2}
                                     required
-                                    />
-                                )}
+                                />
+                            )}
+                            <label className="placeholder-label">{trls('Supplier')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                        {trls('Reference_customer')}   
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
+                        <Col className="product-text">
                             {referenceCustomerFlag ? (
                                 <Form.Control type="text" name="reference" required defaultValue = {this.props.salesOrder?this.props.salesOrder.referencecustomer:''} placeholder={trls('Reference')} />
                             ): 
                                 <Form.Control type="text" name="reference" defaultValue = {this.props.salesOrder?this.props.salesOrder.referencecustomer:''} placeholder={trls('Reference')} />
                             }
-                            
+                            <label className="placeholder-label">{trls('Reference_customer')}</label>
                         </Col>
                     </Form.Group>
+                    {!referenceCustomerFlag && (
+                        <Form.Group as={Row} className="product-text" controlId="formPlaintextPassword">
+                            <Col>
+                                <Select
+                                    name="rederij"
+                                    options={rederijList}
+                                    placeholder={trls('Shipping_company')}
+                                    onChange={val => this.setState({val3: val.value})}
+                                    defaultValue={{value: salesOrder.RederijCode ? salesOrder.RederijCode : '', label: salesOrder.Rederij}}
+                                />
+                                <label className="placeholder-label">{trls('Shipping_company')}</label>
+                                {!this.props.disabled && !this.props.salesOrder && (
+                                    <input
+                                        onChange={val=>console.log()}
+                                        tabIndex={-1}
+                                        autoComplete="off"
+                                        style={{ opacity: 0, height: 0, width: "100%" }}
+                                        value={this.state.val3}
+                                        required
+                                    />
+                                )}
+                            </Col>
+                        </Form.Group>
+                    )}
+                    {!referenceCustomerFlag && (
+                        <Form.Group as={Row} className="product-text" controlId="formPlaintextPassword">
+                            <Col>
+                                <Form.Control type="text" name="uithaalreferentie" required defaultValue={salesOrder.Uithaalreferentie ? salesOrder.Uithaalreferentie : ''} placeholder={trls('Reference')} />
+                                <label className="placeholder-label">{trls('Picking_reference')}</label>
+                            </Col>
+                        </Form.Group>
+                    )}
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3">
-                        {trls('Loading_date')}  
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
+                        <Col className="product-text">
                             { this.state.orderdateflag || !this.props.salesOrder ? (
-                                <DatePicker name="orderdate" className="myDatePicker" isClearable={true} dateFormat="dd-MM-yyyy" selected={this.state.orderdate} onChange = {(value, e)=>this.onChangeDate(value, e, 'orderdate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'orderdate')}/>}/>
+                                <DatePicker name="orderdate" className="myDatePicker" isClearable={true} dateFormat="dd-MM-yyyy" selected={this.state.orderdate ? this.state.orderdate : new Date()} onChange = {(value, e)=>this.onChangeDate(value, e, 'orderdate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'orderdate')}/>}/>
                             ) : <DatePicker name="orderdate" className="myDatePicker" isClearable={true} dateFormat="dd-MM-yyyy" selected={salesOrder.loadingdate!=="1900-01-01T00:00:00" ? new Date(salesOrder.loadingdate) : ''} onChange = {(value, e)=>this.onChangeDate(value, e, 'orderdate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'orderdate')}/>}/>
                             } 
+                            <label className="placeholder-label">{trls('Loading_date')}</label>
                         </Col>
                     </Form.Group>
                     {!this.state.arriFlag && this.props.arrivaldate && this.props.salesOrder?(
                         <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                            {trls('Arrival_date')}  
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
+                            <Col className="product-text">
                                 { this.state.arrivalDateFlag || !this.props.arrivaldate ? (
-                                    <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.arrivalDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
-                                ) : <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.salesOrder.arrivaldate)} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
+                                    <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.arrivalDate ? this.state.arrivalDate : new Date()} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
+                                ) : <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.props.salesOrder.arrivaldate ? new Date(this.props.salesOrder.arrivaldate) : ''} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
                                 } 
+                                <label className="placeholder-label">{trls('Arrival_date')}</label>
                             </Col>
                         </Form.Group>
                     ):<div></div>}
                     {this.state.arrivaleFlag && this.state.arriFlag?(
                         <Form.Group as={Row} controlId="formPlaintextPassword">
-                            <Form.Label column sm="3">
-                            {trls('Arrival_date')}  
-                            </Form.Label>
-                            <Col sm="9" className="product-text">
+                            <Col className="product-text">
                                 { this.state.arrivalDateFlag || !this.props.arrivaldate ? (
-                                    <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.arrivalDate} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
-                                ) : <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.salesOrder.arrivaldate)} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
+                                    <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.arrivalDate ? this.state.arrivalDate : new Date()} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
+                                ) : <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.props.salesOrder.arrivaldate ? new Date(this.props.salesOrder.arrivaldate) : ''} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
                                 } 
+                                <label className="placeholder-label">{trls('Arrival_date')}</label>
                             </Col>
                         </Form.Group>
                     ):<div></div>}
                     <Form.Group as={Row} controlId="formPlaintextSupplier">
-                        <Form.Label column sm="3" >
-                            {trls('Attachments')}   
-                        </Form.Label>
-                        <Col sm="9" className="product-text input-div" style={{height: "auto"}}>
+                        <Col className="product-text input-div" style={{height: "auto"}}>
                             <div id="react-file-drop-demo" style={{border: '1px solid #ced4da', color: 'black', padding: 7, borderRadius: 3 }}>
                                 <FileDrop onDrop={this.handleDrop}>
                                     {fileData.length>0?(
@@ -429,14 +462,13 @@ class Salesupdateform extends Component {
                                      <input id="inputFile" name="file" type="file" accept="*.*"  onChange={this.onChange} style={{display: "none"}} />   
                                 </FileDrop>
                             </div>
+                            <label className="placeholder-label">{trls('Attachments')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextPassword">
-                        <Form.Label column sm="3" >
-                            {trls('Comments')}   
-                        </Form.Label>
-                        <Col sm="9" className="product-text">
+                        <Col className="product-text">
                             <Form.Control as="textarea" rows="3" name="comments" defaultValue = {this.props.salesOrder?this.props.salesOrder.Comments:''}  placeholder={trls("Comments")} />
+                            <label className="placeholder-label">{trls('Comments')}</label>
                         </Col>
                     </Form.Group>
                     <Form.Group style={{textAlign:"center"}}>
@@ -456,6 +488,7 @@ class Salesupdateform extends Component {
                 orderid={this.state.orderid}
                 typedata={this.state.typeData}
             />
+            <Pageloadspiiner loading = {pageLodingFlag}/>
         </Modal>
         );
     }

@@ -218,7 +218,7 @@ class Addpurchase extends Component {
                             purchaseid: this.props.purchaseid,
                             id: result.data.NewId,
                         }
-                        Axios.post(API.CheckMultipleLines, params, headers)
+                        Axios.post(API.CheckMultipleLinesTransport, params, headers)
                         .then(result => {
 
                             if(result.data.Items[0].multiplelines==="true"){

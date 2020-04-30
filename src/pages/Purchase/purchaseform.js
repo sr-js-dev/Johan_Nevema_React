@@ -317,7 +317,8 @@ class Purchaseform extends Component {
                                         name="supplier"
                                         placeholder={trls('Supplier')}
                                         options={this.state.transport}
-                                        onChange={val => this.setState({val1:val, setSupplierCode: val.value})}
+                                        onChange={val => this.changeSupplier(val)}
+                                        // onChange={val => this.setState({val1:val, setSupplierCode: val.value})}
                                         defaultValue = {this.getSupplierData()}
                                     />
                                 }

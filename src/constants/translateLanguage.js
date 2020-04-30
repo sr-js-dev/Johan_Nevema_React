@@ -174,6 +174,9 @@ export const TRANSLATIONS = {
       BookingNumber: 'BookingNumber',
       Edit_Purchase_detail: 'Edit Purchase detail',
       Edit_Order_detail: 'Edit Order detail',
+      Shipping_company: 'Shipping company',
+      Picking_reference: 'Picking reference',
+      PickingDate: 'PickingDate '
     },
 
 
@@ -298,7 +301,7 @@ export const TRANSLATIONS = {
       Container_number: 'Container nummer',
       ShippingDocumentnumber: 'Vrachtbrief nummer',
       Add: 'Toevoegen',
-      ReportingDate: 'laaddatum',
+      ReportingDate: 'Laaddatum',
       Number: 'Nummer',
       Quality: 'Controle',
       Complete: 'Compleet',
@@ -352,5 +355,8 @@ export const TRANSLATIONS = {
       BookingNumber: 'BoekingNummer',
       Edit_Purchase_detail: 'Aankoopdetails bewerken',
       Edit_Order_detail: 'Order bewerken',
+      Shipping_company: 'Rederij',
+      Picking_reference: 'Uithaalreferentie',
+      PickingDate: 'Uithalen voor'
     }
   };

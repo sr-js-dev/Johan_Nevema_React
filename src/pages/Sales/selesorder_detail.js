@@ -157,7 +157,9 @@ class Salesorderdtail extends Component {
     }
 
     onHide = () => {
-        this.props.onGetSalesData();
+        if(!this.props.viewDetailFlag){
+            this.props.onGetSalesData();
+        }
         this.props.onHide();
         Common.hideSlideForm();
     }

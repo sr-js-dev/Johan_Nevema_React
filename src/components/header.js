@@ -5,6 +5,7 @@ import Select from 'react-select';
 import { connect } from 'react-redux';
 import history from '../history';
 import { removeAuth } from '../components/auth';
+import * as Auth from '../components/auth';
 import $ from 'jquery';
 
 const mapStateToProps = state => ({ 
@@ -21,6 +22,7 @@ class Header extends Component {
             roles:[{"value":"en_US","label":"En"},{"value":"nl_BE","label":"Nl"}],
             selectrolvalue:window.localStorage.getItem('nevema_lang'),
             selectrollabel:window.localStorage.getItem('nevema_label'),
+            userInfo: Auth.getUserInfo()
         };
     }
     componentDidMount () {
@@ -43,42 +45,43 @@ class Header extends Component {
         this.props.changeLan(val)
     }
     render () {
-      return (
-        <div>
-            <header className="header">
-                <div className="header__burger-btn">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                <a href="/" className="header__logo-mob">
-                    <img src={require("../assets/images/appmakerz.svg")} alt="logo"/>
-                </a>
-                <div className="header__controls">
-                        <Select
-                            name="lan"
-                            options={this.state.roles}
-                            className="select-lang-class"
-                            value={{"label":this.state.selectrollabel,"value":this.state.selectrolvalue}}
-                            onChange={val => this.changeLangauge(val)}
-                        />
-                        <Dropdown>
-                            <Dropdown.Toggle variant="success" id="dropdown-basic" style={{color: "#585858"}}>
-                                Johan Boerema<img src={require("../assets/images/avatar.jpg")} alt="User avatar" className="header__user-dropdown-img"/> 
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu style={{marginLeft:15}}>
-                                <Dropdown.Item onClick={this.logOut}>Logout</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
-                </div>
-                <div className="header__user">
-                    <span className="header__user-name">
-                    </span>
-                    <img src={require("../assets/images/avatar.jpg")} alt="User avatar" className="header__user-img"/>
-                </div>
-            </header>
-        </div>
-      )
+        const { userInfo } = this.state; 
+        return (
+            <div>
+                <header className="header">
+                    <div className="header__burger-btn">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <a href="/" className="header__logo-mob">
+                        <img src={require("../assets/images/appmakerz.svg")} alt="logo"/>
+                    </a>
+                    <div className="header__controls">
+                            <Select
+                                name="lan"
+                                options={this.state.roles}
+                                className="select-lang-class"
+                                value={{"label":this.state.selectrollabel,"value":this.state.selectrolvalue}}
+                                onChange={val => this.changeLangauge(val)}
+                            />
+                            <Dropdown>
+                                <Dropdown.Toggle variant="success" id="dropdown-basic" style={{color: "#585858"}}>
+                                    { userInfo.userName}
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu style={{marginLeft:15}}>
+                                    <Dropdown.Item onClick={this.logOut}>Logout</Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                    </div>
+                    <div className="header__user">
+                        <span className="header__user-name">
+                        </span>
+                        <img src={require("../assets/images/avatar.jpg")} alt="User avatar" className="header__user-img"/>
+                    </div>
+                </header>
+            </div>
+        )
     };
   }
   export default connect(mapStateToProps, mapDispatchToProps)(Header);

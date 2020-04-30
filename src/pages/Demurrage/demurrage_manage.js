@@ -12,6 +12,7 @@ import 'datatables.net';
 import Filtercomponent from '../../components/filtercomponent';
 import Contextmenu from '../../components/contextmenu';
 import * as Common  from '../../components/common';
+import Salesorderdetail from '../Sales/selesorder_detail';
 
 const mapStateToProps = state => ({ ...state.auth });
 
@@ -25,13 +26,19 @@ class Demurragemanage extends Component {
         this.state = {  
             demurrageData: [],
             filterColunm: [
-                {"label": 'Supplier', "value": "Supplier", "type": 'text', "show": true},
+                {"label": 'Id', "value": "id", "type": 'text', "show": true},
+                {"label": 'Customer', "value": "Customer", "type": 'text', "show": true},
+                {"label": 'Shipping_company', "value": "Rederij", "text": 'text', "show": true},
+                {"label": 'Container', "value": "Container", "type": 'text', "show": true},
                 {"label": 'Productcode', "value": "ProductCode", "type": 'text', "show": true},
+                {"label": 'Sales_Unit', "value": "SalesUnit", "type": 'text', "show": true},
+                {"label": 'Sales_Quantity', "value": "SalesQuantity", "type": 'text', "show": true},
                 {"label": 'Arrival_date', "value": "Arrivaldate", "type": 'date', "show": true},
-                {"label": 'Packing_date', "value": "pickingdate", "date": 'text', "show": true},
+                {"label": 'PickingDate', "value": "pickingdate", "type": 'date', "show": true},
             ],
             filterData: [],
             originFilterData: [],
+            slideDetailFlag: false
         };
       }
     componentDidMount() {
@@ -74,7 +81,7 @@ class Demurragemanage extends Component {
                         }
                       },
                         "dom": 't<"bottom-datatable" lip>',
-                        "order": [[ 0, "desc" ]]
+                        "order": [[ 8 ,'dsc']]
                     }
                   );
             }
@@ -150,7 +157,11 @@ class Demurragemanage extends Component {
         //   filterData.push(filterColum[0]);
         // }
         // this.setState({filterData: filterData})
-      }
+    }
+
+    loadSalesDetail = (data)=>{
+        this.setState({newId: data.id, slideDetailFlag: true})
+    }
 
     render () {
         const {filterColunm, demurrageData} = this.state;
@@ -203,10 +214,17 @@ class Demurragemanage extends Component {
                                 {
                                 demurrageData.map((data,i) =>(
                                     <tr id={data.id} key={i}>
-                                        <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}>{data.Supplier}</td>
-                                        <td className={!this.showColumn(filterColunm[1].label) ? "filter-show__hide" : ''}>{data.ProductCode}</td>
-                                        <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.pickingdate)}</td>
-                                        <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.Arrivaldate)}</td>
+                                        <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}>
+                                            <div id={data.id} style={{cursor: "pointer", color:'#004388', fontSize:"14px", fontWeight:'bold'}} onClick={()=>this.loadSalesDetail(data)}>{data.id}</div>    
+                                        </td>
+                                        <td className={!this.showColumn(filterColunm[1].label) ? "filter-show__hide" : ''}>{data.Customer}</td>
+                                        <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{data.Rederij}</td>
+                                        <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''}>{data.Container}</td>
+                                        <td className={!this.showColumn(filterColunm[4].label) ? "filter-show__hide" : ''}>{data.ProductCode}</td>
+                                        <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>{data.SalesUnit}</td>
+                                        <td className={!this.showColumn(filterColunm[6].label) ? "filter-show__hide" : ''}>{data.SalesQuantity}</td>
+                                        <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.Arrivaldate)}</td>
+                                        <td className={!this.showColumn(filterColunm[8].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.pickingdate)}</td>
                                     </tr>
                                 ))
                                 }
@@ -222,6 +240,15 @@ class Demurragemanage extends Component {
                         )}
                     </div>
                 </div>
+                {this.state.newId ? (
+                    <Salesorderdetail
+                        newid={this.state.newId}
+                        onHide={() => this.setState({slideDetailFlag: false, newId: ''})}
+                        customercode={this.state.customercode}
+                        suppliercode={this.state.suppliercode}
+                        viewDetailFlag={true}
+                    />
+                ): null}
             </div>
         )
         };

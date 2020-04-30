@@ -375,7 +375,7 @@ class Addproduct extends Component {
                         <Form.Group as={Row} controlId="formPlaintextPassword">
                             <Col className="product-text">
                                 {this.state.invoicedateflag || !this.props.loadingdate? (
-                                    <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy"  onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>}/>
+                                    <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.state.reportingDate)} onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>}/>
                                 ) : <DatePicker name="reporingdate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={new Date(this.props.loadingdate)} onChange = {(value, e)=>this.onChangeDate(value, e)} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event)}/>}/>
                                 } 
                                 <label className="placeholder-label">{trls('ReportingDate')}</label>

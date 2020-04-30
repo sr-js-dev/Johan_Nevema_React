@@ -62,26 +62,20 @@ class Purchaseorderdtail extends Component {
                 }
             })
             this.setState({purchaseOrder: result.data.Items[0]});
-            
+            let purChaseOrder = result.data.Items[0];
             if(!result.data.Items[0].istransport){
                 Axios.get(API.GetSuppliersDropdown, headers)
                 .then(result => {
-                    let supplierData = result.data.Items;
-                    let supplierCode = '';
-
-                    supplierData.map((supplier, index)=>{
-                        if(supplier.value===this.state.purchaseOrder.Customer){
-                            supplierCode = supplier.key;
-                        }
-                        return supplierData;
-                    });
                     var suparams = {
-                        supplier: supplierCode
+                        supplier: purChaseOrder.suppliercode
                     }
                     Axios.post(API.GetDefaultVatCode, suparams, headers)
                     .then(result => {
                         if(result.data.Success){
-                            let defaultVatCode = result.data.Items[0].VatCode
+                            let defaultVatCode = '';
+                            if(result.data.Items[0]){
+                                defaultVatCode = result.data.Items[0].VatCode;
+                            }
                             Axios.get(API.GetVATCode, headers)
                             .then(result => {
                                     let vatCode = result.data.Items.map( s => ({value:s.key,label:s.value}));
@@ -90,27 +84,21 @@ class Purchaseorderdtail extends Component {
                             });
                         }
                     });
-                    this.setState({supplierCode: supplierCode})
+                    this.setState({supplierCode: purChaseOrder.suppliercode})
                 });
             }else{
                 Axios.get(API.GetTransportersDropdown, headers)
                 .then(result => {
-                    
-                    let supplierData = result.data.Items;
-                    let supplierCode = '';
-                    supplierData.map((supplier, index)=>{
-                        if(supplier.Value===this.state.purchaseOrder.Customer){
-                            supplierCode = supplier.Key;
-                        }
-                        return supplierData;
-                    });
                     var suparams = {
-                        supplier: supplierCode
+                        supplier: purChaseOrder.suppliercode
                     }
                     Axios.post(API.GetDefaultVatCode, suparams, headers)
                     .then(result => {
                         if(result.data.Success){
-                            let defaultVatCode = result.data.Items[0].VatCode
+                            let defaultVatCode = '';
+                            if(result.data.Items[0]){
+                                defaultVatCode = result.data.Items[0].VatCode
+                            }
                             Axios.get(API.GetVATCode, headers)
                             .then(result => {
                                     let vatCode = result.data.Items.map( s => ({value:s.key,label:s.value}));
@@ -119,7 +107,7 @@ class Purchaseorderdtail extends Component {
                             });
                         }
                     });
-                    this.setState({supplierCode: supplierCode})
+                    this.setState({supplierCode: purChaseOrder.suppliercode})
                 });
             }
             this.setState({purchaseOrder: result.data.Items[0]});

@@ -132,7 +132,6 @@ changeFilter = () => {
 }
 // filter module
 loadSalesDetail = (data)=>{
-    // Common.showSlideForm();
     this.setState({newId: data.id, slideDetailFlag: true})
 }
 
@@ -271,6 +270,7 @@ render () {
                     customercode={this.state.customercode}
                     suppliercode={this.state.suppliercode}
                     onGetSalesData={()=>this.getsalesData()}
+                    viewDetailFlag={false}
                 />
             ): null}
         </div>
