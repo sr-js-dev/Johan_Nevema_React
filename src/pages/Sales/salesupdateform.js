@@ -144,7 +144,6 @@ class Salesupdateform extends Component {
     }
 
     selectCustomer = (val) =>{
-        console.log('123', val)
         this.setState({val1: val.value});
         let tempArray = [];
         tempArray = this.props.customerData;
@@ -299,16 +298,15 @@ class Salesupdateform extends Component {
         }
         const { salesOrder } = this.props;
         const { val1, pageLodingFlag } = this.state;
-        let val11 = this.state.val1;
         let referenceCustomerFlag = true;
-        if(!val11){
+        if(!val1){
             if(!salesOrder.CustomerCode ){
                 referenceCustomerFlag = false;
             }else{
                 referenceCustomerFlag = true;
             }
         }else{
-            if(val11==="99999998"){
+            if(val1.value==='99999998'){
                 referenceCustomerFlag = false
             }else{
                 referenceCustomerFlag = true
@@ -385,7 +383,7 @@ class Salesupdateform extends Component {
                             <label className="placeholder-label">{trls('Reference_customer')}</label>
                         </Col>
                     </Form.Group>
-                    {!referenceCustomerFlag && (
+                    {!this.state.arriFlag && this.props.arrivaldate && this.props.salesOrder && (
                         <Form.Group as={Row} className="product-text" controlId="formPlaintextPassword">
                             <Col>
                                 <Select
@@ -409,7 +407,39 @@ class Salesupdateform extends Component {
                             </Col>
                         </Form.Group>
                     )}
-                    {!referenceCustomerFlag && (
+                    {this.state.arrivaleFlag && this.state.arriFlag && (
+                        <Form.Group as={Row} className="product-text" controlId="formPlaintextPassword">
+                            <Col>
+                                <Select
+                                    name="rederij"
+                                    options={rederijList}
+                                    placeholder={trls('Shipping_company')}
+                                    onChange={val => this.setState({val3: val.value})}
+                                    defaultValue={{value: salesOrder.RederijCode ? salesOrder.RederijCode : '', label: salesOrder.Rederij}}
+                                />
+                                <label className="placeholder-label">{trls('Shipping_company')}</label>
+                                {!this.props.disabled && !this.props.salesOrder && (
+                                    <input
+                                        onChange={val=>console.log()}
+                                        tabIndex={-1}
+                                        autoComplete="off"
+                                        style={{ opacity: 0, height: 0, width: "100%" }}
+                                        value={this.state.val3}
+                                        required
+                                    />
+                                )}
+                            </Col>
+                        </Form.Group>
+                    )}
+                    {this.state.arrivaleFlag && this.state.arriFlag && (
+                        <Form.Group as={Row} className="product-text" controlId="formPlaintextPassword">
+                            <Col>
+                                <Form.Control type="text" name="uithaalreferentie" required defaultValue={salesOrder.Uithaalreferentie ? salesOrder.Uithaalreferentie : ''} placeholder={trls('Reference')} />
+                                <label className="placeholder-label">{trls('Picking_reference')}</label>
+                            </Col>
+                        </Form.Group>
+                    )}
+                    {!this.state.arriFlag && this.props.arrivaldate && this.props.salesOrder && (
                         <Form.Group as={Row} className="product-text" controlId="formPlaintextPassword">
                             <Col>
                                 <Form.Control type="text" name="uithaalreferentie" required defaultValue={salesOrder.Uithaalreferentie ? salesOrder.Uithaalreferentie : ''} placeholder={trls('Reference')} />
@@ -430,19 +460,19 @@ class Salesupdateform extends Component {
                         <Form.Group as={Row} controlId="formPlaintextPassword">
                             <Col className="product-text">
                                 { this.state.arrivalDateFlag || !this.props.arrivaldate ? (
-                                    <DatePicker name="arrivaldate" className="myDatePicker" isClearable={true} dateFormat="dd-MM-yyyy" selected={this.state.arrivalDate ? this.state.arrivalDate : new Date()} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
-                                ) : <DatePicker name="arrivaldate" className="myDatePicker" isClearable={true} dateFormat="dd-MM-yyyy" selected={this.props.salesOrder.arrivaldate ? new Date(this.props.salesOrder.arrivaldate) : ''} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
+                                    <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.arrivalDate ? this.state.arrivalDate : new Date()} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
+                                ) : <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.props.salesOrder.arrivaldate ? new Date(this.props.salesOrder.arrivaldate) : ''} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
                                 } 
                                 <label className="placeholder-label">{trls('Arrival_date')}</label>
                             </Col>
                         </Form.Group>
                     ):<div></div>}
-                    {this.state.arrivaleFlag && this.state.arriFlag && !referenceCustomerFlag?(
+                    {this.state.arrivaleFlag && this.state.arriFlag?(
                         <Form.Group as={Row} controlId="formPlaintextPassword">
                             <Col className="product-text">
                                 { this.state.arrivalDateFlag || !this.props.arrivaldate ? (
-                                    <DatePicker name="arrivaldate" className="myDatePicker" isClearable={true} dateFormat="dd-MM-yyyy" selected={this.state.arrivalDate ? this.state.arrivalDate : new Date()} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
-                                ) : <DatePicker name="arrivaldate" className="myDatePicker" isClearable={true} dateFormat="dd-MM-yyyy" selected={this.props.salesOrder.arrivaldate ? new Date(this.props.salesOrder.arrivaldate) : ''} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
+                                    <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.state.arrivalDate ? this.state.arrivalDate : new Date()} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
+                                ) : <DatePicker name="arrivaldate" className="myDatePicker" dateFormat="dd-MM-yyyy" selected={this.props.salesOrder.arrivaldate ? new Date(this.props.salesOrder.arrivaldate) : ''} onChange = {(value, e)=>this.onChangeDate(value, e, 'arrivaldate')} customInput={<input onKeyUp={(event)=>this.handleEnterKeyPress(event, 'arrivaldate')}/>}/>
                                 } 
                                 <label className="placeholder-label">{trls('Arrival_date')}</label>
                             </Col>

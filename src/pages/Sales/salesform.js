@@ -144,9 +144,7 @@ class Salesform extends Component {
 
     selectCustomer = (val) =>{
         if(val.label==="Nog te plannen"){
-            this.setState({referCustomerFlag: false, arrivaleFlag: true, arriFlag: true})
-        }else{
-            this.setState({referCustomerFlag: true, arrivaleFlag: false, arriFlag: false})
+            this.setState({referCustomerFlag: false})
         }
         this.setState({val1: val.value});
         let tempArray = [];
@@ -465,7 +463,7 @@ class Salesform extends Component {
                                 <label className="placeholder-label">{trls('Arrival_date')}</label>
                             </Col>
                         </Form.Group>
-                    ):null}
+                    ):<div></div>}
                     {this.state.arrivaleFlag && this.state.arriFlag?(
                         <Form.Group as={Row} className="product-text" controlId="formPlaintextPassword">
                             <Col>
