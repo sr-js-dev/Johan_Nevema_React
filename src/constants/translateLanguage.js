@@ -176,7 +176,8 @@ export const TRANSLATIONS = {
       Edit_Order_detail: 'Edit Order detail',
       Shipping_company: 'Shipping company',
       Picking_reference: 'Picking reference',
-      PickingDate: 'PickingDate '
+      PickingDate: 'PickingDate',
+      RemoveReference: 'RemoveReference'
     },
 
 
@@ -357,6 +358,7 @@ export const TRANSLATIONS = {
       Edit_Order_detail: 'Order bewerken',
       Shipping_company: 'Rederij',
       Picking_reference: 'Uithaalreferentie',
-      PickingDate: 'Uithalen voor'
+      PickingDate: 'Uithalen voor',
+      RemoveReference: 'UithaalReferentie'
     }
   };

@@ -35,6 +35,7 @@ class Demurragemanage extends Component {
                 {"label": 'Sales_Quantity', "value": "SalesQuantity", "type": 'text', "show": true},
                 {"label": 'Arrival_date', "value": "Arrivaldate", "type": 'date', "show": true},
                 {"label": 'PickingDate', "value": "pickingdate", "type": 'date', "show": true},
+                {"label": 'RemoveReference', "value": "UithaalReferentie", "type": 'date', "show": true},
             ],
             filterData: [],
             originFilterData: [],
@@ -81,7 +82,7 @@ class Demurragemanage extends Component {
                         }
                       },
                         "dom": 't<"bottom-datatable" lip>',
-                        "order": [[ 8 ,'dsc']]
+                        // "order": [[ 8 ,'dsc']]
                     }
                   );
             }
@@ -225,6 +226,7 @@ class Demurragemanage extends Component {
                                         <td className={!this.showColumn(filterColunm[6].label) ? "filter-show__hide" : ''}>{data.SalesQuantity}</td>
                                         <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.Arrivaldate)}</td>
                                         <td className={!this.showColumn(filterColunm[8].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.pickingdate)}</td>
+                                        <td className={!this.showColumn(filterColunm[9].label) ? "filter-show__hide" : ''}>{data.UithaalReferentie}</td>
                                     </tr>
                                 ))
                                 }
