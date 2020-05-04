@@ -58,8 +58,12 @@ class Demurragemanage extends Component {
         .then(result => {
             if(this._isMounted){
                 if(!data){
-                    this.setState({demurrageData: result.data.Items, originFilterData: result.data.Items});
+                    let itemData = result.data.Items;
+                    itemData.sort(function(a, b){return new Date(a.pickingdate) - new Date(b.pickingdate)});
+                    this.setState({demurrageData: itemData, originFilterData: result.data.Items});
                 }else{
+                    let itemData = data;
+                    itemData.sort(function(a, b){return new Date(a.pickingdate) - new Date(b.pickingdate)});
                     this.setState({demurrageData: data});
                 }
                 this.setState({loading:false})
@@ -83,6 +87,7 @@ class Demurragemanage extends Component {
                       },
                         "dom": 't<"bottom-datatable" lip>',
                         // "order": [[ 8 ,'dsc']]
+                        "ordering": false
                     }
                   );
             }
