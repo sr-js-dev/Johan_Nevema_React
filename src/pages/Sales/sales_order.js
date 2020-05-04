@@ -158,6 +158,7 @@ showColumn = (value) => {
 }
 
 render () {
+    
     let salesData = this.state.salesData;
     const { filterColunm } = this.state;
     salesData.sort(function(a, b) {
