@@ -59,6 +59,9 @@ class Taskoverview extends Component {
                 {"label": 'Sales_Amount', "value": "SalesAmount", "type": 'date', "show": true},
                 {"label": 'Loading_date', "value": "Loadingdate", "type": 'text', "show": true},
                 {"label": 'Loading_week', "value": "Loadingweek", "type": 'text', "show": true},
+                {"label": 'PackingSlip', "value": "PackingSlip", "type": 'text', "show": true},
+                {"label": 'Container', "value": "Container", "type": 'text', "show": true},
+                {"label": 'Shipping', "value": "Container", "type": 'text', "show": true},
                 {"label": 'BookingNumber', "value": "BookingNumber", "type": 'text', "show": true},
                 {"label": 'Complete', "value": "Complete", "type": 'text', "show": true},
             ],
@@ -200,7 +203,7 @@ getSupplierData = () => {
 }
 
 loadSalesDetail = (data)=>{
-    Common.showSlideForm();
+    // Common.showSlideForm();
     let detailData = [];
     let customerData = this.state.customerData.filter(item => item.key===data.customercode.trim());
     let supplierData = this.state.supplierData.filter(item => item.key===data.suppliercode.trim());
@@ -349,8 +352,11 @@ render () {
                                     <td className={!this.showColumn(filterColunm[4].label) ? "filter-show__hide" : ''}>{Common.formatMoney(data.SalesAmount)}</td>
                                     <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.Loadingdate)}</td>
                                     <td className={!this.showColumn(filterColunm[6].label) ? "filter-show__hide" : ''}>{data.Loadingweek}</td>
-                                    <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>{data.BookingNumber}</td>
-                                    <td className={!this.showColumn(filterColunm[8].label) ? "filter-show__hide" : ''}>
+                                    <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>{data.PackingSlip}</td>
+                                    <td className={!this.showColumn(filterColunm[8].label) ? "filter-show__hide" : ''}>{data.Container}</td>
+                                    <td className={!this.showColumn(filterColunm[9].label) ? "filter-show__hide" : ''}>{data.Shipping}</td>
+                                    <td className={!this.showColumn(filterColunm[10].label) ? "filter-show__hide" : ''}>{data.BookingNumber}</td>
+                                    <td className={!this.showColumn(filterColunm[11].label) ? "filter-show__hide" : ''}>
                                         <Row style={{justifyContent:"center"}}>
                                             {!data.isCompleted && data.referencecustomer!=="Nog te plannen" && data.customer!=="" && !data.Temporary?(
                                                 <Button type="submit" style={{width:"auto", height: 35}} onClick={()=>this.completeOrder(data.Id)}>{trls('Send_salesinvoice')}</Button>
@@ -380,6 +386,7 @@ render () {
                             customercode={this.state.customercode}
                             suppliercode={this.state.suppliercode}
                             salesdetaildata={this.state.salesDetailData}
+                            viewDetailFlag={true}
                         />
                     ): null}
                     {/* <Salesdetailfrom

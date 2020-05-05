@@ -50,6 +50,7 @@ class Salesorder extends Component {
                 {"label": 'Productcode', "value": "ProductCode", "type": 'text', "show": true},
                 {"label": 'PackingSlip', "value": "PackingSlip", "type": 'text', "show": true},
                 {"label": 'Container', "value": "Container", "type": 'text', "show": true},
+                {"label": 'Shipping', "value": "Container", "type": 'text', "show": true},
                 {"label": 'ExactBooking', "value": "Container", "type": 'text', "show": true},
             ],
             loadingFlag: false,
@@ -158,7 +159,7 @@ showColumn = (value) => {
 }
 
 render () {
-    
+
     let salesData = this.state.salesData;
     const { filterColunm } = this.state;
     salesData.sort(function(a, b) {
@@ -228,7 +229,8 @@ render () {
                                     <td className={!this.showColumn(filterColunm[9].label) ? "filter-show__hide" : ''}>{data.ProductCode}</td>
                                     <td className={!this.showColumn(filterColunm[10].label) ? "filter-show__hide" : ''}>{data.PackingSlip}</td>
                                     <td className={!this.showColumn(filterColunm[11].label) ? "filter-show__hide" : ''}>{data.Container}</td>
-                                    <td className={!this.showColumn(filterColunm[12].label) ? "filter-show__hide" : ''} style={{width: 100}}>
+                                    <td className={!this.showColumn(filterColunm[12].label) ? "filter-show__hide" : ''}>{data.Shipping}</td>
+                                    <td className={!this.showColumn(filterColunm[13].label) ? "filter-show__hide" : ''} style={{width: 100}}>
                                         {data.exactBooking ? (
                                             <Row>
                                                 <i className="fas fa-check-circle order-booking__icon-active"></i>

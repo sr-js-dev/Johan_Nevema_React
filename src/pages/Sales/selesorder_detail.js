@@ -39,7 +39,8 @@ class Salesorderdtail extends Component {
             salesOrderDocList: [],
             lodingFlag: false,
             detailData: [],
-            purchaseFlag: pathArray[2] ? true : false
+            purchaseFlag: pathArray[2] ? true : false,
+            salesDetailFlag: false
         }
       }
     componentDidMount() {
@@ -54,6 +55,7 @@ class Salesorderdtail extends Component {
     }
 
     getSalesOrder() {
+        this.setState({salesDetailFlag: false});
         var params={
             "salesorderid":this.props.newid
         }
@@ -69,7 +71,7 @@ class Salesorderdtail extends Component {
                     this.setState({salesOrderDocList: result.data.Items})
                 }
             })
-            this.setState({salesorder: result.data.Items[0]});
+            this.setState({salesorder: result.data.Items[0], salesDetailFlag: true});
         });
     }
 
@@ -188,7 +190,7 @@ class Salesorderdtail extends Component {
         let detailData = this.state.salesorder;
         let salesItems = this.state.salesItems;
         let transporter = this.state.salesTransport;
-        const { salesOrderDocList, lodingFlag, purchaseFlag } = this.state;
+        const { salesOrderDocList, lodingFlag, purchaseFlag, salesDetailFlag } = this.state;
         return (
             <div className="slide-form__controls open slide-product__detail">
                 <div style={{marginBottom:30, padding:"0 20px"}}>
@@ -391,7 +393,7 @@ class Salesorderdtail extends Component {
                 getSalesOrderData={()=>this.getSalesOrder()}
                 onLoadingFlag={(value) => this.setState({lodingFlag: value})}
             />
-            {detailData.loadingdate&&(
+            {detailData.loadingdate && salesDetailFlag &&(
                 <Addproductform
                     show={this.state.showModalProduct}
                     onHide={() => this.setState({showModalProduct: false})}
