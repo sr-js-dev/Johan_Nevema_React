@@ -53,8 +53,8 @@ class Taskoverview extends Component {
             supplierData: [],
             filterColunm: [
                 {"label": 'Id', "value": "Id", "type": 'text', "show": true},
-                {"label": 'Supplier', "value": "supplier", "type": 'text', "show": true},
                 {"label": 'Customer', "value": "customer", "type": 'text', "show": true},
+                {"label": 'Supplier', "value": "supplier", "type": 'text', "show": true},
                 {"label": 'Purchase_Amount', "value": "PurchaseAmount", "type": 'date', "show": true},
                 {"label": 'Sales_Amount', "value": "SalesAmount", "type": 'date', "show": true},
                 {"label": 'Loading_date', "value": "Loadingdate", "type": 'text', "show": true},
@@ -346,8 +346,8 @@ render () {
                                 qualityData.map((data,i) =>(
                                 <tr id={data.id} key={i}>
                                     <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}><div id={data.id} style={{cursor: "pointer", color:'#004388', fontSize:"14px", fontWeight:'bold'}} onClick={()=>this.loadSalesDetail(data)}>{data.Id}</div></td>
-                                    <td className={!this.showColumn(filterColunm[1].label) ? "filter-show__hide" : ''}>{data.supplier}</td>
-                                    <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{data.customer}</td>
+                                    <td className={!this.showColumn(filterColunm[1].label) ? "filter-show__hide" : ''}>{data.customer}</td>
+                                    <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{data.supplier}</td>
                                     <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''}>{Common.formatMoney(data.PurchaseAmount)}</td>
                                     <td className={!this.showColumn(filterColunm[4].label) ? "filter-show__hide" : ''}>{Common.formatMoney(data.SalesAmount)}</td>
                                     <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.Loadingdate)}</td>

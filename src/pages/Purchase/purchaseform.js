@@ -141,6 +141,8 @@ class Purchaseform extends Component {
         this._isMounted = true;
         let fileArray = this.state.files
         let documentParam = [];
+        let k = 1;
+        let fileLength = fileArray.length;
         fileArray.map((file, index)=>{
             var formData = new FormData();
             formData.append('file', file);// file from input
@@ -158,19 +160,21 @@ class Purchaseform extends Component {
                 Axios.post(API.PostPurchaseDocument, documentParam, headers)
                 .then(result=>{
                     if(this._isMounted){
+                        if(k===fileLength){
+                            this.props.onHide();
+                            Common.hideSlideForm();
+                            if(!this.props.purchaseData){
+                                this.props.onloadPurchaseDetail(purchaseid);
+                            }else{
+                                this.props.getPurchaseOrder();
+                            }
+                        }
+                        k++;
                     }
                 })
             })
             return fileArray;
         });
-        this.props.onHide();
-        Common.hideSlideForm();
-        if(!this.props.purchaseData){
-            this.props.onloadPurchaseDetail(purchaseid);
-        }else{
-            this.props.getPurchaseOrder();
-        }
-        
     }
 
     handleDrop = (files, event) => {
