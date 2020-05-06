@@ -143,38 +143,49 @@ class Purchaseform extends Component {
         let documentParam = [];
         let k = 1;
         let fileLength = fileArray.length;
-        fileArray.map((file, index)=>{
-            var formData = new FormData();
-            formData.append('file', file);// file from input
-            var headers = {
-                "headers": {
-                    "Authorization": "bearer "+Auth.getUserToken(),
-                }
-            }
-            Axios.post(API.FileUpload, formData, headers)
-            .then(result => {
-                documentParam = {
-                    purchaseid: purchaseid,
-                    fileid: result.data.Id
-                }
-                Axios.post(API.PostPurchaseDocument, documentParam, headers)
-                .then(result=>{
-                    if(this._isMounted){
-                        if(k===fileLength){
-                            this.props.onHide();
-                            Common.hideSlideForm();
-                            if(!this.props.purchaseData){
-                                this.props.onloadPurchaseDetail(purchaseid);
-                            }else{
-                                this.props.getPurchaseOrder();
-                            }
-                        }
-                        k++;
+        if(fileLength!==0){
+            fileArray.map((file, index)=>{
+                var formData = new FormData();
+                formData.append('file', file);// file from input
+                var headers = {
+                    "headers": {
+                        "Authorization": "bearer "+Auth.getUserToken(),
                     }
+                }
+                Axios.post(API.FileUpload, formData, headers)
+                .then(result => {
+                    documentParam = {
+                        purchaseid: purchaseid,
+                        fileid: result.data.Id
+                    }
+                    Axios.post(API.PostPurchaseDocument, documentParam, headers)
+                    .then(result=>{
+                        if(this._isMounted){
+                            if(k===fileLength){
+                                this.props.onHide();
+                                Common.hideSlideForm();
+                                if(!this.props.purchaseData){
+                                    this.props.onloadPurchaseDetail(purchaseid);
+                                }else{
+                                    this.props.getPurchaseOrder();
+                                }
+                            }
+                            k++;
+                        }
+                    })
                 })
-            })
-            return fileArray;
-        });
+                return fileArray;
+            });
+        }else{
+            this.props.onHide();
+            Common.hideSlideForm();
+            if(!this.props.purchaseData){
+                this.props.onloadPurchaseDetail(purchaseid);
+            }else{
+                this.props.getPurchaseOrder();
+            }
+        }
+        
     }
 
     handleDrop = (files, event) => {
