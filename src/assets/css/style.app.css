@@ -908,3 +908,7 @@ input[name="search"].form-control::-webkit-input-placeholder {
 .exact-booking__number{
   margin-left: 6px;
 }
+.invoice-pdf_info{
+  text-align: right;
+  color: blue;
+}

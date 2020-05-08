@@ -121,5 +121,6 @@ export default {
     GetPurchaseDocuments   : `${BASEURL}/api/factory/execute/Appmakerz-Test/getPurchaseDocuments`,
     GetDownloadFile   : `${BASEURL}/api/factory/download-file/`,
     GetRederijDropdown: `${BASEURL}/api/factory/execute/Exact-Test/getRederijDropdown`,
+    GetAddress: `${BASEURL}/api/factory/execute/appmakerz-test/getAddress`,
   }; 
-  
+   

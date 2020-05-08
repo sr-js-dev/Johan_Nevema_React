@@ -15,6 +15,9 @@ import FlashMassage from 'react-flash-message'
 import Filtercomponent from '../../components/filtercomponent';
 import Salesorderdetail from '../Sales/selesorder_detail';
 import Contextmenu from '../../components/contextmenu';
+import jsPDF from "jspdf";
+// import Invoicepdf from './invoice_pdf';
+import 'jspdf-autotable'
 
 const mapStateToProps = state => ({
      ...state.auth,
@@ -64,8 +67,10 @@ class Taskoverview extends Component {
                 {"label": 'Shipping', "value": "Container", "type": 'text', "show": true},
                 {"label": 'BookingNumber', "value": "BookingNumber", "type": 'text', "show": true},
                 {"label": 'Complete', "value": "Complete", "type": 'text', "show": true},
+                {"label": 'CreateProFormaInvoice', "value": "CreateProFormaInvoice", "type": 'text', "show": true},
             ],
         };
+        this.divToPrint = React.createRef();
       }
 componentDidMount() {
     this._isMounted = true;
@@ -272,6 +277,101 @@ showColumn = (value) => {
     return filterColum[0].show;
 }
 
+createIvoicePdf = () => {
+    const doc = new jsPDF("p", "mm", "a4");
+    doc.setTextColor(0, 0, 252);
+    doc.setFontSize(10);
+    doc.text(113, 5, 'Sluiskade NZ 79 - 7676 SH Westerhaar - The Netherlands');
+    doc.text(165, 10, 'Tel: +31-(0)-524 525 123');
+    doc.text(164, 15, 'Fax: +31-(0)-524 524 196');
+    doc.text(170, 20, 'Mail: info@nevema.nl');
+    doc.setTextColor(0, 0, 0);
+    doc.text(1, 50, 'BTW-Nr. NL 001898486B01');
+    doc.text(113, 60, 'Jongkind B.V.');
+    doc.text(113, 65, 'Oosteinderweg 357');
+    doc.text(113, 70, '1432 AX AALSMEER');
+    doc.text(15, 90, 'Leveringsvoorwaarde:');
+    doc.text(15, 95, 'Af Kade');
+    doc.text(70, 90, 'Referentie: 2020-2517');
+    //center table
+    doc.autoTable({
+        head: [['Afl. datum ', 'Aantal', 'Omschrijving', 'Prijs', 'Bedrag']],
+        body: [
+          ['30-04-2020', '95,00 WM M3', 'SwedShamrock fractie 2 RHP 2020-2517/Van Brenk/63670/132325', '44,80', '4.256,00'],
+        ],
+        margin: { top: 100 },
+    })
+    doc.setDrawColor(0, 0, 0);
+    doc.line(0, 225, 70, 225)
+    doc.text(1, 230, 'Betalingsconditie : Binnen 30 dagen netto');
+    doc.text(1, 235, 'Vervaldatum: 04-06-2020');
+    doc.line(0, 240, 70, 240)
+    doc.line(70, 225, 70, 240)
+
+    doc.text(150, 200, 'Totaal excl.   EUR:   4.256,00');
+    doc.text(150, 205, 'Totaal Btw     21 % :   893,76');
+    //polygon
+    doc.line(80, 240, 200, 240);//down
+    doc.line(80, 240, 80, 220);//left
+    doc.line(80, 220, 200, 220);//up
+    doc.line(200, 220, 200, 240);//right
+    //inline
+    doc.line(80, 229, 200, 229);//1
+    doc.line(110, 240, 110, 220);//2
+    doc.line(140, 225, 140, 240);//3
+    doc.line(170, 240, 170, 220);//4
+    doc.line(110, 225, 170, 225);//4
+    //in text
+    doc.text(84, 225, 'Factuurdatum');
+    doc.text(120, 224, 'Bij betaling vermelden');
+    doc.text(113, 228, 'Factuurnummer');
+    doc.text(143, 228, 'Cliëntnummer');
+    doc.text(174, 225, 'Factuurbedrag');
+
+    doc.text(86, 235, '05-05-2020');
+    doc.text(115, 235, '20000731');
+    doc.text(146, 235, '810515');
+    doc.setFontType("bold");
+    doc.setFontSize(12);
+    doc.text(172, 235, '€');
+    doc.text(180, 235, '5.149,76');
+    doc.setFontSize(10);
+    let str1 = "ID-Nr. NL001898486B01 Chamber of Commerce - Groningen Nr. 05023998";
+    let str2 = "Bank details:     ABN Amro 62.60.29.562 * IBAN: NL58ABNA0626029562* Swiftcode: ABNANL2A";
+    let str3 = "All agreements are subject to the general sales conditions of the VPN";
+    var pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+    doc.setFontSize(10);
+    doc.text(str1, pageWidth / 2, 245, 'center');
+    doc.text(str2, pageWidth / 2-10, 250, 'center');
+    doc.text(str3, pageWidth / 2, 255, 'center');
+    let text = "De geleverde goederen blijven eigendom van Nevema totdat deze volledig zijn betaald. Na het verstrijken van de betalingstermijn wordt over het verschuldigde bedragde wettelijke rente +2% berekend en zijn incassokosten verschuldigd. Voor alle transacties, met uitsluiting van andere voorwaarden, gelden onze bij de KvK te Zwollegedeponeerde Algemene Voorwaarden, waarvan op aanvraag kosteloos een exemplaar wordt verstrekt. De rechter van onze vestigingsplaats is de bevoegde rechter.(Zie ommezijde) Handelsregister onder dossiernummer 05023998"
+    var splitText = doc.splitTextToSize(text, 250);
+    doc.setFontSize(7);
+    doc.setFontType("normal");
+    var y = 261;
+    for (var i=0; i<splitText.length; i++){
+        if (y > 275){
+            y = 20;
+            doc.addPage();
+        }
+        doc.text(2, y, splitText[i]);
+        y = y + 4;
+    }
+    doc.save('pdf')
+}
+
+getAddress = (id) => {
+    let params = {
+        id: id
+    }
+    var headers = SessionManager.shared().getAuthorizationHeader();
+    Axios.post(API.GetAddress, params, headers)
+    .then(result => {
+       console.log('343434', result);
+    });
+    
+}
+
 render () {
     const {filterColunm} = this.state;
     let qualityData = this.state.qualityData
@@ -283,6 +383,7 @@ render () {
             <div className="content__header content__header--with-line">
                 <h2 className="title">{trls('Quality')}</h2>
             </div>
+            
              {this.state.exactFlag&&(
                 <div style={{marginLeft: 20}}>
                     <FlashMassage duration={2000}>
@@ -363,7 +464,11 @@ render () {
                                             ):
                                                 <Button type="submit" disabled style={{width:"auto", height: 35}}>{trls('Send_salesinvoice')}</Button>
                                             }
-                                            
+                                        </Row>
+                                    </td>
+                                    <td className={!this.showColumn(filterColunm[12].label) ? "filter-show__hide" : ''}>
+                                        <Row style={{justifyContent:"center"}}>
+                                            <Button style={{width:"auto", height: 35}} onClick={()=>this.createIvoicePdf()}>{trls('CreateProFormaInvoice')}</Button>
                                         </Row>
                                     </td>
                                 </tr>
