@@ -178,7 +178,11 @@ export const TRANSLATIONS = {
       Picking_reference: 'Picking reference',
       PickingDate: 'PickingDate',
       RemoveReference: 'RemoveReference',
-      CreateProFormaInvoice: 'Create Pro Forma invoice'
+      CreateProFormaInvoice: 'Create Pro Forma invoice',
+      SalesInvoice: 'SalesInvoice',
+      ProFormaInvoice: 'Pro Forma factuur',
+      DocDelete: 'DocDelete',
+      Success: 'Success'
     },
 
 
@@ -361,6 +365,10 @@ export const TRANSLATIONS = {
       Picking_reference: 'Uithaalreferentie',
       PickingDate: 'Uithalen voor',
       RemoveReference: 'UithaalReferentie',
-      CreateProFormaInvoice: 'Maak een Pro Forma-factuur'
+      CreateProFormaInvoice: 'Maak een Pro Forma-factuur',
+      SalesInvoice: 'Verkoopfactuur',
+      ProFormaInvoice: 'Pro Forma invoice',
+      DocDelete: 'DocVerwijderen',
+      Success: 'Succes'
     }
   };

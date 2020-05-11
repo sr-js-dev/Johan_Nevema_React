@@ -912,3 +912,11 @@ input[name="search"].form-control::-webkit-input-placeholder {
   text-align: right;
   color: blue;
 }
+.docList-text{
+  cursor: pointer;
+  padding: 5px;
+}
+.doclist-delete__icon{
+  float: right;
+  cursor: pointer;
+}

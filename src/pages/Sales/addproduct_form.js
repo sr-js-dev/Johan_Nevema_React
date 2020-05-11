@@ -122,12 +122,13 @@ class Addproduct extends Component {
     }
 
     getProductList = () =>{
+        const { customercode, suppliercode, loadingdate, arrivaldate } = this.props;
         this._isMounted = true;
         var headers = SessionManager.shared().getAuthorizationHeader();
         var params = {
-            customercode: this.props.customercode,
-            suppliercode: this.props.suppliercode,
-            loadingdate: this.props.loadingdate
+            customercode: customercode,
+            suppliercode: suppliercode,
+            loadingdate: loadingdate==="1900-01-01T00:00:00" ? arrivaldate : loadingdate
         }
         if(this.props.customercode){
             Axios.post(API.GetSalesItems, params, headers)

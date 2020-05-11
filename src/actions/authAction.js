@@ -25,7 +25,7 @@ export const fetchLoginData = (params) => {
             window.localStorage.setItem('nevema_roles', response.roles);
             window.localStorage.setItem('nevema_loginUser', JSON.stringify(response));
             dispatch(fetchLoginDataSuccess(response));
-            history.push('/product')
+            history.push('/sales-order')
         })
         .catch(err => {
             dispatch(fetchLoginDataFail(err.responseJSON.error_description));

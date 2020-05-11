@@ -16,8 +16,8 @@ import Filtercomponent from '../../components/filtercomponent';
 import Salesorderdetail from '../Sales/selesorder_detail';
 import Contextmenu from '../../components/contextmenu';
 import jsPDF from "jspdf";
-// import Invoicepdf from './invoice_pdf';
 import 'jspdf-autotable'
+import {Logoimage} from './logo_image'
 
 const mapStateToProps = state => ({
      ...state.auth,
@@ -66,8 +66,8 @@ class Taskoverview extends Component {
                 {"label": 'Container', "value": "Container", "type": 'text', "show": true},
                 {"label": 'Shipping', "value": "Container", "type": 'text', "show": true},
                 {"label": 'BookingNumber', "value": "BookingNumber", "type": 'text', "show": true},
-                {"label": 'Complete', "value": "Complete", "type": 'text', "show": true},
-                {"label": 'CreateProFormaInvoice', "value": "CreateProFormaInvoice", "type": 'text', "show": true},
+                {"label": 'Action', "value": "Action", "type": 'text', "show": true},
+                // {"label": 'CreateProFormaInvoice', "value": "CreateProFormaInvoice", "type": 'text', "show": true},
             ],
         };
         this.divToPrint = React.createRef();
@@ -277,8 +277,17 @@ showColumn = (value) => {
     return filterColum[0].show;
 }
 
-createIvoicePdf = () => {
+createIvoicePdf = (addressData, lineData) => {
+    let bedragSum = 0;
+    lineData.map((data, index)=>{
+        bedragSum += data.Amount;
+        return data;
+    })
+    let totalBTW = bedragSum/100*addressData.btwper;
+    let nowDate = new Date()
+    let next30daysDate = new Date(nowDate.setDate(nowDate.getDate() + 30))
     const doc = new jsPDF("p", "mm", "a4");
+    doc.addImage(Logoimage, 'PNG', 2, 2, 60, 10);
     doc.setTextColor(0, 0, 252);
     doc.setFontSize(10);
     doc.text(113, 5, 'Sluiskade NZ 79 - 7676 SH Westerhaar - The Netherlands');
@@ -287,29 +296,31 @@ createIvoicePdf = () => {
     doc.text(170, 20, 'Mail: info@nevema.nl');
     doc.setTextColor(0, 0, 0);
     doc.text(1, 50, 'BTW-Nr. NL 001898486B01');
-    doc.text(113, 60, 'Jongkind B.V.');
-    doc.text(113, 65, 'Oosteinderweg 357');
-    doc.text(113, 70, '1432 AX AALSMEER');
+    doc.text(113, 60, addressData.DebtorName);
+    doc.text(113, 65, addressData.AddressLine1);
+    doc.text(113, 70, addressData.PostalCode+" "+addressData.City);
     doc.text(15, 90, 'Leveringsvoorwaarde:');
     doc.text(15, 95, 'Af Kade');
     doc.text(70, 90, 'Referentie: 2020-2517');
     //center table
     doc.autoTable({
+        columnStyles: {0: {fillColor: [255, 255, 255], cellPadding: 1}, 1: {fillColor: [255, 255, 255], cellPadding: 1}, 2: {fillColor: [255, 255, 255], cellPadding: 1}, 3: {fillColor: [255, 255, 255], cellPadding: 1}, 4: {fillColor: [255, 255, 255], cellPadding: 1}},
         head: [['Afl. datum ', 'Aantal', 'Omschrijving', 'Prijs', 'Bedrag']],
         body: [
-          ['30-04-2020', '95,00 WM M3', 'SwedShamrock fractie 2 RHP 2020-2517/Van Brenk/63670/132325', '44,80', '4.256,00'],
+          [lineData[0].Loadingdate, lineData[0].Quantity+" "+lineData[0].Unit, lineData[0].description, lineData[0].Value, Common.formatQuantity(lineData[0].Amount)],
+          ['', '', lineData[1].Text, '', '']
         ],
         margin: { top: 100 },
     })
     doc.setDrawColor(0, 0, 0);
     doc.line(0, 225, 70, 225)
     doc.text(1, 230, 'Betalingsconditie : Binnen 30 dagen netto');
-    doc.text(1, 235, 'Vervaldatum: 04-06-2020');
+    doc.text(1, 235, 'Vervaldatum: '+ Common.formatDate(next30daysDate));
     doc.line(0, 240, 70, 240)
     doc.line(70, 225, 70, 240)
 
-    doc.text(150, 200, 'Totaal excl.   EUR:   4.256,00');
-    doc.text(150, 205, 'Totaal Btw     21 % :   893,76');
+    doc.text(150, 200, 'Totaal excl.   EUR:   '+ Common.formatQuantity(bedragSum));
+    doc.text(150, 205, 'Totaal Btw     '+addressData.btwper+' %:    '+Common.formatQuantity(totalBTW));
     //polygon
     doc.line(80, 240, 200, 240);//down
     doc.line(80, 240, 80, 220);//left
@@ -328,13 +339,13 @@ createIvoicePdf = () => {
     doc.text(143, 228, 'Cliëntnummer');
     doc.text(174, 225, 'Factuurbedrag');
 
-    doc.text(86, 235, '05-05-2020');
-    doc.text(115, 235, '20000731');
+    doc.text(86, 235, Common.formatDate(new Date()));
+    doc.text(115, 235, Common.formatDateThree(new Date()));
     doc.text(146, 235, '810515');
     doc.setFontType("bold");
     doc.setFontSize(12);
     doc.text(172, 235, '€');
-    doc.text(180, 235, '5.149,76');
+    doc.text(180, 235, Common.formatQuantity(bedragSum+totalBTW));
     doc.setFontSize(10);
     let str1 = "ID-Nr. NL001898486B01 Chamber of Commerce - Groningen Nr. 05023998";
     let str2 = "Bank details:     ABN Amro 62.60.29.562 * IBAN: NL58ABNA0626029562* Swiftcode: ABNANL2A";
@@ -360,14 +371,29 @@ createIvoicePdf = () => {
     doc.save('pdf')
 }
 
-getAddress = (id) => {
+createPdfDocument = (id) => {
+    let addressData = [];
+    let lineData = [];
     let params = {
         id: id
     }
     var headers = SessionManager.shared().getAuthorizationHeader();
     Axios.post(API.GetAddress, params, headers)
     .then(result => {
-       console.log('343434', result);
+        if(result.data.Success){
+            addressData = result.data.Items[0];
+            Axios.post(API.GetLines, params, headers)
+            .then(result => {
+                if(result.data.Items.length>0){
+                    lineData = result.data.Items;
+                    this.createIvoicePdf(addressData, lineData)
+                }
+            })
+            // if(result.data.Items.length>0){
+            //     this.createIvoicePdf(result.data.Items[0]);
+            // }
+        }
+        
     });
     
 }
@@ -380,6 +406,7 @@ render () {
     });
     return (
         <div className="order_div">
+            
             <div className="content__header content__header--with-line">
                 <h2 className="title">{trls('Quality')}</h2>
             </div>
@@ -458,17 +485,13 @@ render () {
                                     <td className={!this.showColumn(filterColunm[9].label) ? "filter-show__hide" : ''}>{data.Shipping}</td>
                                     <td className={!this.showColumn(filterColunm[10].label) ? "filter-show__hide" : ''}>{data.BookingNumber}</td>
                                     <td className={!this.showColumn(filterColunm[11].label) ? "filter-show__hide" : ''}>
-                                        <Row style={{justifyContent:"center"}}>
+                                        <Row style={{justifyContent:"space-around", width: 250}}>
                                             {!data.isCompleted && data.referencecustomer!=="Nog te plannen" && data.customer!=="" && !data.Temporary?(
-                                                <Button type="submit" style={{width:"auto", height: 35}} onClick={()=>this.completeOrder(data.Id)}>{trls('Send_salesinvoice')}</Button>
+                                                <Button type="submit" style={{width:"auto", height: 35}} onClick={()=>this.completeOrder(data.Id)}>{trls('SalesInvoice')}</Button>
                                             ):
-                                                <Button type="submit" disabled style={{width:"auto", height: 35}}>{trls('Send_salesinvoice')}</Button>
+                                                <Button type="submit" disabled style={{width:"auto", height: 35}}>{trls('SalesInvoice')}</Button>
                                             }
-                                        </Row>
-                                    </td>
-                                    <td className={!this.showColumn(filterColunm[12].label) ? "filter-show__hide" : ''}>
-                                        <Row style={{justifyContent:"center"}}>
-                                            <Button style={{width:"auto", height: 35}} onClick={()=>this.createIvoicePdf()}>{trls('CreateProFormaInvoice')}</Button>
+                                            <Button style={{width:"auto", height: 35}} onClick={()=>this.createPdfDocument(data.Id)}>{trls('ProFormaInvoice')}</Button>
                                         </Row>
                                     </td>
                                 </tr>

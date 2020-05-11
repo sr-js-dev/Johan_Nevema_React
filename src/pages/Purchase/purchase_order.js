@@ -13,6 +13,7 @@ import * as Common from '../../components/common';
 import Purchaseorderdetail from './purchaseorder_detail';
 import Filtercomponent from '../../components/filtercomponent';
 import Contextmenu from '../../components/contextmenu';
+import SweetAlert from 'sweetalert';
 
 const mapStateToProps = state => ({
      ...state.auth,
@@ -42,6 +43,7 @@ class Purchaseorder extends Component {
                 {"label": 'IsTransport', "value": "IsTransport", "type": 'text', "show": true},
                 {"label": 'Total_amount', "value": "total", "type": 'text', "show": true},
                 {"label": 'ExactBooking', "value": "ExactBooking", "type": 'text', "show": true},
+                {"label": 'Action', "value": "Action", "type": 'text', "show": true},
             ],
         };
       }
@@ -136,13 +138,31 @@ removeColumn = (value) => {
       return item;
     })
     this.setState({filterColunm: filterColunm})
-  }
+}
 
-  showColumn = (value) => {
+showColumn = (value) => {
     let filterColum = this.state.filterColunm;
     filterColum = filterColum.filter((item, key)=>item.label===value);
     return filterColum[0].show;
-  }
+}
+
+deletePurchaseOrder = (id) => {
+    let params = {
+        id: id
+    }
+    var header = SessionManager.shared().getAuthorizationHeader();
+    Axios.post(API.DeletePurchaseOrder, params, header)
+    .then(result=>{
+        if(result.data.Success){
+            SweetAlert({
+                title: trls('Success'),
+                icon: "success",
+                button: "OK",
+            });
+            this.getPurchaseOrders();
+        }
+    })
+}
 
 render () {
     let salesData = this.state.purhaseorders;
@@ -222,6 +242,15 @@ render () {
                                                 <span className="exact-booking__number"></span>
                                             </Row>
                                         }
+                                    </td>
+                                    <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>
+                                        <Row style={{width: 80}}>
+                                            {!data.exactBooking ? (
+                                                <Button variant="light" onClick={()=>this.deletePurchaseOrder(data.id)} className="action-button"><i className="fas fa-trash-alt add-icon"></i>{trls('Delete')}</Button>
+                                            ):
+                                                <Button variant="light" onClick={()=>this.deletePurchaseOrder(data.id)} disabled className="action-button"><i className="fas fa-trash-alt add-icon"></i>{trls('Delete')}</Button>
+                                            }
+                                        </Row>
                                     </td>
                                 </tr>
                             ))

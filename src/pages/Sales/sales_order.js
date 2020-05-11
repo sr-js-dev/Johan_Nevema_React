@@ -13,6 +13,7 @@ import * as Common  from '../../components/common';
 import Salesorderdetail from './selesorder_detail';
 import Filtercomponent from '../../components/filtercomponent';
 import Contextmenu from '../../components/contextmenu';
+import SweetAlert from 'sweetalert';
 
 const mapStateToProps = state => ({
      ...state.auth,
@@ -52,6 +53,7 @@ class Salesorder extends Component {
                 {"label": 'Container', "value": "Container", "type": 'text', "show": true},
                 {"label": 'Shipping', "value": "Container", "type": 'text', "show": true},
                 {"label": 'ExactBooking', "value": "Container", "type": 'text', "show": true},
+                {"label": 'Action', "value": "Action", "type": 'text', "show": true},
             ],
             loadingFlag: false,
             newId: pathArray[2] ? pathArray[2] : '',
@@ -158,6 +160,37 @@ showColumn = (value) => {
     return filterColum[0].show;
 }
 
+deleteSalesOrder = (id) => {
+    let params = {
+        id: id
+    }
+    var header = SessionManager.shared().getAuthorizationHeader();
+    Axios.post(API.DeleteSalesOrder, params, header)
+    .then(result=>{
+        if(result.data.Success){
+            SweetAlert({
+                title: trls('Success'),
+                icon: "success",
+                button: "OK",
+            });
+            this.getsalesData();
+        }
+    })
+}
+
+deleteDocment = (id) => {
+    let params = {
+        id: id
+    }
+    var header = SessionManager.shared().getAuthorizationHeader();
+    Axios.post(API.DeleteSalesDocument, params, header)
+    .then(result=>{
+        if(result.data.Success){
+            this.getsalesData();
+        }
+    })
+}
+
 render () {
 
     let salesData = this.state.salesData;
@@ -242,6 +275,13 @@ render () {
                                                 <span className="exact-booking__number"></span>
                                             </Row>
                                         }
+                                    </td>
+                                    <td className={!this.showColumn(filterColunm[13].label) ? "filter-show__hide" : ''}>
+                                        <Row style={{justifyContent:"space-around", width: 100}}>
+                                            {!data.exactBooking && (
+                                                <Button variant="light" onClick={()=>this.deleteSalesOrder(data.id)} className="action-button"><i className="fas fa-trash-alt add-icon"></i>{trls('Delete')}</Button>
+                                            )}
+                                        </Row>
                                     </td>
                                 </tr>
                             ))

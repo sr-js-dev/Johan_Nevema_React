@@ -122,5 +122,10 @@ export default {
     GetDownloadFile   : `${BASEURL}/api/factory/download-file/`,
     GetRederijDropdown: `${BASEURL}/api/factory/execute/Exact-Test/getRederijDropdown`,
     GetAddress: `${BASEURL}/api/factory/execute/appmakerz-test/getAddress`,
+    GetLines: `${BASEURL}/api/factory/execute/appmakerz-test/getLines`,
+    DeleteSalesOrder: `${BASEURL}/api/factory/execute/Appmakerz-Test/deleteSalesOrder`,
+    DeleteSalesDocument: `${BASEURL}/api/factory/execute/Appmakerz-Test/deleteSalesDocument`,
+    DeletePurchaseDocument: `${BASEURL}/api/factory/execute/Appmakerz-Test/deletePurchaseDocument`,
+    DeletePurchaseOrder: `${BASEURL}/api/factory/execute/Appmakerz-Test/deletePurchaseOrder`,
   }; 
-   
+  

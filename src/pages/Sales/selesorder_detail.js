@@ -186,6 +186,19 @@ class Salesorderdtail extends Component {
         window.open(API.GetDownloadFile+fileId);
     }
 
+    deleteSalesOrderDocment = (fileId) => {
+        let params = {
+            filestorageid: fileId
+        }
+        var header = SessionManager.shared().getAuthorizationHeader();
+        Axios.post(API.DeleteSalesDocument, params, header)
+        .then(result=>{
+            if(result.data.Success){
+                this.getSalesOrder();
+            }
+        })
+    }
+
     render () {
         let detailData = this.state.salesorder;
         let salesItems = this.state.salesItems;
@@ -221,8 +234,9 @@ class Salesorderdtail extends Component {
                                 <div id="react-file-drop-demo" className = "purhcase-order__doc">
                                     {salesOrderDocList.length>0&&(
                                         salesOrderDocList.map((data,i) =>(
-                                            <div id={i} key={i} style={{cursor: "pointer", padding: '5px 5px'}} onClick={()=>this.downLoadFile(data.FileStorageId)}>
-                                                {data.FileName}
+                                            <div id={i} key={i}>
+                                                <span className="docList-text" onClick={()=>this.downLoadFile(data.FileStorageId)}>{data.FileName}</span>
+                                                <i className="fas fa-trash-alt add-icon doclist-delete__icon" onClick={()=>this.deleteSalesOrderDocment(data.FileStorageId)}></i>
                                             </div>
                                         ))
                                     )
@@ -400,6 +414,7 @@ class Salesorderdtail extends Component {
                     customercode={detailData.CustomerCode}
                     suppliercode={detailData.SupplierCode}
                     loadingdate={detailData.loadingdate}
+                    arrivaldate={detailData.arrivaldate}
                     orderid={this.props.newid}
                     getSalesOrderLine={()=>this.getSalesItem()}
                     getTransport={()=>this.getSalesOrderTransports()}

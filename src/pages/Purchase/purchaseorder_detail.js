@@ -255,6 +255,19 @@ class Purchaseorderdtail extends Component {
         window.open(path+'sales-order/'+orderHeaderId, '_blank');
     }
 
+    deleteSalesOrderDocment = (fileId) => {
+        let params = {
+            filestorageid: fileId
+        }
+        var header = SessionManager.shared().getAuthorizationHeader();
+        Axios.post(API.DeletePurchaseDocument, params, header)
+        .then(result=>{
+            if(result.data.Success){
+                this.getPurchaseOrder();
+            }
+        })
+    }
+
     render () {
         let detailData = [];
         if(this.state.purchaseOrder){
@@ -314,8 +327,9 @@ class Purchaseorderdtail extends Component {
                                 <div id="react-file-drop-demo" className = "purhcase-order__doc">
                                     {purchaseOrderDocList.length>0&&(
                                         purchaseOrderDocList.map((data,i) =>(
-                                            <div id={i} key={i} style={{cursor: "pointer", padding: '5px 5px'}} onClick={()=>this.downLoadFile(data.FileStorageId)}>
-                                                {data.FileName}
+                                            <div id={i} key={i}>
+                                                <span className="docList-text" onClick={()=>this.downLoadFile(data.FileStorageId)}>{data.FileName}</span>
+                                                <i className="fas fa-trash-alt add-icon doclist-delete__icon" onClick={()=>this.deleteSalesOrderDocment(data.FileStorageId)}></i>
                                             </div>
                                         ))
                                     )
