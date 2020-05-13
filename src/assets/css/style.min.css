@@ -999,7 +999,8 @@ table {
     background-image: url(../images/img_admin.png);
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
-  }
+	height: 100vh;
+}
 
 .input-password {
 	background-color: rgba(45, 175, 229, .05);
