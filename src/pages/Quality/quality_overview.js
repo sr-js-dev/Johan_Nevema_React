@@ -290,34 +290,35 @@ createIvoicePdf = (addressData, lineData) => {
     doc.addImage(Logoimage, 'PNG', 2, 2, 60, 10);
     doc.setTextColor(0, 0, 252);
     doc.setFontSize(10);
-    doc.text(113, 5, 'Sluiskade NZ 79 - 7676 SH Westerhaar - The Netherlands');
-    doc.text(165, 10, 'Tel: +31-(0)-524 525 123');
-    doc.text(164, 15, 'Fax: +31-(0)-524 524 196');
-    doc.text(170, 20, 'Mail: info@nevema.nl');
+    doc.text(113, 10, 'Sluiskade NZ 79 - 7676 SH Westerhaar - The Netherlands');
+    doc.text(165, 15, 'Tel: +31-(0)-524 525 123');
+    doc.text(164, 20, 'Fax: +31-(0)-524 524 196');
+    doc.text(170, 25, 'Mail: info@nevema.nl');
     doc.setTextColor(0, 0, 0);
-    doc.text(1, 50, 'BTW-Nr. NL 001898486B01');
+    // doc.text(1, 50, 'BTW-Nr. NL 001898486B01');
     doc.text(113, 60, addressData.DebtorName);
     doc.text(113, 65, addressData.AddressLine1);
     doc.text(113, 70, addressData.PostalCode+" "+addressData.City);
-    doc.text(15, 90, 'Leveringsvoorwaarde:');
-    doc.text(15, 95, 'Af Kade');
-    doc.text(70, 90, 'Referentie: 2020-2517');
+    // doc.text(15, 90, 'Leveringsvoorwaarde:');
+    // doc.text(15, 95, 'Af Kade');
+    doc.text(70, 90, 'Referentie: '+addressData.ReferenceCustomer);
     //center table
     doc.autoTable({
-        columnStyles: {0: {fillColor: [255, 255, 255], cellPadding: 1}, 1: {fillColor: [255, 255, 255], cellPadding: 1}, 2: {fillColor: [255, 255, 255], cellPadding: 1}, 3: {fillColor: [255, 255, 255], cellPadding: 1}, 4: {fillColor: [255, 255, 255], cellPadding: 1}},
-        head: [['Afl. datum ', 'Aantal', 'Omschrijving', 'Prijs', 'Bedrag']],
+        columnStyles: {0: {fillColor: [255, 255, 255], cellPadding: 1, cellWidth: 25}, 1: {fillColor: [255, 255, 255], cellPadding: 1}, 2: {fillColor: [255, 255, 255], cellPadding: 1}, 3: {fillColor: [255, 255, 255], cellPadding: 1}, 4: {fillColor: [255, 255, 255], cellPadding: 1}},
+        head: [['Afl. datum ', 'Aantal eenheid', 'Omschrijving', 'Prijs', 'Bedrag']],
         body: [
-          [lineData[0].Loadingdate, lineData[0].Quantity+" "+lineData[0].Unit, lineData[0].description, lineData[0].Value, Common.formatQuantity(lineData[0].Amount)],
-          ['', '', lineData[1].Text, '', '']
+          [Common.formatDate(lineData[0].Loadingdate), lineData[0].Quantity+" "+lineData[0].Unit, lineData[0].description, Common.formatMoney(lineData[0].Value), Common.formatMoney(lineData[0].Amount)],
+          ['', lineData[1].Text, '', '', '']
         ],
         margin: { top: 100 },
     })
     doc.setDrawColor(0, 0, 0);
-    doc.line(0, 225, 70, 225)
-    doc.text(1, 230, 'Betalingsconditie : Binnen 30 dagen netto');
-    doc.text(1, 235, 'Vervaldatum: '+ Common.formatDate(next30daysDate));
-    doc.line(0, 240, 70, 240)
-    doc.line(70, 225, 70, 240)
+    doc.line(5, 225, 5, 240)
+    doc.line(5, 225, 75, 225)
+    doc.text(6, 230, 'Betalingsconditie : Binnen 30 dagen netto');
+    doc.text(6, 235, 'Vervaldatum: '+ Common.formatDate(next30daysDate));
+    doc.line(5, 240, 75, 240)
+    doc.line(75, 225, 75, 240)
 
     doc.text(150, 200, 'Totaal excl.   EUR:   '+ Common.formatQuantity(bedragSum));
     doc.text(150, 205, 'Totaal Btw     '+addressData.btwper+' %:    '+Common.formatQuantity(totalBTW));
@@ -347,7 +348,7 @@ createIvoicePdf = (addressData, lineData) => {
     doc.text(172, 235, '€');
     doc.text(180, 235, Common.formatQuantity(bedragSum+totalBTW));
     doc.setFontSize(10);
-    let str1 = "ID-Nr. NL001898486B01 Chamber of Commerce - Groningen Nr. 05023998";
+    let str1 = "VAT-ID Nr. NL001898486B01 Chamber of Commerce - Groningen Nr. 05023998";
     let str2 = "Bank details:     ABN Amro 62.60.29.562 * IBAN: NL58ABNA0626029562* Swiftcode: ABNANL2A";
     let str3 = "All agreements are subject to the general sales conditions of the VPN";
     var pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
@@ -365,7 +366,7 @@ createIvoicePdf = (addressData, lineData) => {
             y = 20;
             doc.addPage();
         }
-        doc.text(2, y, splitText[i]);
+        doc.text(28, y, splitText[i]);
         y = y + 4;
     }
     doc.save('pdf')

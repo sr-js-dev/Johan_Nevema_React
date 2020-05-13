@@ -333,8 +333,8 @@ class Product extends Component {
                                   <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{data.Product}</td>
                                   <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''}>{data.Customer}</td>
                                   <td className={!this.showColumn(filterColunm[4].label) ? "filter-show__hide" : ''}>{data.Product}</td>
-                                  <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>{data.SalesPrice}</td>
-                                  <td className={!this.showColumn(filterColunm[6].label) ? "filter-show__hide" : ''}>{data.PurchasePrice}</td>
+                                  <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>{Common.formatMoney(data.SalesPrice)}</td>
+                                  <td className={!this.showColumn(filterColunm[6].label) ? "filter-show__hide" : ''}>{Common.formatMoney(data.PurchasePrice)}</td>
                                   <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>{data.SalesUnit}</td>
                                   <td className={!this.showColumn(filterColunm[8].label) ? "filter-show__hide" : ''}>{data.PurchaseUnit}</td>
                                   <td className={!this.showColumn(filterColunm[9].label) ? "filter-show__hide" : ''}>{data.Kilogram}</td>

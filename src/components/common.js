@@ -37,6 +37,7 @@ export const formatDateThree = (startdate) => {
 };
 
 export const formatMoney = (num) => {
+    num = parseFloat(num);
     if(num){
         return (
             "€ "+num
