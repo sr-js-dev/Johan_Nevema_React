@@ -279,7 +279,26 @@ showColumn = (value) => {
 
 createIvoicePdf = (addressData, lineData) => {
     let bedragSum = 0;
+    let tableBodyData = [];
     lineData.map((data, index)=>{
+        let bodyList = [];
+        if(data.Text===''){
+            console.log('data', data);
+            bodyList[0] = Common.formatDate(data.Loadingdate);
+            bodyList[1] = data.Quantity+" "+data.Unit;
+            bodyList[2] = data.description;
+            bodyList[3] = Common.formatMoney(data.Value);
+            bodyList[4] = Common.formatMoney(data.Amount);
+            tableBodyData.push(bodyList);
+        }else{
+            bodyList[0] = '';
+            bodyList[1] = data.Text;
+            bodyList[2] = '';
+            bodyList[3] = '';
+            bodyList[4] = '';
+            tableBodyData.push(bodyList);
+        }
+        
         bedragSum += data.Amount;
         return data;
     })
@@ -301,27 +320,24 @@ createIvoicePdf = (addressData, lineData) => {
     doc.text(113, 70, addressData.PostalCode+" "+addressData.City);
     // doc.text(15, 90, 'Leveringsvoorwaarde:');
     // doc.text(15, 95, 'Af Kade');
-    doc.text(70, 90, 'Referentie: '+addressData.ReferenceCustomer);
+    doc.text(70, 90, trls('Reference')+':  '+addressData.ReferenceCustomer);
     //center table
     doc.autoTable({
-        columnStyles: {0: {fillColor: [255, 255, 255], cellPadding: 1, cellWidth: 25}, 1: {fillColor: [255, 255, 255], cellPadding: 1}, 2: {fillColor: [255, 255, 255], cellPadding: 1}, 3: {fillColor: [255, 255, 255], cellPadding: 1}, 4: {fillColor: [255, 255, 255], cellPadding: 1}},
-        head: [['Afl. datum ', 'Aantal eenheid', 'Omschrijving', 'Prijs', 'Bedrag']],
-        body: [
-          [Common.formatDate(lineData[0].Loadingdate), lineData[0].Quantity+" "+lineData[0].Unit, lineData[0].description, Common.formatMoney(lineData[0].Value), Common.formatMoney(lineData[0].Amount)],
-          ['', lineData[1].Text, '', '', '']
-        ],
+        columnStyles: {0: {fillColor: [255, 255, 255], cellPadding: 1, cellWidth: 25}, 1: {fillColor: [255, 255, 255], cellPadding: 1, cellWidth: 35}, 2: {fillColor: [255, 255, 255], cellPadding: 1}, 3: {fillColor: [255, 255, 255], cellPadding: 1}, 4: {fillColor: [255, 255, 255], cellPadding: 1, cellWidth: 25}},
+        head: [[trls("DelDate"), trls('NumberUnit'), trls('Description'), trls('Price'), trls('Amount')]],
+        body: tableBodyData,
         margin: { top: 100 },
     })
     doc.setDrawColor(0, 0, 0);
     doc.line(5, 225, 5, 240)
     doc.line(5, 225, 75, 225)
-    doc.text(6, 230, 'Betalingsconditie : Binnen 30 dagen netto');
-    doc.text(6, 235, 'Vervaldatum: '+ Common.formatDate(next30daysDate));
+    doc.text(6, 230, trls('PaymentCondition')+' : Binnen 30 dagen netto');
+    doc.text(6, 235, trls('ExpireDate')+': '+ Common.formatDate(next30daysDate));
     doc.line(5, 240, 75, 240)
     doc.line(75, 225, 75, 240)
 
-    doc.text(150, 200, 'Totaal excl.   EUR:   '+ Common.formatQuantity(bedragSum));
-    doc.text(150, 205, 'Totaal Btw     '+addressData.btwper+' %:    '+Common.formatQuantity(totalBTW));
+    doc.text(150, 200, trls('TotalExcl')+'   EUR:   '+ Common.formatQuantity(bedragSum));
+    doc.text(150, 205, trls('TotalVat')+'     '+addressData.btwper+' %:    '+Common.formatQuantity(totalBTW));
     //polygon
     doc.line(80, 240, 200, 240);//down
     doc.line(80, 240, 80, 220);//left
@@ -334,11 +350,11 @@ createIvoicePdf = (addressData, lineData) => {
     doc.line(170, 240, 170, 220);//4
     doc.line(110, 225, 170, 225);//4
     //in text
-    doc.text(84, 225, 'Factuurdatum');
-    doc.text(120, 224, 'Bij betaling vermelden');
-    doc.text(113, 228, 'Factuurnummer');
-    doc.text(143, 228, 'Cliëntnummer');
-    doc.text(174, 225, 'Factuurbedrag');
+    doc.text(84, 225, trls('InvoiceDate'));
+    doc.text(120, 224, trls('PaymentReference'));
+    doc.text(113, 228, trls('InvoiceNumber'));
+    doc.text(143, 228, trls('CustomerNumber'));
+    doc.text(174, 225, trls('InvoiceAmount'));
 
     doc.text(86, 235, Common.formatDate(new Date()));
     doc.text(115, 235, Common.formatDateThree(new Date()));
@@ -356,7 +372,7 @@ createIvoicePdf = (addressData, lineData) => {
     doc.text(str1, pageWidth / 2, 245, 'center');
     doc.text(str2, pageWidth / 2-10, 250, 'center');
     doc.text(str3, pageWidth / 2, 255, 'center');
-    let text = "De geleverde goederen blijven eigendom van Nevema totdat deze volledig zijn betaald. Na het verstrijken van de betalingstermijn wordt over het verschuldigde bedragde wettelijke rente +2% berekend en zijn incassokosten verschuldigd. Voor alle transacties, met uitsluiting van andere voorwaarden, gelden onze bij de KvK te Zwollegedeponeerde Algemene Voorwaarden, waarvan op aanvraag kosteloos een exemplaar wordt verstrekt. De rechter van onze vestigingsplaats is de bevoegde rechter.(Zie ommezijde) Handelsregister onder dossiernummer 05023998"
+    let text = trls('InvoiceNevemaPdf');
     var splitText = doc.splitTextToSize(text, 250);
     doc.setFontSize(7);
     doc.setFontType("normal");

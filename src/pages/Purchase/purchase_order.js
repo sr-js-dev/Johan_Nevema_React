@@ -45,19 +45,31 @@ class Purchaseorder extends Component {
                 {"label": 'ExactBooking', "value": "ExactBooking", "type": 'text', "show": true},
                 {"label": 'Action', "value": "Action", "type": 'text', "show": true},
             ],
+            packingFilterNum: '',
+            obj: this
         };
       }
 componentDidMount() {
     this.getPurchaseOrders();
     this.setFilterData();
+    let obj = this.state.obj;
+    $("#packing-filter").keyup(function(event) {
+        if (event.keyCode === 13) {
+            obj.getPurchaseOrders();
+        }
+    });
 }
 
 componentWillUnmount() {
 }
 getPurchaseOrders(data) {
+    const { packingFilterNum } = this.state;
     this.setState({loading: true})
     var headers = SessionManager.shared().getAuthorizationHeader();
-    Axios.get(API.GetPurchaseOrders, headers)
+    let params = {
+        pakbon: packingFilterNum
+    }
+    Axios.post(API.GetPurchaseOrders, params, headers)
     .then(result => {
         if(!data){
             this.setState({purhaseorders: result.data.Items, originpurchaseorders: result.data.Items});
@@ -104,6 +116,7 @@ setFilterData = () => {
     let filterData = [
         {"label": trls('Supplier'), "value": "Supplier", "type": 'text'},
         {"label": trls('Invoice'), "value": "invoicenr", "type": 'text'},
+        {"label": trls('Pakbon'), "value": "pakbon ", "type": 'text'},
         {"label": trls('Invoice_date'), "value": "invoicedate", "type": 'date'},
         {"label": trls('Totalamount'), "value": "total", "type": 'text'}
     ]
@@ -179,10 +192,14 @@ render () {
                     </Col>
                     <Col sm={6} className="has-search">
                         <div style={{display: 'flex', float: 'right'}}>
+                            <div style={{marginRight: 20}}>
+                                <i className="fas fa-filter form-control-feedback"></i>
+                                <Form.Control id="packing-filter" className="form-control" type="text" placeholder={trls("PackingFilter")} onChange={(evt)=>this.setState({packingFilterNum: evt.target.value})}/>
+                            </div>
                             <Button variant="light" onClick={()=>this.changeFilter()}><i className="fas fa-filter add-icon"></i>{trls('Filter')}</Button>
                             <div style={{marginLeft: 20}}>
                                 <span className="fa fa-search form-control-feedback"></span>
-                                <Form.Control className="form-control fitler" type="text" name="number"placeholder={trls("Quick_search")}/>
+                                <Form.Control className="form-control fitler" type="text" placeholder={trls("Quick_search")}/>
                             </div>
                         </div>
                     </Col>
