@@ -4,6 +4,7 @@ import $ from 'jquery';
 import { BallBeat } from 'react-pure-loaders';
 import { Button, Form, Row, Spinner, Col } from 'react-bootstrap';
 import { trls } from '../../components/translate';
+import { trlsPDF } from '../../components/translate';
 import 'datatables.net';
 import SessionManager from '../../components/session_manage';
 import API from '../../components/api'
@@ -12,6 +13,7 @@ import Select from 'react-select';
 import * as Common from '../../components/common';
 import FlashMassage from 'react-flash-message'
 // import Salesdetailfrom from "../Sales/salesorder_detailform";
+import Setlanguageform from "./setlanguage_form";
 import Filtercomponent from '../../components/filtercomponent';
 import Salesorderdetail from '../Sales/selesorder_detail';
 import Contextmenu from '../../components/contextmenu';
@@ -69,6 +71,9 @@ class Taskoverview extends Component {
                 {"label": 'Action', "value": "Action", "type": 'text', "show": true},
                 // {"label": 'CreateProFormaInvoice', "value": "CreateProFormaInvoice", "type": 'text', "show": true},
             ],
+            LanguagemodalShow: false,
+            pdfLang: '',
+            invoicePdfId: ''
         };
         this.divToPrint = React.createRef();
       }
@@ -283,7 +288,6 @@ createIvoicePdf = (addressData, lineData) => {
     lineData.map((data, index)=>{
         let bodyList = [];
         if(data.Text===''){
-            console.log('data', data);
             bodyList[0] = Common.formatDate(data.Loadingdate);
             bodyList[1] = data.Quantity+" "+data.Unit;
             bodyList[2] = data.description;
@@ -320,24 +324,24 @@ createIvoicePdf = (addressData, lineData) => {
     doc.text(113, 70, addressData.PostalCode+" "+addressData.City);
     // doc.text(15, 90, 'Leveringsvoorwaarde:');
     // doc.text(15, 95, 'Af Kade');
-    doc.text(70, 90, trls('Reference')+':  '+addressData.ReferenceCustomer);
+    doc.text(70, 90, trlsPDF('Reference')+':  '+addressData.ReferenceCustomer);
     //center table
     doc.autoTable({
         columnStyles: {0: {fillColor: [255, 255, 255], cellPadding: 1, cellWidth: 25}, 1: {fillColor: [255, 255, 255], cellPadding: 1, cellWidth: 35}, 2: {fillColor: [255, 255, 255], cellPadding: 1}, 3: {fillColor: [255, 255, 255], cellPadding: 1}, 4: {fillColor: [255, 255, 255], cellPadding: 1, cellWidth: 25}},
-        head: [[trls("DelDate"), trls('NumberUnit'), trls('Description'), trls('Price'), trls('Amount')]],
+        head: [[trlsPDF("DelDate"), trlsPDF('NumberUnit'), trlsPDF('Description'), trlsPDF('Price'), trlsPDF('Amount')]],
         body: tableBodyData,
         margin: { top: 100 },
     })
     doc.setDrawColor(0, 0, 0);
     doc.line(5, 225, 5, 240)
     doc.line(5, 225, 75, 225)
-    doc.text(6, 230, trls('PaymentCondition')+' : Binnen 30 dagen netto');
-    doc.text(6, 235, trls('ExpireDate')+': '+ Common.formatDate(next30daysDate));
+    doc.text(6, 230, trlsPDF('PaymentCondition')+' : Binnen 30 dagen netto');
+    doc.text(6, 235, trlsPDF('ExpireDate')+': '+ Common.formatDate(next30daysDate));
     doc.line(5, 240, 75, 240)
     doc.line(75, 225, 75, 240)
 
-    doc.text(150, 200, trls('TotalExcl')+'   EUR:   '+ Common.formatQuantity(bedragSum));
-    doc.text(150, 205, trls('TotalVat')+'     '+addressData.btwper+' %:    '+Common.formatQuantity(totalBTW));
+    doc.text(150, 200, trlsPDF('TotalExcl')+'   EUR:   '+ Common.formatQuantity(bedragSum));
+    doc.text(150, 205, trlsPDF('TotalVat')+'     '+addressData.btwper+' %:    '+Common.formatQuantity(totalBTW));
     //polygon
     doc.line(80, 240, 200, 240);//down
     doc.line(80, 240, 80, 220);//left
@@ -350,11 +354,11 @@ createIvoicePdf = (addressData, lineData) => {
     doc.line(170, 240, 170, 220);//4
     doc.line(110, 225, 170, 225);//4
     //in text
-    doc.text(84, 225, trls('InvoiceDate'));
-    doc.text(120, 224, trls('PaymentReference'));
-    doc.text(113, 228, trls('InvoiceNumber'));
-    doc.text(143, 228, trls('CustomerNumber'));
-    doc.text(174, 225, trls('InvoiceAmount'));
+    doc.text(84, 225, trlsPDF('InvoiceDate'));
+    doc.text(120, 224, trlsPDF('PaymentReference'));
+    doc.text(113, 228, trlsPDF('InvoiceNumber'));
+    doc.text(143, 228, trlsPDF('CustomerNumber'));
+    doc.text(174, 225, trlsPDF('InvoiceAmount'));
 
     doc.text(86, 235, Common.formatDate(new Date()));
     doc.text(115, 235, Common.formatDateThree(new Date()));
@@ -372,7 +376,7 @@ createIvoicePdf = (addressData, lineData) => {
     doc.text(str1, pageWidth / 2, 245, 'center');
     doc.text(str2, pageWidth / 2-10, 250, 'center');
     doc.text(str3, pageWidth / 2, 255, 'center');
-    let text = trls('InvoiceNevemaPdf');
+    let text = trlsPDF('InvoiceNevemaPdf');
     var splitText = doc.splitTextToSize(text, 250);
     doc.setFontSize(7);
     doc.setFontType("normal");
@@ -385,14 +389,16 @@ createIvoicePdf = (addressData, lineData) => {
         doc.text(28, y, splitText[i]);
         y = y + 4;
     }
-    doc.save('pdf')
+    doc.save('Invoice')
 }
 
-createPdfDocument = (id) => {
+createPdfDocument = () => {
+    const { invoicePdfId } = this.state;
+    this.setState({LanguagemodalShow: false})
     let addressData = [];
     let lineData = [];
     let params = {
-        id: id
+        id: invoicePdfId
     }
     var headers = SessionManager.shared().getAuthorizationHeader();
     Axios.post(API.GetAddress, params, headers)
@@ -415,8 +421,14 @@ createPdfDocument = (id) => {
     
 }
 
+showSetLanguage = (invoiceData) =>{
+
+    this.setState({LanguagemodalShow: true, pdfLang: invoiceData.language === "NL" ? "Dutch" : "English", invoicePdfId: invoiceData.Id})
+    localStorage.setItem('nevema_lang_PDF', invoiceData.language === "NL" ? "nl_BE" : "en_US");
+}
+
 render () {
-    const {filterColunm} = this.state;
+    const { filterColunm, LanguagemodalShow } = this.state;
     let qualityData = this.state.qualityData
     qualityData.sort(function(a, b) {
         return a.id - b.id;
@@ -508,7 +520,7 @@ render () {
                                             ):
                                                 <Button type="submit" disabled style={{width:"auto", height: 35}}>{trls('SalesInvoice')}</Button>
                                             }
-                                            <Button style={{width:"auto", height: 35}} onClick={()=>this.createPdfDocument(data.Id)}>{trls('ProFormaInvoice')}</Button>
+                                            <Button style={{width:"auto", height: 35}} onClick={()=>this.showSetLanguage(data)}>{trls('ProFormaInvoice')}</Button>
                                         </Row>
                                     </td>
                                 </tr>
@@ -543,6 +555,13 @@ render () {
                         customercode={this.state.customerCode}
                         suppliercode={this.state.supplierCode}
                     /> */}
+                    {LanguagemodalShow && (
+                        <Setlanguageform
+                            show={LanguagemodalShow}
+                            onHide={()=>this.createPdfDocument()}
+                            pdfLanguage={this.state.pdfLang}
+                        />
+                    )}
                 </div>
             </div>
         </div>

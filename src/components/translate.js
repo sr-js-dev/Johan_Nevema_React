@@ -5,3 +5,10 @@ export const trls = (translate_key) => {
         TRANSLATIONS[lang][translate_key]
     )
 };
+
+export const trlsPDF = (translate_key) => {
+    var lang = window.localStorage.getItem('nevema_lang_PDF');
+    return(
+        TRANSLATIONS[lang][translate_key]
+    )
+};

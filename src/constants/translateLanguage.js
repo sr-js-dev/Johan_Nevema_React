@@ -196,7 +196,8 @@ export const TRANSLATIONS = {
       InvoiceAmount: 'Invoice acmount',
       InvoiceNevemaPdf: 'The supplied goods remain property of Nevema untill they have been fully paid. After the expire date of this invoice the legal interest of 2% and all legal costs are on the account of the customer. For all transactions (unless agreed otherwise) our General Conditions are valid, they have been deposited at the Chamber of Commerce in Zwolle. If required we can send you a copy for free. The judge of our place of business (file number 05023998) is the competent judge.',
       Pakbon: 'Pakbon',
-      PackingFilter: 'Packing filter'
+      PackingFilter: 'Pakbon',
+      Language: 'Language'
     },
 
 
@@ -397,6 +398,7 @@ export const TRANSLATIONS = {
       InvoiceAmount: 'Factuurbedrag',
       InvoiceNevemaPdf: 'De geleverde goederen blijven eigendom van Nevema totdat deze volledig zijn betaald. Na het verstrijken van de betalingstermijn wordt over het verschuldigde bedragde wettelijke rente +2% berekend en zijn incassokosten verschuldigd. Voor alle transacties, met uitsluiting van andere voorwaarden, gelden onze bij de KvK te Zwollegedeponeerde Algemene Voorwaarden, waarvan op aanvraag kosteloos een exemplaar wordt verstrekt. De rechter van onze vestigingsplaats is de bevoegde rechter.(Zie ommezijde) Handelsregister onder dossiernummer 05023998.',
       Pakbon: 'Pakbon',
-      PackingFilter: 'Verpakkingsfilter'
+      PackingFilter: 'Pakbon',
+      Language: 'Taal'
     }
   };
