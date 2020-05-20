@@ -72,7 +72,6 @@ class Purchaseform extends Component {
         });
     };
 
-
     handleSubmit = (event) => {
         event.preventDefault();
         const clientFormData = new FormData(event.target);

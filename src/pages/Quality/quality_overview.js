@@ -454,7 +454,7 @@ render () {
                 <div style={{marginTop:10, marginLeft: 20}}><Spinner animation="border" variant="info"/><span style={{marginTp:10, fontWeight: "bold", fontSize: 16}}> {trls('Sending')}...</span></div>
             )}
             <div className="orders">
-                <Row className="order_filter">
+                <Row>
                     <Col sm={6}>
                         <Select
                             name="filter"

@@ -1,6 +1,7 @@
-const BASEURL = 'https://app-test.organisatie.freepeat.com';
+// const BASEURL = 'https://app-test.organisatie.freepeat.com';
+const BASEURL = 'https://app1.organisatie.freepeat.com:4434';
 export default {
-    GetToken: "https://app-test.organisatie.freepeat.com/token",
+    GetToken: `${BASEURL}/token`,
     GetUserData: `${BASEURL}/api/users/GetUsers?excludeActiveUsers=false`,
     PostUserData: `${BASEURL}/api/Users`,
     DeleteUserData: `${BASEURL}/api/users/Delete?id=`,

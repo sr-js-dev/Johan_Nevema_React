@@ -14,6 +14,7 @@ import Purchaseorderdetail from './purchaseorder_detail';
 import Filtercomponent from '../../components/filtercomponent';
 import Contextmenu from '../../components/contextmenu';
 import SweetAlert from 'sweetalert';
+// import ErrorBoundary from './boundary';
 
 const mapStateToProps = state => ({
      ...state.auth,
@@ -300,6 +301,7 @@ render () {
                 />
             ): null}
         </div>
+        
     )
 };
 }
