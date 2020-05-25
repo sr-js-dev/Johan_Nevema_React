@@ -12,7 +12,6 @@ import Axios from 'axios';
 import Select from 'react-select';
 import * as Common from '../../components/common';
 import FlashMassage from 'react-flash-message'
-// import Salesdetailfrom from "../Sales/salesorder_detailform";
 import Setlanguageform from "./setlanguage_form";
 import Filtercomponent from '../../components/filtercomponent';
 import Salesorderdetail from '../Sales/selesorder_detail';
@@ -28,6 +27,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
 
 }); 
+
 class Taskoverview extends Component {
     _isMounted = false
     constructor(props) {
@@ -60,6 +60,7 @@ class Taskoverview extends Component {
                 {"label": 'Id', "value": "Id", "type": 'text', "show": true},
                 {"label": 'Customer', "value": "customer", "type": 'text', "show": true},
                 {"label": 'Supplier', "value": "supplier", "type": 'text', "show": true},
+                {"label": 'Reference_customer', "value": "referencecustomer", "type": 'text', "show": true},
                 {"label": 'Purchase_Amount', "value": "PurchaseAmount", "type": 'date', "show": true},
                 {"label": 'Sales_Amount', "value": "SalesAmount", "type": 'date', "show": true},
                 {"label": 'Loading_date', "value": "Loadingdate", "type": 'text', "show": true},
@@ -95,7 +96,7 @@ getQualityData = (data) => {
     Axios.get(API.GetQualityControl, header)
     .then(result => {
         let optionarray = [];
-        if(!data){
+        if(!data || data.length===0){
             if(result.data.Items){
                 result.data.Items.map((value, index) => {
                     if(this.state.showMode===1){
@@ -160,6 +161,7 @@ setFilterData = () => {
     let filterData = [
         {"label": trls('Supplier'), "value": "supplier", "type": 'text'},
         {"label": trls('Customer'), "value": "customer", "type": 'text'},
+        {"label": trls('Reference_customer'), "value": "referencecustomer", "type": 'text'},
         {"label": trls('Purchase_Amount'), "value": "PurchaseAmount", "type": 'date'},
 	    {"label": trls('Sales_Amount'), "value": "SalesAmount", "type": 'date'},
         {"label": trls('Loading_date'), "value": "Loadingdate", "type": 'text'},
@@ -412,17 +414,11 @@ createPdfDocument = () => {
                     this.createIvoicePdf(addressData, lineData)
                 }
             })
-            // if(result.data.Items.length>0){
-            //     this.createIvoicePdf(result.data.Items[0]);
-            // }
         }
-        
     });
-    
 }
 
 showSetLanguage = (invoiceData) =>{
-
     this.setState({LanguagemodalShow: true, pdfLang: invoiceData.language === "NL" ? "Dutch" : "English", invoicePdfId: invoiceData.Id})
     localStorage.setItem('nevema_lang_PDF', invoiceData.language === "NL" ? "nl_BE" : "en_US");
 }
@@ -505,15 +501,16 @@ render () {
                                     <td className={!this.showColumn(filterColunm[0].label) ? "filter-show__hide" : ''}><div id={data.id} style={{cursor: "pointer", color:'#004388', fontSize:"14px", fontWeight:'bold'}} onClick={()=>this.loadSalesDetail(data)}>{data.Id}</div></td>
                                     <td className={!this.showColumn(filterColunm[1].label) ? "filter-show__hide" : ''}>{data.customer}</td>
                                     <td className={!this.showColumn(filterColunm[2].label) ? "filter-show__hide" : ''}>{data.supplier}</td>
-                                    <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''}>{Common.formatMoney(data.PurchaseAmount)}</td>
-                                    <td className={!this.showColumn(filterColunm[4].label) ? "filter-show__hide" : ''}>{Common.formatMoney(data.SalesAmount)}</td>
-                                    <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.Loadingdate)}</td>
-                                    <td className={!this.showColumn(filterColunm[6].label) ? "filter-show__hide" : ''}>{data.Loadingweek}</td>
-                                    <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>{data.PackingSlip}</td>
-                                    <td className={!this.showColumn(filterColunm[8].label) ? "filter-show__hide" : ''}>{data.Container}</td>
-                                    <td className={!this.showColumn(filterColunm[9].label) ? "filter-show__hide" : ''}>{data.Shipping}</td>
-                                    <td className={!this.showColumn(filterColunm[10].label) ? "filter-show__hide" : ''}>{data.BookingNumber}</td>
-                                    <td className={!this.showColumn(filterColunm[11].label) ? "filter-show__hide" : ''}>
+                                    <td className={!this.showColumn(filterColunm[3].label) ? "filter-show__hide" : ''}>{data.referencecustomer}</td>
+                                    <td className={!this.showColumn(filterColunm[4].label) ? "filter-show__hide" : ''}>{Common.formatMoney(data.PurchaseAmount)}</td>
+                                    <td className={!this.showColumn(filterColunm[5].label) ? "filter-show__hide" : ''}>{Common.formatMoney(data.SalesAmount)}</td>
+                                    <td className={!this.showColumn(filterColunm[6].label) ? "filter-show__hide" : ''}>{Common.formatDate(data.Loadingdate)}</td>
+                                    <td className={!this.showColumn(filterColunm[7].label) ? "filter-show__hide" : ''}>{data.Loadingweek}</td>
+                                    <td className={!this.showColumn(filterColunm[8].label) ? "filter-show__hide" : ''}>{data.PackingSlip}</td>
+                                    <td className={!this.showColumn(filterColunm[9].label) ? "filter-show__hide" : ''}>{data.Container}</td>
+                                    <td className={!this.showColumn(filterColunm[10].label) ? "filter-show__hide" : ''}>{data.Shipping}</td>
+                                    <td className={!this.showColumn(filterColunm[11].label) ? "filter-show__hide" : ''}>{data.BookingNumber}</td>
+                                    <td className={!this.showColumn(filterColunm[12].label) ? "filter-show__hide" : ''}>
                                         <Row style={{justifyContent:"space-around", width: 250}}>
                                             {!data.isCompleted && data.referencecustomer!=="Nog te plannen" && data.customer!=="" && !data.Temporary?(
                                                 <Button type="submit" style={{width:"auto", height: 35}} onClick={()=>this.completeOrder(data.Id)}>{trls('SalesInvoice')}</Button>
@@ -546,15 +543,6 @@ render () {
                             viewDetailFlag={true}
                         />
                     ): null}
-                    {/* <Salesdetailfrom
-                        show={this.state.modalShow}
-                        onHide={() => this.setState({modalShow: false})}
-                        onSetDetailFlag={()=>this.setState({detailFlag: false})}
-                        detailflag={this.state.detailFlag}
-                        orderid={this.state.orderId}
-                        customercode={this.state.customerCode}
-                        suppliercode={this.state.supplierCode}
-                    /> */}
                     {LanguagemodalShow && (
                         <Setlanguageform
                             show={LanguagemodalShow}
