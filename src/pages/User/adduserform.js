@@ -24,7 +24,7 @@ class Adduserform extends Component {
     constructor(props) {
         super(props);
         this.state = {  
-            roles:[{"value":"Administrator","label":"Administrator"},{"value":"Customer","label":"Customer"}],
+            roles:[],
             selectrolvalue:"Select...",
             selectrollabel:"Select...",
             val1:'',
@@ -38,6 +38,30 @@ class Adduserform extends Component {
     }
     
     componentDidMount() {
+        this.getUserRole();
+    }
+
+    getUserRole = () => {
+        this._isMounted = true;
+        let roleList = [];
+        let roleArray = {};
+        var headers = SessionManager.shared().getAuthorizationHeader();
+        Axios.get(API.GetUserRole, headers)
+        .then(result => {
+            if(this._isMounted){
+                result.data.map((role, index)=>{
+                    roleArray = {
+                        value: role.Id,
+                        label: role.Name
+                    };
+                    roleList.push(roleArray);
+                    return role;
+                })
+            }
+            this.setState({roles: roleList})
+        })
+        .catch(err => {
+        });
     }
 
     handleSubmit = (event) => {
@@ -54,7 +78,7 @@ class Adduserform extends Component {
                 "PhoneNumber": data.PhoneNumber,
                 "password": data.password1,
                 "confirmPassword": data.confirmpassword1,
-                "RoleName": data.roles,
+                "RoleName": this.state.val1.label,
             }
             var headers = SessionManager.shared().getAuthorizationHeader();
             Axios.post(API.PostUserData, params, headers)
@@ -77,7 +101,7 @@ class Adduserform extends Component {
             params = {
                 "Id": this.props.userID,
                 "PhoneNumber": data.PhoneNumber,
-                "RoleName": data.roles,
+                "RoleName": this.state.val1.label,
             }
             headers = SessionManager.shared().getAuthorizationHeader();
             Axios.post(API.PostUserUpdate, params, headers)
@@ -95,6 +119,12 @@ class Adduserform extends Component {
     getRoles (value) {
         this.setState({val1:value.value})
     }
+
+    setUserRole = (role) => {
+        const { roles } = this.state;
+        let setUserRole = roles.filter((item, key)=>item.value===role[0].RoleId);
+        return setUserRole;
+    }
     
     onHide = () => {
         this.props.onHide();
@@ -104,7 +134,6 @@ class Adduserform extends Component {
     render(){   
         let updateData = [];
         let roles = [];
-        // let roledata=''
         if(this.props.userUpdateData){
             updateData=this.props.userUpdateData;
             roles = updateData.roles;
@@ -118,7 +147,7 @@ class Adduserform extends Component {
                     <i className="fas fa-times slide-close" style={{ fontSize: 20, cursor: 'pointer'}} onClick={()=>this.onHide()}></i>
                 </div>
                 <Form className="container" onSubmit = { this.handleSubmit }>
-                    <Col className="title add-product">{trls('Add_Product')}</Col>
+                    <Col className="title add-product">{this.props.mode==="add" ? trls('Add User') : trls('Edit User')}</Col>
                     {this.state.errorFlag && (
                         <ListErrors errors={this.props.error}/>
                     )}
@@ -157,12 +186,15 @@ class Adduserform extends Component {
                     </Form.Group>
                     <Form.Group as={Row} controlId="formPlaintextSupplier">
                         <Col>
-                            <Select
-                                name="roles"
-                                placeholder={trls('Roles')}
-                                options={this.state.roles}
-                                onChange={val => this.setState({val1: val})}
-                            />
+                            {this.state.roles.length>0 && (
+                                <Select
+                                    name="roles"
+                                    placeholder={trls('Roles')}
+                                    options={this.state.roles}
+                                    defaultValue={this.props.mode==="update" ? this.setUserRole(updateData.Roles) : ''}
+                                    onChange={val => this.setState({val1: val})}
+                                />
+                            )}
                             <label className="placeholder-label">{trls('Roles')}</label>
                             {!this.props.disabled&&this.props.mode==="add" && (
                                 <input

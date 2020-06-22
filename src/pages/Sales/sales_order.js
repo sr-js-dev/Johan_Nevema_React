@@ -14,6 +14,7 @@ import Salesorderdetail from './selesorder_detail';
 import Filtercomponent from '../../components/filtercomponent';
 import Contextmenu from '../../components/contextmenu';
 import SweetAlert from 'sweetalert';
+import * as Auth from '../../components/auth';
 
 const mapStateToProps = state => ({
      ...state.auth,
@@ -57,6 +58,7 @@ class Salesorder extends Component {
             ],
             loadingFlag: false,
             newId: pathArray[2] ? pathArray[2] : '',
+            userInfo: Auth.getUserInfo()
         };
       }
 componentDidMount() {
@@ -172,8 +174,12 @@ deleteSalesOrder = (id) => {
                 title: trls('Success'),
                 icon: "success",
                 button: "OK",
-            });
-            this.getsalesData();
+            })
+            .then((value) => {
+                this.getsalesData();
+                return;
+            }); ;
+           
         }
     })
 }
@@ -194,7 +200,7 @@ deleteDocment = (id) => {
 render () {
 
     let salesData = this.state.salesData;
-    const { filterColunm } = this.state;
+    const { filterColunm, userInfo } = this.state;
     salesData.sort(function(a, b) {
         return a.id - b.id;
     });
@@ -276,13 +282,16 @@ render () {
                                             </Row>
                                         }
                                     </td>
-                                    <td className={!this.showColumn(filterColunm[13].label) ? "filter-show__hide" : ''}>
-                                        <Row style={{justifyContent:"space-around", width: 100}}>
-                                            {!data.exactBooking && (
-                                                <Button variant="light" onClick={()=>this.deleteSalesOrder(data.id)} className="action-button"><i className="fas fa-trash-alt add-icon"></i>{trls('Delete')}</Button>
-                                            )}
-                                        </Row>
-                                    </td>
+                                    {userInfo.roles==="Administrator" ? (
+                                        <td className={!this.showColumn(filterColunm[13].label) ? "filter-show__hide" : ''}>
+                                            <Row style={{justifyContent:"space-around", width: 100}}>
+                                                {!data.exactBooking && (
+                                                    <Button variant="light" onClick={()=>this.deleteSalesOrder(data.id)} className="action-button"><i className="fas fa-trash-alt add-icon"></i>{trls('Delete')}</Button>
+                                                )}
+                                            </Row>
+                                        </td>
+                                    ) : <td></td>}
+                                    
                                 </tr>
                             ))
                             }

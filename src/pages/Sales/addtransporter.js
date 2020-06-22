@@ -54,6 +54,7 @@ class Addtransporter extends Component {
     }
 
     postTransport = () => {
+        console.log('221323123', this.props.transportdata)
         let transportArray = this.state.transportSavingData;
         let params = [];
         var headers = SessionManager.shared().getAuthorizationHeader();
@@ -62,6 +63,7 @@ class Addtransporter extends Component {
                 if(transport.checked){
                     params = {
                         orderid: this.props.orderid,
+                        salesorderlineid: this.props.transportdata.salesOrderLineId,
                         transportercode: transport.TransporterCode,
                         pricingtype: transport.pricingtype,
                         price: transport.price,

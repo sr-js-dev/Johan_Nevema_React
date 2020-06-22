@@ -3,13 +3,13 @@ import { Row, Col, Form, Button, Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import SessionManager from '../../components/session_manage';
 import Axios from 'axios';
-import API from '../../components/api'
+import API from '../../components/api';
 import { trls } from '../../components/translate';
-import Updatepurchaseform  from './updatepurchase_form'
-import Addpurchaseform  from './addpruchase_form'
-import * as Common from '../../components/common'
+import Updatepurchaseform  from './updatepurchase_form';
+import Addpurchaseform  from './addpruchase_form';
+import * as Common from '../../components/common';
 import FlashMassage from 'react-flash-message';
-import Addmanuallytranspor from './transportmanualform'
+import Addmanuallytranspor from './transportmanualform';
 import Sweetalert from 'sweetalert';
 
 const mapStateToProps = state => ({ 
@@ -37,7 +37,8 @@ class Purchaseorderdtail extends Component {
             updateManualData: [],
             defaultVatCode: '',
             vatCodeList: [], 
-            purchaseOrderDocList: []
+            purchaseOrderDocList: [],
+            showTextModal: false,
         }
     }
 
@@ -47,6 +48,11 @@ class Purchaseorderdtail extends Component {
         this.getPurchaseTransportManual();
     }
 
+        
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+    
     getPurchaseOrder() {
         var params= {
             "purchaseorderid":this.props.newId
@@ -158,11 +164,21 @@ class Purchaseorderdtail extends Component {
             }
         });
     }
-    
-    componentWillUnmount() {
-        this._isMounted = false
+
+    getPurchaseTextLines = () => {
+        this._isMounted = true;
+        var params = {
+            purchaseorderheaderid:this.props.newId
+        }
+        var headers = SessionManager.shared().getAuthorizationHeader();
+        Axios.post(API.GetTextLines, params, headers)
+        .then(result => {
+            if(this._isMounted) {
+                this.setState({purchaseTextLines: result.data.Items});
+            }
+        });
     }
-    
+
     generatePurchaseInvoiceXmlExact = () => {
         this.setState({sendingFlag: true, exactFlag: false})
         var headers = SessionManager.shared().getAuthorizationHeader();
