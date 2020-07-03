@@ -481,7 +481,7 @@ table {
 	z-index: 10;
 	left: -100%;
 	top: 54px;
-	width: 100%;
+	width: 220px;
 	height: calc(100%);
 	padding-top: 15px;
 	background-color: #f4fbfe;
@@ -674,8 +674,8 @@ table {
 	padding: 0 0px
 }
 
-.menu__item {
-	display: flex;
+.nav-item {
+	/* display: flex; */
 	padding: 13px 0px;
 }
 
@@ -1840,19 +1840,6 @@ table {
 
 .place-and-orders {
 	padding: 0 30px
-}
-
-.place-and-orders__top {
-	/* display: -webkit-box;
-	display: -ms-flexbox;
-	display: flex;
-	-webkit-box-pack: justify;
-	-ms-flex-pack: justify;
-	justify-content: space-between;
-	-webkit-box-align: start;
-	-ms-flex-align: start;
-	align-items: flex-start;
-	margin-top: 30px */
 }
 
 .place-and-orders__form {
